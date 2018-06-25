@@ -1,0 +1,5 @@
+Requirement already satisfied: Flask in /usr/local/lib/python2.7/dist-packages (0.10.1)
+Requirement already satisfied: Jinja2>=2.4 in /usr/local/lib/python2.7/dist-packages (from Flask) (2.10)
+Requirement already satisfied: Werkzeug>=0.7 in /usr/local/lib/python2.7/dist-packages (from Flask) (0.14.1)
+Requirement already satisfied: itsdangerous>=0.21 in /usr/local/lib/python2.7/dist-packages (from Flask) (0.24)
+Requirement already satisfied: MarkupSafe>=0.23 in /usr/local/lib/python2.7/dist-packages (from Jinja2>=2.4->Flask) (1.0)
