@@ -103,7 +103,8 @@ ENV/
 #
 .csv
 .json
-.png.gif
+.png
+.gif
 .mp3
 .wav
 .zip
