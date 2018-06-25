@@ -101,11 +101,11 @@ ENV/
 .mypy_cache/
 
 #
-.csv
-.json
-.png
-.gif
-.mp3
-.wav
-.zip
+*.csv
+*.json
+*.png
+*.gif
+*.mp3
+*.wav
+*.zip
 
