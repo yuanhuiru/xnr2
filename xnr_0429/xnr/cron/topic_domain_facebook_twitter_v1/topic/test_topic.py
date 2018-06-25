@@ -38,16 +38,16 @@ def load_weibo(uid_weibo):
     result_data = {}
     p_data = {}
     for uid, keywords in uid_weibo.items():
-    	keywords_temp = {}
-    	for keyword, val in keywords.items():
-    		keywords_temp[keyword.encode('utf8')] = val*1000
-    	keywords = keywords_temp
+        keywords_temp = {}
+        for keyword, val in keywords.items():
+            keywords_temp[keyword.encode('utf8')] = val*1000
+        keywords = keywords_temp
 
-    	result_data[uid] = {}
-    	domain_p = TOPIC_DICT
-    	for field in domain_p:
-    		result_data[uid][field] = com_p(keywords, DOMAIN_DICT[field], DOMAIN_COUNT[field], LEN_DICT[field], TOTAL)
-    	p_data[uid] = rank_result(result_data[uid])
+        result_data[uid] = {}
+        domain_p = TOPIC_DICT
+        for field in domain_p:
+            result_data[uid][field] = com_p(keywords, DOMAIN_DICT[field], DOMAIN_COUNT[field], LEN_DICT[field], TOTAL)
+        p_data[uid] = rank_result(result_data[uid])
     return result_data,p_data
 
 def rank_dict(has_word):
@@ -133,3 +133,4 @@ if __name__ == '__main__':
     result_data,uid_topic = topic_classfiy(uid_list, uid_weibo)
     print result_data
     print uid_topic
+

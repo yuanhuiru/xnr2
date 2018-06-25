@@ -7,7 +7,7 @@ from keyword_extraction import get_filter_keywords
 import sys
 sys.path.append('../')
 from global_config import S_DATE_FB, S_DATE_TW
-from global_utils import es_fb_user_portrait as es, \
+from global_utils import es_xnr_2 as es, \
                          fb_portrait_index_name, fb_portrait_index_type, \
                          facebook_user_index_name, facebook_user_index_type, \
                          facebook_flow_text_index_name_pre, facebook_flow_text_index_type, \
@@ -15,8 +15,10 @@ from global_utils import es_fb_user_portrait as es, \
 from time_utils import get_facebook_flow_text_index_list, get_fb_bci_index_list, datetime2ts, ts2datetime
 from parameter import MAX_SEARCH_SIZE, FB_TW_TOPIC_ABS_PATH, FB_DOMAIN_ABS_PATH, DAY, WEEK
 
-sys.path.append('../cron/trans/')
-from trans import trans
+MAX_SEARCH_SIZE = 999999
+TEST_MAX_FLOW_TEXT_DAYS = 30
+FB_TW_TOPIC_ABS_PATH = '/home/xnr1/xnr_0429/xnr/cron/topic_domain_facebook_twitter_v1/topic'
+FB_DOMAIN_ABS_PATH = '/home/xnr1/xnr_0429/xnr/cron/topic_domain_facebook_twitter_v1/domain_facebook'
 
 sys.path.append(FB_TW_TOPIC_ABS_PATH)
 from test_topic import topic_classfiy
@@ -47,10 +49,10 @@ def load_uid_list():
     return uid_list
 
 def load_timestamp(type='test'):
-    if type == 'test':
-        timestamp =  datetime2ts(S_DATE_FB)
-    else:
-        timestamp = time.time()
+    # if type == 'test':
+    #     timestamp =  datetime2ts(S_DATE_FB)
+    # else:
+    timestamp = time.time()
     return timestamp
 
 def save_data2es(data):
@@ -63,49 +65,79 @@ def save_data2es(data):
             else:
                 create_uid_list.append(uid)
         #bulk create
-        bulk_create_action = []
         if create_uid_list:
+            bulk_create_action = []
+            count = 0
             for uid in create_uid_list:
                 create_action = {'index':{'_id': uid}}
                 bulk_create_action.extend([create_action, data[uid]])
-            result = es.bulk(bulk_create_action, index=fb_portrait_index_name, doc_type=fb_portrait_index_type)
-            if result['errors'] :
-                print result
-                return False
+                count += 1
+                if count % 5000 == 0:
+                    es.bulk(bulk_create_action, index=fb_portrait_index_name, doc_type=fb_portrait_index_type)
+                    bulk_create_action = []
+            if bulk_create_action:
+                result = es.bulk(bulk_create_action, index=fb_portrait_index_name, doc_type=fb_portrait_index_type)
+                if result['errors'] :
+                    print result
+                    return False
         #bulk update
         if update_uid_list:
             bulk_update_action = []
+            count = 0
             for uid in update_uid_list:
                 update_action = {'update':{'_id': uid}}
                 bulk_update_action.extend([update_action, {'doc': data[uid]}])
-            result = es.bulk(bulk_update_action, index=fb_portrait_index_name, doc_type=fb_portrait_index_type)
-            if result['errors'] :
-                print result
-                return False
+                count += 1
+                if count % 5000 == 0:
+                    es.bulk(bulk_update_action, index=fb_portrait_index_name, doc_type=fb_portrait_index_type)
+                    bulk_update_action = []
+            if bulk_update_action:
+                result = es.bulk(bulk_update_action, index=fb_portrait_index_name, doc_type=fb_portrait_index_type)
+                if result['errors'] :
+                    print result
+                    return False
     except Exception,e:
         print e
         return False
     return True
 
+
 def update_keywords(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp())
-    keywords_query_body = {
-        'query':{
-            "filtered":{
-                "filter": {
-                    "bool": {
-                        "must": [
-                            {"terms": {"uid": uid_list}},
-                        ]
-                     }
-                }
+    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
+    keywords_query_body={
+      'post_filter': {
+        'missing': {
+          'field': 'keywords_string'
+        }
+      },
+      'query': {
+        "filtered": {
+          "filter": {
+            "bool": {
+              "must": [
+                {
+                  "terms": {
+                    "uid": uid_list
+                  }
+                },
+                
+              ]
             }
-        },
-        'size': MAX_SEARCH_SIZE,
-        "sort": {"timestamp": {"order": "desc"}},
-        "fields": ["keywords_dict", "uid"]
+          }
+        }
+      },
+      'size': MAX_SEARCH_SIZE,
+      "sort": {
+        "timestamp": {
+          "order": "desc"
+        }
+      },
+      "fields": [
+        "keywords_dict",
+        "uid"
+      ]
     }
     user_keywords = {}
     for index_name in fb_flow_text_index_list:
@@ -144,7 +176,7 @@ def update_keywords(uid_list=[]):
 def update_hashtag(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp())
+    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
     keywords_query_body = {
         'query':{
             "filtered":{
@@ -195,7 +227,7 @@ def update_hashtag(uid_list=[]):
 def update_influence(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    fb_bci_index_list = get_fb_bci_index_list(load_timestamp())
+    fb_bci_index_list = get_fb_bci_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
     fb_influence_query_body = {
         'query':{
             "filtered":{
@@ -245,7 +277,7 @@ def update_influence(uid_list=[]):
 def update_sensitive(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp())
+    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
     sensitive_query_body = {
         'query':{
             "filtered":{
@@ -308,7 +340,7 @@ def update_sentiment(uid_list=[]):
     '''
     if not uid_list:
         uid_list = load_uid_list()
-    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp())
+    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
     sentiment_query_body = {
         'query':{
             "filtered":{
@@ -396,12 +428,17 @@ def trans_bio_data(bio_data):
 def update_domain(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp())
+    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
     user_domain_data = {}
     #load num of text
     count_result = count_text_num(uid_list, fb_flow_text_index_list)
     #load baseinfo
     fb_user_query_body = {
+        'post_filter': {
+            'exists': {
+                'field': 'bio_str'
+            }
+        },
         'query':{
             "filtered":{
                 "filter": {
@@ -414,7 +451,7 @@ def update_domain(uid_list=[]):
             }
         },
         'size': MAX_SEARCH_SIZE,
-        "fields": ["bio", "about", "description", "quotes", "category", "uid"]
+        "fields": ["bio_str", "category", "uid"]
     }
     try:
         search_results = es.search(index=facebook_user_index_name, doc_type=facebook_user_index_type, body=fb_user_query_body)['hits']['hits']
@@ -425,7 +462,6 @@ def update_domain(uid_list=[]):
                 text_num = count_result[uid]
                 user_domain_data[uid] = {
                     'bio_str': '',
-                    'bio_list': [],
                     'category': '',
                     'number_of_text': text_num
                 }
@@ -434,54 +470,16 @@ def update_domain(uid_list=[]):
                 category = content.get('category')[0]
             else:
                 category = ''
-            if content.has_key('description'):
-                description = content.get('description')[0][:1000]  #有的用户描述信息之类的太长了……3000+，没有卵用，而且翻译起来会出现一些问题，截取一部分就行了
+            if content.has_key('bio_str'):
+                bio_str = content.get('bio_str')[0]
             else:
-                description = ''
-            if content.has_key('quotes'):
-                quotes = content.get('quotes')[0][:1000]
-            else:
-                quotes = ''
-            if content.has_key('bio'):
-                bio = content.get('bio')[0][:1000]
-            else:
-                bio = ''
-            if content.has_key('about'):
-                about = content.get('about')[0][:1000]
-            else:
-                about = ''    
-            user_domain_data[uid]['bio_list'] = [quotes, bio, about, description]
+                bio_str = ''  
+            user_domain_data[uid]['bio_str'] = bio_str
             user_domain_data[uid]['category'] = category
     except Exception,e:
         print e
-    #由于一个用户请求一次翻译太耗时，所以统一批量翻译
-    trans_uid_list = []
-    untrans_bio_data = []
-    cut = 100
-    n = len(user_domain_data)/cut
-    for uid, content in user_domain_data.items():
-        trans_uid_list.append(uid)
-        untrans_bio_data.extend(content['bio_list'])
-        content.pop('bio_list')
-        if n:
-            if len(trans_uid_list)%cut == 0:
-                temp_trans_bio_data = trans_bio_data(untrans_bio_data)
-                for i in range(len(trans_uid_list)):
-                    uid = trans_uid_list[i]
-                    user_domain_data[uid]['bio_str'] = '_'.join(temp_trans_bio_data[4*i : 4*i+4])
-                trans_uid_list = []
-                untrans_bio_data = []
-                n = n - 1
-        else:
-            if len(trans_uid_list) == (len(user_domain_data)%cut):
-                temp_trans_bio_data = trans_bio_data(untrans_bio_data)
-                for i in range(len(trans_uid_list)):
-                    uid = trans_uid_list[i]
-                    user_domain_data[uid]['bio_str'] = '_'.join(temp_trans_bio_data[4*i : 4*i+4])
-                trans_uid_list = []
-                untrans_bio_data = []
     #domian计算
-    user_domain_temp = domain_main(user_domain_data)    
+    user_domain_temp = domain_main(user_domain_data) 
     user_domain = {}
     for uid in uid_list:
         if uid in user_domain_temp:
@@ -495,7 +493,7 @@ def update_domain(uid_list=[]):
 def update_topic(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp())
+    fb_flow_text_index_list = get_facebook_flow_text_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
     user_topic_data = get_filter_keywords(fb_flow_text_index_list, uid_list)
     user_topic_dict, user_topic_list = topic_classfiy(uid_list, user_topic_data)
     
@@ -619,27 +617,26 @@ def update_all(uid_list=[]):
     print 'time used: ', time_list[-1] - time_list[-2]
 
     #周更新
-    if flag:
-        print 'update_keywords:', update_keywords(uid_list)
-        time_list.append(time.time())
-        print 'time used: ', time_list[-1] - time_list[-2]
-        
-        print 'update_sentiment: ', update_sentiment(uid_list)
-        time_list.append(time.time())
-        print 'time used: ', time_list[-1] - time_list[-2]
+    # if flag:
+    print 'update_keywords:', update_keywords(uid_list)
+    time_list.append(time.time())
+    print 'time used: ', time_list[-1] - time_list[-2]
+    
+    print 'update_sentiment: ', update_sentiment(uid_list)
+    time_list.append(time.time())
+    print 'time used: ', time_list[-1] - time_list[-2]
 
-        print 'update_domain: ', update_domain(uid_list)
-        time_list.append(time.time())
-        print 'time used: ', time_list[-1] - time_list[-2]
+    print 'update_domain: ', update_domain(uid_list)
+    time_list.append(time.time())
+    print 'time used: ', time_list[-1] - time_list[-2]
 
-        print 'update_topic: ', update_topic(uid_list)
-        time_list.append(time.time())
-        print 'time used: ', time_list[-1] - time_list[-2]
+    print 'update_topic: ', update_topic(uid_list)
+    time_list.append(time.time())
+    print 'time used: ', time_list[-1] - time_list[-2]
 
 if __name__ == '__main__':
-    update_all(uid_list=['100018797745111'])
-    print '111'
-    # update_baseinfo(load_uid_list())
+    update_all()
+    # update_domain(load_uid_list()[:50])
 # total num:  92
 # time used:  0.0157630443573
 # update_baseinfo:  True
@@ -658,3 +655,4 @@ if __name__ == '__main__':
 # time used:  65.2284970284
 # update_topic:  True
 # time used:  12.6456358433
+

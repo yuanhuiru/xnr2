@@ -5,16 +5,31 @@ import re
 import scws
 import sys
 import csv
-import opencc
+# import opencc
 import time
 from global_utils_do import *
-
-sys.path.append('../../trans')
-from trans import trans, traditional2simplified
+from langconv import *
+# sys.path.append('../../trans')
+# from trans import trans, traditional2simplified
 
 # cc = opencc.OpenCC('t2s', opencc_path='/usr/bin/opencc')
 s = load_scws()
 
+#繁体转简体
+def traditional2simplified(sentence):
+    '''
+    将sentence中的繁体字转为简体字
+    :param sentence: 待转换的句子
+    :return: 将句子中繁体字转换为简体字之后的句子
+    '''
+    sentence = Converter('zh-hans').convert(sentence)
+    return sentence
+
+#简体转繁体
+def simplified2traditional(sentence):  
+    sentence = Converter('zh-hant').convert(sentence)  
+    return sentence  
+    
 def classify_by_category(category):#根据用户category划分
 
     category_lower = category.lower()
@@ -86,7 +101,7 @@ def domain_main(user_data):#facebook用户身份分类主函数
         return {}
     else:
         user_label = get_domain(user_data, user_label)
-        return user_label
+    return user_label
 
         
 def get_domain(user_data, user_label):
@@ -126,3 +141,7 @@ def get_domain(user_data, user_label):
                 label = 'active'
             user_label[k] = label
     return user_label
+
+if __name__ == '__main__':
+    data = {u'100000571076089': {'category': '', 'bio_str': u'\u707e\u96be\u4e4b\u540e\uff0c\u662f\u5f80\u6b63\u9762\u601d\u8003\u7684\u5951\u673a\uff0c\u4eba\u53ef\u4ee5\u4ece\u707e\u96be\u4e2d\u5f97\u5230\u5f88\u591a\u6559\u8bad\u3002_\u6211\u662fKaty\uff0c\u5f88\u9ad8\u5174\u8ba4\u8bc6\u4f60\u3008\u59b3\u3009\u4eec\uff0c\u4e00\u8d77\u52a0\u6cb9\u5537\uff01__', 'number_of_text': 0}}
+    print domain_main(data)

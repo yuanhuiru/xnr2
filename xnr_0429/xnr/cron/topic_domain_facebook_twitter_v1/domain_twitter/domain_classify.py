@@ -5,15 +5,30 @@ import re
 import scws
 import sys
 import csv
-import opencc
+# import opencc
 from global_utils_do import *
-
-sys.path.append('../../trans')
-from trans import trans, traditional2simplified
+from langconv import *
+# sys.path.append('../../trans')
+# from trans import trans, traditional2simplified
 
 # cc = opencc.OpenCC('t2s', opencc_path='/usr/bin/opencc')
 s = load_scws()
 
+#繁体转简体
+def traditional2simplified(sentence):
+    '''
+    将sentence中的繁体字转为简体字
+    :param sentence: 待转换的句子
+    :return: 将句子中繁体字转换为简体字之后的句子
+    '''
+    sentence = Converter('zh-hans').convert(sentence)
+    return sentence
+
+#简体转繁体
+def simplified2traditional(sentence):  
+    sentence = Converter('zh-hant').convert(sentence)  
+    return sentence  
+    
 def classify_by_biostring(bio_string):#根据用户bio_string划分
 
     # bio_string_s = cc.convert(bio_string.decode('utf-8'))
@@ -196,3 +211,4 @@ def domain_main(user_data):#twitter用户身份分类主函数
     return user_label
       
         
+

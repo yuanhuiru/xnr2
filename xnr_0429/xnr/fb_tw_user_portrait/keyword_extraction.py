@@ -9,10 +9,10 @@ import json
 import random
 from collections import Counter
 from textrank4zh import TextRank4Keyword, TextRank4Sentence
-
+from langconv import *
 sys.path.append('../')
 from global_config import S_DATE_FB, S_DATE_TW
-from global_utils import es_fb_user_portrait as es, \
+from global_utils import es_xnr_2 as es, \
                          fb_portrait_index_name, fb_portrait_index_type, \
                          facebook_user_index_name, facebook_user_index_type, \
                          facebook_flow_text_index_name_pre, facebook_flow_text_index_type, \
@@ -21,14 +21,27 @@ from global_utils import es_fb_user_portrait as es, \
 from time_utils import get_facebook_flow_text_index_list, get_fb_bci_index_list, datetime2ts, ts2datetime
 from parameter import MAX_SEARCH_SIZE, FB_TW_TOPIC_ABS_PATH, FB_DOMAIN_ABS_PATH, DAY, WEEK
 
-sys.path.append('../cron/trans')
-from trans import trans, traditional2simplified
 
 sys.path.append(FB_TW_TOPIC_ABS_PATH)
 from test_topic import topic_classfiy
 from config import name_list, zh_data
 
 tr4w = TextRank4Keyword()
+
+#繁体转简体
+def traditional2simplified(sentence):
+    '''
+    将sentence中的繁体字转为简体字
+    :param sentence: 待转换的句子
+    :return: 将句子中繁体字转换为简体字之后的句子
+    '''
+    sentence = Converter('zh-hans').convert(sentence)
+    return sentence
+
+#简体转繁体
+def simplified2traditional(sentence):  
+    sentence = Converter('zh-hant').convert(sentence)  
+    return sentence  
 
 def load_black_words():
     one_words = [line.strip('\r\n') for line in file('black.txt')]
@@ -118,6 +131,7 @@ def load_fb_flow_text(fb_flow_text_index_list, uid_list, fb_flow_text_query_body
                         "bool": {
                             "must": [
                                 {"terms": {"uid": uid_list}},
+                                {'range': {'flag_ch': {'gte': -1}}},
                             ]
                          }
                     }
@@ -125,7 +139,7 @@ def load_fb_flow_text(fb_flow_text_index_list, uid_list, fb_flow_text_query_body
             },
             'size': MAX_SEARCH_SIZE,
             "sort": {"timestamp": {"order": "desc"}},
-            "fields": ["text", "uid"]
+            "fields": ["text_ch", "uid"]
         }
     fb_flow_text = {}
     for index_name in fb_flow_text_index_list:
@@ -138,8 +152,8 @@ def load_fb_flow_text(fb_flow_text_index_list, uid_list, fb_flow_text_query_body
                     fb_flow_text[uid] = {
                         'text_dict': {}
                     }
-                if content.has_key('text'):
-                    fb_flow_text[uid]['text_dict'][item['_id']] = traditional2simplified(content['text'][0][:1800]) #对文本内容长度做出限制[:1800]，以免翻译时麻烦
+                if content.has_key('text_ch'):
+                    fb_flow_text[uid]['text_dict'][item['_id']] = traditional2simplified(content['text_ch'][0][:1800]) #对文本内容长度做出限制[:1800]，以免翻译时麻烦
                 else:
                     fb_flow_text[uid]['text_dict'][item['_id']] = ''
         except Exception,e:
@@ -153,57 +167,6 @@ def load_fb_flow_text(fb_flow_text_index_list, uid_list, fb_flow_text_query_body
             }
     return fb_flow_text
 
-def save_and_trans(text_dict):
-    #将翻译后的结果保存到数据库中，并在翻译前查询数据库中是否已经有了相应内容之前存储的翻译结果，以提高效率
-    mids = text_dict.keys()
-    untranslated_mids = []
-    untranslated_text_list = []
-    bulk_create_action= []
-    res = es_translation.mget(index=translation_index_name, doc_type=translation_index_type, body={'ids': mids})['docs']
-    for r in res:
-        mid = r['_id']
-        if r.has_key('found'):  #{u'_type': u'translation', u'_id': u'xxx', u'found': False或者True, u'_index': u'record'} 
-            found = r['found']
-            if found:
-                translation = r['_source']['translation']
-                text_dict[mid] = translation
-            else:
-                untranslated_mids.append(mid)
-                untranslated_text_list.append(text_dict[mid])
-        else:   #es表中目前无任何记录      {u'_type': u'translation', u'_id': u'xxx', u'error': u'[record] missing', u'_index': u'record'} 
-            untranslated_mids.append(mid)
-            untranslated_text_list.append(text_dict[mid])
-
-    if untranslated_mids:
-        count = 1.0
-        while True:
-            try:
-                trans_result = trans(untranslated_text_list)
-                count = 0
-            except Exception,e:
-                print e
-            if count == 0:
-                break
-            else:
-                print 'sleep start ...'
-                time.sleep(count)
-                count = count*1.1
-                print 'sleep over, next try ...'
-        try:
-            for i in range(len(untranslated_text_list)):
-                mid = untranslated_mids[i]
-                text = trans_result[i]
-                text_dict[mid] = text
-                create_action = {'index':{'_id': mid}}
-                bulk_create_action.extend([create_action, {'translation': text}])
-            save_result = es.bulk(bulk_create_action, index=translation_index_name, doc_type=translation_index_type)
-            if save_result['errors']:
-                print save_result
-        except Exception,e:
-            print e
-    # return text_dict.values()
-    return text_dict
-
 def get_filter_keywords(fb_flow_text_index_list, uid_list):
     global black
     black = load_black_words()
@@ -215,22 +178,10 @@ def get_filter_keywords(fb_flow_text_index_list, uid_list):
         #如果没有结果则对其进行翻译，得到最终结果；反之，不用进行翻译直接进行重新计算得到最终结果
         text_dict = content['text_dict']
         #text_dict = {'mid1': text1, 'mid2': text2, ...}
-       
-        sample_num = min([int(0.1*len(text_dict)), 20])
+
         if len(text_dict):  #如果有内容的话，至少抽取一篇
-            if not sample_num:
-                sample_num = 1
-            sample_text_keys = random.sample(text_dict, sample_num)
-            sample_text_list = []
-            
-            for key in sample_text_keys:
-                sample_text_list.append(text_dict[key])
-            
-            if get_weibo(sample_text_list):
-                result = get_weibo(text_dict.values())
-            else:
-                text_dict_translated = save_and_trans(text_dict)
-                result = get_weibo(text_dict_translated.values())
+            result = get_weibo(text_dict.values())
+
             filter_keywords_result[uid] = result
         else:
             filter_keywords_result[uid] = {}
@@ -248,6 +199,7 @@ def get_filter_keywords_for_match_function(fb_flow_text_index_list, uid_list):
                     "bool": {
                         "must": [
                             {"terms": {"uid": uid_list}},
+                            {'range': {'flag_ch': {'gte': -1}}},
                         ],
                         "must_not": {
                             "exists": {
@@ -260,7 +212,7 @@ def get_filter_keywords_for_match_function(fb_flow_text_index_list, uid_list):
         },
         'size': 999,
         "sort": {"timestamp": {"order": "desc"}},
-        "fields": ["text", "uid"]
+        "fields": ["text_ch", "uid"]
     }
     fb_flow_text = load_fb_flow_text(fb_flow_text_index_list, uid_list, fb_flow_text_query_body)
 
@@ -270,22 +222,8 @@ def get_filter_keywords_for_match_function(fb_flow_text_index_list, uid_list):
         #如果没有结果则对其进行翻译，得到最终结果；反之，不用进行翻译直接进行重新计算得到最终结果
         text_dict = content['text_dict']
         #text_dict = {'mid1': text1, 'mid2': text2, ...}
-       
-        sample_num = min([int(0.1*len(text_dict)), 20])
-        if len(text_dict):  #如果有内容的话，至少抽取一篇
-            if not sample_num:
-                sample_num = 1
-            sample_text_keys = random.sample(text_dict, sample_num)
-            sample_text_list = []
-            
-            for key in sample_text_keys:
-                sample_text_list.append(text_dict[key])
-            
-            if get_weibo(sample_text_list): #说明不需要进行翻译
-                pass
-            else:
-                text_dict = save_and_trans(text_dict)
 
+        if len(text_dict):  #如果有内容的话，至少抽取一篇
             for mid,text in text_dict.items():
                 result = get_weibo_single(text)
                 if result:

@@ -7,7 +7,7 @@ from keyword_extraction import get_filter_keywords
 import sys
 sys.path.append('../')
 from global_config import S_DATE_FB, S_DATE_TW
-from global_utils import es_tw_user_portrait as es, \
+from global_utils import es_xnr_2 as es, \
                          tw_portrait_index_name, tw_portrait_index_type, \
                          twitter_user_index_name, twitter_user_index_type, \
                          twitter_flow_text_index_name_pre, twitter_flow_text_index_type, \
@@ -15,8 +15,10 @@ from global_utils import es_tw_user_portrait as es, \
 from time_utils import get_twitter_flow_text_index_list, get_tw_bci_index_list, datetime2ts, ts2datetime
 from parameter import MAX_SEARCH_SIZE, FB_TW_TOPIC_ABS_PATH, TW_DOMAIN_ABS_PATH, DAY, WEEK
 
-sys.path.append('../cron/trans/')
-from trans import trans
+MAX_SEARCH_SIZE = 999999
+TEST_MAX_FLOW_TEXT_DAYS = 30
+FB_TW_TOPIC_ABS_PATH = '/home/xnr1/xnr_0429/xnr/cron/topic_domain_facebook_twitter_v1/topic'
+TW_DOMAIN_ABS_PATH = '/home/xnr1/xnr_0429/xnr/cron/topic_domain_facebook_twitter_v1/domain_twitter'
 
 sys.path.append(FB_TW_TOPIC_ABS_PATH)
 from test_topic import topic_classfiy
@@ -47,10 +49,10 @@ def load_uid_list():
     return uid_list
 
 def load_timestamp(type='test'):
-    if type == 'test':
-        timestamp =  datetime2ts(S_DATE_TW)
-    else:
-        timestamp = time.time()
+    # if type == 'test':
+    #     timestamp =  datetime2ts(S_DATE_TW)
+    # else:
+    timestamp = time.time()
     return timestamp
 
 def save_data2es(data):
@@ -63,25 +65,37 @@ def save_data2es(data):
             else:
                 create_uid_list.append(uid)
         #bulk create
-        bulk_create_action = []
         if create_uid_list:
+            bulk_create_action = []
+            count = 0
             for uid in create_uid_list:
                 create_action = {'index':{'_id': uid}}
                 bulk_create_action.extend([create_action, data[uid]])
-            result = es.bulk(bulk_create_action, index=tw_portrait_index_name, doc_type=tw_portrait_index_type)
-            if result['errors'] :
-                print result
-                return False
+                count += 1
+                if count % 5000 == 0:
+                    es.bulk(bulk_create_action, index=tw_portrait_index_name, doc_type=tw_portrait_index_type)
+                    bulk_create_action = []
+            if bulk_create_action:
+                result = es.bulk(bulk_create_action, index=tw_portrait_index_name, doc_type=tw_portrait_index_type)
+                if result['errors'] :
+                    print result
+                    return False
         #bulk update
         if update_uid_list:
             bulk_update_action = []
+            count = 0
             for uid in update_uid_list:
                 update_action = {'update':{'_id': uid}}
                 bulk_update_action.extend([update_action, {'doc': data[uid]}])
-            result = es.bulk(bulk_update_action, index=tw_portrait_index_name, doc_type=tw_portrait_index_type)
-            if result['errors'] :
-                print result
-                return False
+                count += 1
+                if count % 5000 == 0:
+                    es.bulk(bulk_update_action, index=tw_portrait_index_name, doc_type=tw_portrait_index_type)
+                    bulk_update_action = []
+            if bulk_update_action:
+                result = es.bulk(bulk_update_action, index=tw_portrait_index_name, doc_type=tw_portrait_index_type)
+                if result['errors'] :
+                    print result
+                    return False
     except Exception,e:
         print e
         return False
@@ -90,22 +104,39 @@ def save_data2es(data):
 def update_keywords(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp())
-    keywords_query_body = {
-        'query':{
-            "filtered":{
-                "filter": {
-                    "bool": {
-                        "must": [
-                            {"terms": {"uid": uid_list}},
-                        ]
-                     }
-                }
+    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
+    keywords_query_body={
+      'post_filter': {
+        'missing': {
+          'field': 'keywords_string'
+        }
+      },
+      'query': {
+        "filtered": {
+          "filter": {
+            "bool": {
+              "must": [
+                {
+                  "terms": {
+                    "uid": uid_list
+                  }
+                },
+                
+              ]
             }
-        },
-        'size': MAX_SEARCH_SIZE,
-        "sort": {"timestamp": {"order": "desc"}},
-        "fields": ["keywords_dict", "uid"]
+          }
+        }
+      },
+      'size': MAX_SEARCH_SIZE,
+      "sort": {
+        "timestamp": {
+          "order": "desc"
+        }
+      },
+      "fields": [
+        "keywords_dict",
+        "uid"
+      ]
     }
     user_keywords = {}
     for index_name in tw_flow_text_index_list:
@@ -143,7 +174,7 @@ def update_keywords(uid_list=[]):
 def update_hashtag(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp())
+    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
     keywords_query_body = {
         'query':{
             "filtered":{
@@ -199,7 +230,7 @@ def update_sentiment(uid_list=[]):
     '''
     if not uid_list:
         uid_list = load_uid_list()
-    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp())
+    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
     sentiment_query_body = {
         'query':{
             "filtered":{
@@ -249,7 +280,7 @@ def update_sentiment(uid_list=[]):
 def update_influence(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    tw_bci_index_list = get_tw_bci_index_list(load_timestamp())
+    tw_bci_index_list = get_tw_bci_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
     tw_influence_query_body = {
         'query':{
             "filtered":{
@@ -299,7 +330,7 @@ def update_influence(uid_list=[]):
 def update_sensitive(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp())
+    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
     sensitive_query_body = {
         'query':{
             "filtered":{
@@ -396,12 +427,17 @@ def trans_bio_data(bio_data):
 def update_domain(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp())
+    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp(),TEST_MAX_FLOW_TEXT_DAYS)
     user_domain_data = {}
     #load num of text
     count_result = count_text_num(uid_list, tw_flow_text_index_list)
     #load baseinfo
     tw_user_query_body = {
+        'post_filter': {
+            'exists': {
+                'field': 'location_ch'
+            }
+        },
         'query':{
             "filtered":{
                 "filter": {
@@ -414,7 +450,7 @@ def update_domain(uid_list=[]):
             }
         },
         'size': MAX_SEARCH_SIZE,
-        "fields": ["location", "username", "description", "uid"]
+        "fields": ["location_ch", "username", "description_ch", "uid"]
     }
     try:
         search_results = es.search(index=twitter_user_index_name, doc_type=twitter_user_index_type, body=tw_user_query_body)['hits']['hits']
@@ -424,55 +460,28 @@ def update_domain(uid_list=[]):
             if not uid in user_domain_data:
                 text_num = count_result[uid]
                 user_domain_data[uid] = {
-                    'location': '',
+                    'location_ch': '',
                     'username': '',
-                    'description': '',
+                    'description_ch': '',
                     'number_of_text': text_num
                 }
-            if content.has_key('location'):
-                location = content.get('location')[0]
+            if content.has_key('location_ch'):
+                location_ch = content.get('location_ch')[0]
             else:
-                location = ''
-            if content.has_key('description'):
-                description = content.get('description')[0][:1000]
+                location_ch = ''
+            if content.has_key('description_ch'):
+                description_ch = content.get('description_ch')[0][:1000]
             else:
-                description = ''
+                description_ch = ''
             if content.has_key('username'):
                 username = content.get('username')[0]
             else:
                 username = '' 
-            user_domain_data[uid]['location'] = location
+            user_domain_data[uid]['location'] = location_ch
             user_domain_data[uid]['username'] = username
-            user_domain_data[uid]['description'] = description
+            user_domain_data[uid]['description'] = description_ch
     except Exception,e:
         print e
-    #由于一个用户请求一次翻译太耗时，所以统一批量翻译
-    trans_uid_list = []
-    untrans_bio_data = []
-    cut = 100
-    n = len(user_domain_data)/cut
-    for uid, content in user_domain_data.items():
-        trans_uid_list.append(uid)
-        untrans_bio_data.extend([content['location'] ,content['description']])
-        if n:
-            if len(trans_uid_list)%cut == 0:
-                temp_trans_bio_data = trans_bio_data(untrans_bio_data)
-                for i in range(len(trans_uid_list)):
-                    uid = trans_uid_list[i]
-                    user_domain_data[uid]['location'] = '_'.join(temp_trans_bio_data[2*i])
-                    user_domain_data[uid]['description'] = '_'.join(temp_trans_bio_data[2*i+1])
-                trans_uid_list = []
-                untrans_bio_data = []
-                n = n - 1
-        else:
-            if len(trans_uid_list) == (len(user_domain_data)%cut):
-                temp_trans_bio_data = trans_bio_data(untrans_bio_data)
-                for i in range(len(trans_uid_list)):
-                    uid = trans_uid_list[i]
-                    user_domain_data[uid]['location'] = '_'.join(temp_trans_bio_data[2*i])
-                    user_domain_data[uid]['description'] = '_'.join(temp_trans_bio_data[2*i+1])
-                trans_uid_list = []
-                untrans_bio_data = []
     #domian计算         
     user_domain_temp = domain_main(user_domain_data)    
     user_domain = {}
@@ -488,7 +497,7 @@ def update_domain(uid_list=[]):
 def update_topic(uid_list=[]):
     if not uid_list:
         uid_list = load_uid_list()
-    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp())
+    tw_flow_text_index_list = get_twitter_flow_text_index_list(load_timestamp(), TEST_MAX_FLOW_TEXT_DAYS)
     user_topic_data = get_filter_keywords(tw_flow_text_index_list, uid_list)
     user_topic_dict, user_topic_list = topic_classfiy(uid_list, user_topic_data)
 
@@ -630,26 +639,26 @@ def update_all(uid_list=[]):
 
 
     #周更新
-    if flag:
-        print 'update_domain: ', update_domain(uid_list)
-        time_list.append(time.time())
-        print 'time used: ', time_list[-1] - time_list[-2]
+    # if flag:
+    print 'update_domain: ', update_domain(uid_list)
+    time_list.append(time.time())
+    print 'time used: ', time_list[-1] - time_list[-2]
 
-        print 'update_sentiment: ', update_sentiment(uid_list)
-        time_list.append(time.time())
-        print 'time used: ', time_list[-1] - time_list[-2]
+    print 'update_sentiment: ', update_sentiment(uid_list)
+    time_list.append(time.time())
+    print 'time used: ', time_list[-1] - time_list[-2]
 
-        print 'update_topic: ', update_topic(uid_list)
-        time_list.append(time.time())
-        print 'time used: ', time_list[-1] - time_list[-2]
+    print 'update_topic: ', update_topic(uid_list)
+    time_list.append(time.time())
+    print 'time used: ', time_list[-1] - time_list[-2]
 
-        print 'update_keywords:', update_keywords(uid_list)
-        time_list.append(time.time())
-        print 'time used: ', time_list[-1] - time_list[-2]
+    print 'update_keywords:', update_keywords(uid_list)
+    time_list.append(time.time())
+    print 'time used: ', time_list[-1] - time_list[-2]
 
 if __name__ == '__main__':
-    update_all()
-    # update_baseinfo(load_uid_list())
+    # update_all()
+    print update_domain(load_uid_list()[40000:])
     
 # total num:  104
 # time used:  0.0210788249969
@@ -669,4 +678,5 @@ if __name__ == '__main__':
 # time used:  30.8768241405
 # update_keywords: True
 # time used:  4.85285305977
+
 

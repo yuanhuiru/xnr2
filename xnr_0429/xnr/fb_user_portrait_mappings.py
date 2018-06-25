@@ -3,7 +3,7 @@ import sys
 import json
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import scan
-from global_utils import es_fb_user_portrait as es
+from global_utils import es_xnr_2 as es
 from global_utils import fb_portrait_index_name, fb_portrait_index_type
 
 def fb_user_portrait_mappings(index_name=fb_portrait_index_name):
@@ -163,3 +163,4 @@ def fb_user_portrait_mappings(index_name=fb_portrait_index_name):
 
 if __name__ == '__main__':
     fb_user_portrait_mappings()
+
