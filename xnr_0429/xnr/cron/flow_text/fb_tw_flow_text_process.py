@@ -16,7 +16,9 @@ reload(sys)
 sys.path.append('../../')
 from global_utils import R_CLUSTER_FLOW2 as r_cluster,twitter_flow_text_index_name_pre,\
                         twitter_flow_text_index_type,facebook_flow_text_index_name_pre,\
-                        facebook_flow_text_index_type
+                        facebook_flow_text_index_type,\
+                        facebook_user_index_name, facebook_user_index_type,\
+                        twitter_user_index_name, twitter_user_index_type
 from global_utils import es_xnr_2 as es, R_UNAME2ID_FT, fb_uname2id, tw_uname2id
 from global_utils import R_ADMIN as r_sensitive
 from parameter import sensitive_score_dict
@@ -24,6 +26,8 @@ from time_utils import ts2datetime,datetime2ts
 from global_config import S_DATE_FB 
 
 
+def ts2datetime_full(ts):
+    return time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(ts))
 
 def uname2uid(uname, ft_type):
     uid = R_UNAME2ID_FT.hget(ft_type,uname)
@@ -36,8 +40,8 @@ def load_date_list(init_flag=False):
     now_ts = int(time.time())
     if init_flag:   #如果是第一次运行，就加载系统启动至今的数据
         start_ts = datetime2ts(S_DATE_FB)
-    else:   #只加载最近7天的数据
-        start_ts = datetime2ts(ts2datetime(now_ts-7*24*3600))
+    else:   #只加载最近10天的数据
+        start_ts = datetime2ts(ts2datetime(now_ts-10*24*3600))
 
     ts = start_ts
     while ts < now_ts:
@@ -45,6 +49,109 @@ def load_date_list(init_flag=False):
         date_list.append(date)
         ts += 24*3600
     return date_list
+
+#加载判定为中文用户的uid，对应用户的text内容不必翻译
+def load_chinese_user(user_index, user_type, query_body={}):
+    if not query_body:
+        query_body = {
+            'query': {
+                'term': {'chinese_user': 1},
+            },
+            'size': 99999,
+        }
+    try:
+        results = es.search(index=user_index, doc_type=user_type, body=query_body)['hits']['hits']
+        uid_list = [result['_source']['uid'] for result in results]
+    except Exception,e:
+        print 'load_chinese_user Exception: ', str(e)
+        uid_list = []
+    return  uid_list
+
+def count_flow_text_num(uid, flow_text_index_list, index_type, search_flag_ch=False):
+    if search_flag_ch:
+        textnum_query_body = {
+            'query':{
+                "filtered":{
+                    "filter": {
+                        "bool": {
+                            "must": [
+                                {"term": {"uid": uid}},
+                                {"term": {"flag_ch": 1}},
+                            ]
+                         }
+                    }
+                }
+            },
+        }
+    else:
+        textnum_query_body = {
+            'query':{
+                "filtered":{
+                    "filter": {
+                        "bool": {
+                            "must": [
+                                {"term": {"uid": uid}},
+                            ]
+                         }
+                    }
+                }
+            },
+        }
+
+    text_num = 0
+    for index_name in flow_text_index_list:
+        result = es.count(index=index_name, doc_type=index_type,body=textnum_query_body)
+        if result['_shards']['successful'] != 0:
+            text_num += result['count']
+    return text_num
+
+def update_chinese_user(index_name_pre, index_type, user_index_name, user_index_type, date_list):
+    #user表中的chinese_user字段为1，代表是中文用户
+    chinese_user_list= load_chinese_user(user_index_name, user_index_type)
+    all_user_list = load_chinese_user(user_index_name, user_index_type, {'query':{'match_all':{},},'size':99999,})
+    unchinese_user_list = list(set(all_user_list) - set(chinese_user_list))
+
+    #需要进行update操作（更新chinese_user为1或0）的user_list
+    update_list = []
+
+    #流数据表
+    flow_text_index_list = []
+    for date in date_list:
+        flow_text_index_list.append(index_name_pre + date)
+
+    #对于chinese_user不为1的用户
+    #当某个uid对应的所有flow_text中，中文帖子的比例占到一定数量，并且帖子数量大于一个阈值的时候，更新为chinese_user=1
+    for uid in unchinese_user_list:
+        text_num = count_flow_text_num(uid, flow_text_index_list, index_type)  
+        if text_num >= 20:
+            text_num_ch = count_flow_text_num(uid, flow_text_index_list, index_type, True)
+            if float(text_num_ch)/text_num > 0.9:
+                update_list.append((uid, 1))
+
+    #对于chinese_user为1的用户，有选择的进行操作：更新为chinese_user=0
+    for uid in chinese_user_list:
+        text_num = count_flow_text_num(uid, flow_text_index_list, index_type)   
+        if text_num:
+            text_num += 1   #以防分母为0
+            text_num_ch = count_flow_text_num(uid, flow_text_index_list, index_type, True)
+            if float(text_num_ch)/text_num < 0.9:   #可以不发帖，但是如果发帖，中文帖子比例一定要高
+                update_list.append((uid, 0))
+
+    #统一进行update操作
+    if update_list:
+        bulk_update_action = []
+        count = 0
+        for uid,flag in update_list:
+            update_action = {'update':{'_id': uid}}
+            bulk_update_action.extend([update_action, {'doc': {'chinese_user': flag}}])
+            count += 1
+            if count % 1000 == 0:
+                es.bulk(bulk_update_action, index=user_index_name, doc_type=user_index_type)
+                bulk_update_action = []
+        if bulk_update_action:
+            es.bulk(bulk_update_action, index=user_index_name, doc_type=user_index_type)
+    return True
+
 
 def get_fb_root_retweet(text, root_uid):
     if isinstance(text, str):
@@ -122,13 +229,19 @@ def test(ft_type):
     if ft_type == 'facebook':
         index_name_pre = facebook_flow_text_index_name_pre
         index_type = facebook_flow_text_index_type
+        user_index_name = facebook_user_index_name
+        user_index_type = facebook_user_index_type
     else:
         index_name_pre = twitter_flow_text_index_name_pre
         index_type = twitter_flow_text_index_type
+        user_index_name = twitter_user_index_name
+        user_index_type = twitter_user_index_type
+
+    # date_list = load_date_list(True)
+    date_list = load_date_list()
 
 
     DFA = createWordTree()
-    date_list = load_date_list(True)
     query_body = {
       'post_filter': {
         'missing': {
@@ -253,6 +366,10 @@ def test(ft_type):
                 es.bulk(bulk_action, index=index_name, doc_type=facebook_flow_text_index_type, timeout=600)
         except Exception,e: #es文档不存在
             print e
+            
+    #这个更新比较费时，设定只允许每天5点以前的更新请求
+    if int(ts2datetime_full(time.time()).split(' ')[1][:2]) < 5:
+        update_chinese_user(index_name_pre, index_type, user_index_name, user_index_type, date_list)
 
 if __name__ == '__main__':
     test('facebook')
