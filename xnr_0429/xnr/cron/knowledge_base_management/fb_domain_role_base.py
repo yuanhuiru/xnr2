@@ -12,7 +12,7 @@ import numpy as np
 reload(sys)
 sys.path.append('../../')
 from global_utils import r,fb_target_domain_detect_queue_name,fb_target_domain_analysis_queue_name,\
-                        es_xnr as es, es_xnr, facebook_flow_text_index_name_pre as flow_text_index_name_pre,\
+                        es_xnr_2 as es, facebook_flow_text_index_name_pre as flow_text_index_name_pre,\
                         facebook_flow_text_index_type as flow_text_index_type,\
                         fb_domain_index_name, fb_domain_index_type, facebook_user_index_name, facebook_user_index_type,\
                         fb_role_index_name, fb_role_index_type,\
@@ -27,7 +27,7 @@ from time_utils import get_facebook_flow_text_index_list as get_flow_text_index_
 from utils import split_city    #fb 没有geo信息 不可用
 
 sys.path.append('../../cron/trans/')
-from trans import trans, simplified2traditional, traditional2simplified
+from trans_v2 import trans, simplified2traditional, traditional2simplified
 
 sys.path.append(FB_TW_TOPIC_ABS_PATH)
 from test_topic import topic_classfiy
@@ -47,6 +47,7 @@ from character.test_ch_sentiment import classify_sentiment
 
 #
 es_flow_text = es
+es_xnr = es
 r_beigin_ts = datetime2ts(R_BEGIN_TIME)
 
 
@@ -167,19 +168,6 @@ def count_text_num(uid_list, fb_flow_text_index_list):
         count_result[uid] = text_num
     return count_result
 
-def trans_bio_data(bio_data):
-    count = 1.0
-    while True:
-        translated_bio_data = trans(bio_data)
-        if len(translated_bio_data) == len(bio_data):
-            break
-        else:
-            print 'sleep start ...'
-            time.sleep(count)
-            count = count*1.1
-            print 'sleep over ...'
-    return translated_bio_data
-
 def my_domain_classfiy(uid_list, datetime_list):
     domain_results = {}
     #将处理后的结果保存到数据库中，并在处理前查询数据库中是否已经有了相应内容之前存储的结果，以提高效率
@@ -223,7 +211,7 @@ def my_domain_classfiy(uid_list, datetime_list):
                 }
             },
             'size': MAX_SEARCH_SIZE,
-            "fields": ["bio", "about", "description", "quotes", "category", "uid"]
+            "fields": ["bio_str", "category", "uid"]
         }
         try:
             search_results = es.search(index=facebook_user_index_name, doc_type=facebook_user_index_type, body=fb_user_query_body)['hits']['hits']
@@ -234,7 +222,6 @@ def my_domain_classfiy(uid_list, datetime_list):
                     text_num = count_result[uid]
                     user_domain_data[uid] = {
                         'bio_str': '',
-                        'bio_list': [],
                         'category': '',
                         'number_of_text': text_num
                     }
@@ -243,53 +230,15 @@ def my_domain_classfiy(uid_list, datetime_list):
                     category = content.get('category')[0]
                 else:
                     category = ''
-                if content.has_key('description'):
-                    description = content.get('description')[0][:1000]  #有的用户描述信息之类的太长了……3000+，没有卵用，而且翻译起来会出现一些问题，截取一部分就行了
+                if content.has_key('bio_str'):
+                    bio_str = content.get('bio_str')[0]
                 else:
-                    description = ''
-                if content.has_key('quotes'):
-                    quotes = content.get('quotes')[0][:1000]
-                else:
-                    quotes = ''
-                if content.has_key('bio'):
-                    bio = content.get('bio')[0][:1000]
-                else:
-                    bio = ''
-                if content.has_key('about'):
-                    about = content.get('about')[0][:1000]
-                else:
-                    about = ''    
-                user_domain_data[uid]['bio_list'] = [quotes, bio, about, description]
+                    bio_str = '____'
+                user_domain_data[uid]['bio_str'] = bio_str
                 user_domain_data[uid]['category'] = category
         except Exception,e:
             print e
-        #由于一个用户请求一次翻译太耗时，所以统一批量翻译
-        trans_uid_list = []
-        untrans_bio_data = []
-        cut = 100
-        n = len(user_domain_data)/cut
-        for uid, content in user_domain_data.items():
-            trans_uid_list.append(uid)
-            untrans_bio_data.extend(content['bio_list'])
-            content.pop('bio_list')
-            if n:
-                if len(trans_uid_list)%cut == 0:
-                    temp_trans_bio_data = trans_bio_data(untrans_bio_data)
-                    for i in range(len(trans_uid_list)):
-                        uid = trans_uid_list[i]
-                        user_domain_data[uid]['bio_str'] = '_'.join(temp_trans_bio_data[4*i : 4*i+4])
-                    trans_uid_list = []
-                    untrans_bio_data = []
-                    n = n - 1
-            else:
-                if len(trans_uid_list) == (len(user_domain_data)%cut):
-                    temp_trans_bio_data = trans_bio_data(untrans_bio_data)
-                    for i in range(len(trans_uid_list)):
-                        uid = trans_uid_list[i]
-                        user_domain_data[uid]['bio_str'] = '_'.join(temp_trans_bio_data[4*i : 4*i+4])
-                    trans_uid_list = []
-                    untrans_bio_data = []
-        #domian计算
+        #domain计算
         user_domain_temp = domain_main(user_domain_data)    
         for uid in unresolved_uids:
             if uid in user_domain_temp:
@@ -301,7 +250,6 @@ def my_domain_classfiy(uid_list, datetime_list):
     #整合
     user_domain_temp.update(domain_results)
     return user_domain_temp
-
 
 '''
 领域知识库计算
@@ -467,9 +415,11 @@ def union_dict(*objs):
 # 为了获得流数据库的后缀日期
 ## input: 任务创建时间
 ## output: 创建日期之前的一周 ['2016-11-22','',...]
+#增加到10天
 def get_flow_text_datetime_list(date_range_end_ts):
     datetime_list = []
-    days_num = MAX_FLOW_TEXT_DAYS
+    # days_num = MAX_FLOW_TEXT_DAYS
+    days_num = 10
     for i in range(1,(days_num+1)):
         date_range_start_ts = date_range_end_ts - i*DAY
         date_range_start_datetime = ts2datetime(date_range_start_ts)
@@ -735,7 +685,7 @@ def uid_list_2_uid_keywords_dict(uids_list,datetime_list,label='other'):
                 if timestamp >=ts_down_limit and timestamp < ts_up_limit:  #确保时间戳确实在datetime_list范围内，因为真的有存储错误的记录。。。
                     uid_weibo.append([uid,text,timestamp])
 
-#keywords需要进行转成简体中文的操作？
+            #keywords需要进行转成简体中文的操作？不需要，流数据处理之前就是已经翻译后的数据了。
             ## 统计用户所有词频
             if uid in uid_weibo_keywords_dict.keys():
                 for keyword, count in keywords_dict.iteritems():
@@ -1006,8 +956,6 @@ def role_feature_analysis(role_label, uids_list,datetime_list,create_time):
     start_date = datetime_list[-1]
     end_date = datetime_list[0]
     flag = 1
-    print 'start_date::::',start_date
-    print 'end_date::::',end_date
     com_result = classify_sentiment(uids_list,uid_weibo,start_date,end_date,flag)
 
     print 'com_result::::',com_result
@@ -1163,3 +1111,4 @@ if __name__ == '__main__':
     # # my_domain_classfiy(uid_list, datetime_list)
 
     # print detect_by_keywords([u'中国', u'党'], datetime_list)
+

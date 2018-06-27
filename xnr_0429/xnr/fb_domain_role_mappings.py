@@ -3,7 +3,7 @@ import sys
 import json
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import scan
-from global_utils import es_xnr as es
+from global_utils import es_xnr_2 as es
 from global_utils import fb_domain_index_name,fb_domain_index_type,\
                         fb_role_index_name,fb_role_index_type, \
                         fb_example_model_index_name, fb_example_model_index_type
