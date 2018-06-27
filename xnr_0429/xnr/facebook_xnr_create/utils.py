@@ -15,7 +15,7 @@ import random
 from xnr.global_config import S_TYPE, S_DATE_FB as S_DATE
 from xnr.global_utils import es_xnr_2 as es
 #facebook_user
-from xnr.global_utils import r, es_fb_user_profile as es_user_profile, \
+from xnr.global_utils import r,\
                             facebook_user_index_type as profile_index_type, \
                             facebook_user_index_name as profile_index_name
 from xnr.global_utils import r, fb_xnr_index_name, fb_xnr_index_type,\
@@ -45,6 +45,7 @@ from fb_operate import Operation
 from xnr.sina.change_userinfo import change_userinfo
 # from xnr.sina.tools.Launcher import SinaLauncher
 es_flow_text = es
+es_user_profile = es
 
 def get_nick_name_unique(nick_name):
     query_body = {
@@ -557,3 +558,4 @@ if __name__ == '__main__':
     domain_create_task(domain_name,create_type,create_time,submitter,remark,compute_status=0)
     '''
     print get_fb_xnr_no()
+
