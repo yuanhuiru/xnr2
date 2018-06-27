@@ -5,7 +5,7 @@ import time
 from elasticsearch import Elasticsearch
 import sys
 sys.path.append('../')
-from global_utils import es_xnr as es
+from global_utils import es_xnr_2 as es
 from global_utils import facebook_feedback_comment_index_name_pre,facebook_feedback_comment_index_type,\
                         facebook_feedback_retweet_index_name_pre,facebook_feedback_retweet_index_type,\
                         facebook_feedback_private_index_name_pre,facebook_feedback_private_index_type,\
@@ -474,13 +474,12 @@ def facebook_feedback_friends_mappings():  ## 粉丝提醒及回粉
 
 if __name__ == '__main__':
 
-    #current_time = time.time()
-    #index_name = index_name_pre + ts2datetime(current_time)
+    current_time = time.time()
+    date = ts2datetime(current_time + 24*3600)
 
-    #index_name = ''
-    # facebook_feedback_like_mappings(index_name)
-    # facebook_feedback_retweet_mappings(index_name)
-    # facebook_feedback_at_mappings(index_name)
-    # facebook_feedback_comment_mappings(index_name)
-    # facebook_feedback_private_mappings(index_name)
+    facebook_feedback_like_mappings(facebook_feedback_like_index_name_pre + date)
+    facebook_feedback_retweet_mappings(facebook_feedback_retweet_index_name_pre + date)
+    facebook_feedback_at_mappings(facebook_feedback_at_index_name_pre + date)
+    facebook_feedback_comment_mappings(facebook_feedback_comment_index_name_pre + date)
+    facebook_feedback_private_mappings(facebook_feedback_private_index_name_pre + date)
     facebook_feedback_friends_mappings()

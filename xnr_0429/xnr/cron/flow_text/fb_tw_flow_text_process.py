@@ -369,9 +369,11 @@ def test(ft_type):
             
     #这个更新比较费时，设定只允许每天5点以前的更新请求
     if int(ts2datetime_full(time.time()).split(' ')[1][:2]) < 5:
+        print 'update chinese user'
         update_chinese_user(index_name_pre, index_type, user_index_name, user_index_type, date_list)
 
 if __name__ == '__main__':
+    print 'start time: ', time.time()
     test('facebook')
     test('twitter')
 

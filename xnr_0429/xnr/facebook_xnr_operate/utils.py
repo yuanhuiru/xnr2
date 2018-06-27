@@ -7,7 +7,7 @@ import random
 import re
 
 from xnr.global_config import S_DATE_FB,S_TYPE,S_DATE_BCI_FB,SYSTEM_START_DATE
-from xnr.global_utils import es_xnr_2 as es,es_xnr, fb_xnr_index_name,fb_xnr_index_type,\
+from xnr.global_utils import es_xnr_2 as es, fb_xnr_index_name,fb_xnr_index_type,\
                     fb_xnr_timing_list_index_name, fb_xnr_timing_list_index_type,\
                     fb_xnr_retweet_timing_list_index_name, fb_xnr_retweet_timing_list_index_type,\
                     facebook_flow_text_index_name_pre, facebook_flow_text_index_type,\
@@ -33,6 +33,8 @@ sys.path.append(WRITING_PATH)
 from tuling_test import get_message_from_tuling
 from question_search import search_answer
 #from question_search_v2 import search_answer
+
+es_xnr = es
 
 def get_robot_reply(question):
     
@@ -1437,7 +1439,7 @@ def get_related_recommendation(task_detail):
     if S_TYPE == 'test':
         current_date = S_DATE_FB
     else:
-        current_date = int(time.time()-24*3600)
+        current_date = ts2datetime(int(time.time()-24*3600))
     flow_text_index_name = facebook_flow_text_index_name_pre + current_date
     if sort_item != 'friend':
         uid_list = []
@@ -1751,3 +1753,4 @@ def save_oprate_like(task_detail):
     except:
         mark=False
     return mark
+
