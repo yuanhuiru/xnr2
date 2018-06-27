@@ -7,11 +7,10 @@ from xnr.global_config import S_TYPE,S_DATE_FB as S_DATE
 from xnr.global_utils import es_xnr_2 as es
 from xnr.global_utils import fb_role_index_name, fb_role_index_type
 #facebook_user
-from xnr.global_utils import r, es_fb_user_profile as es_user_profile, \
+from xnr.global_utils import r,\
                             facebook_user_index_type as profile_index_type, \
                             facebook_user_index_name as profile_index_name
-from xnr.global_utils import es_fb_user_portrait as es_user_portrait,\
-                            fb_portrait_index_name as portrait_index_name, \
+from xnr.global_utils import fb_portrait_index_name as portrait_index_name, \
                             fb_portrait_index_type as portrait_index_type,\
                             facebook_flow_text_index_name_pre as flow_text_index_name_pre, \
                             facebook_flow_text_index_type as flow_text_index_type,\
@@ -27,8 +26,10 @@ from textrank4zh import TextRank4Keyword, TextRank4Sentence
 from xnr.parameter import MAX_VALUE,MAX_SEARCH_SIZE,fb_domain_ch2en_dict,fb_tw_topic_en2ch_dict,fb_domain_en2ch_dict,\
                         EXAMPLE_MODEL_PATH,TOP_ACTIVE_TIME,TOP_PSY_FEATURE
 from xnr.time_utils import ts2datetime,datetime2ts,get_facebook_flow_text_index_list as get_flow_text_index_list
-es_flow_text = es
 
+es_flow_text = es
+es_fb_user_profile = es
+es_user_portrait = es
 
 '''
 领域知识库
@@ -278,34 +279,25 @@ def get_show_domain_group_detail_portrait(domain_name):
         # item['gender'] = ''
         item['home_page'] = ''
         # item['home_page'] = 'http://weibo.com/'+result['_id']+'/profile?topnav=1&wvr=6&is_all=1'
-        item['influence'] = ''
+        item['influence'] = ''   
         if result['found']:
+            _id = result['_id']
             result = result['_source']
-            item['uid'] = result['uid']
-            item['nick_name'] = result['uname']
-            # item['photo_url'] = result['photo_url']
-            item['domain'] = result['domain']
-            item['sensitive'] = result['sensitive']
-            item['location'] = result['location']
-            # item['fans_num'] = result['fansnum']
-            # item['friends_num'] = result['friendsnum']
-            # item['gender'] = result['gender']
-            item['home_page'] = "https://www.facebook.com/profile.php?id=" + str(result['uid'])
-            # item['home_page'] = 'http://weibo.com/'+result['uid']+'/profile?topnav=1&wvr=6&is_all=1'
-            item['influence'] = get_influence_relative(item['uid'],result['influence'])
-        # else:
-        #     item['uid'] = result['_id']
-        #     item['nick_name'] = ''
-        #     # item['photo_url'] = ''
-        #     item['domain'] = ''
-        #     item['sensitive'] = ''
-        #     item['location'] = ''
-        #     # item['fans_num'] = ''
-        #     # item['friends_num'] = ''
-        #     # item['gender'] = ''
-        #     item['home_page'] = "https://www.facebook.com/profile.php?id=" + str(result['_id'])
-        #     # item['home_page'] = 'http://weibo.com/'+result['_id']+'/profile?topnav=1&wvr=6&is_all=1'
-        #     item['influence'] = ''
+
+            item['uid'] = _id
+            item['home_page'] = "https://www.facebook.com/profile.php?id=" + str(_id)
+
+            if result.has_key('uname'):
+                item['nick_name'] = result['uname']
+            if result.has_key('domain'):
+                item['domain'] = result['domain']
+            if result.has_key('sensitive'):
+                item['sensitive'] = result['sensitive']
+            if result.has_key('location'):
+                item['location'] = result['location']
+            if result.has_key('influence'):
+                item['influence'] = get_influence_relative(item['uid'],result['influence'])
+    
         result_all.append(item)
     return result_all
 
@@ -528,4 +520,5 @@ def show_different_corpus(task_detail):
 
     return result
  
+
 

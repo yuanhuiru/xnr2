@@ -1,7 +1,7 @@
 #-*-coding:utf-8-*-
 import json
 import time
-from global_utils import es_user_portrait, es_flow_text,es_user_profile,profile_index_name,profile_index_type,\
+from global_utils import es_xnr_2 as es_fb_tw, es_user_portrait, es_flow_text,es_user_profile,profile_index_name,profile_index_type,\
                         es_xnr,weibo_xnr_index_name,weibo_xnr_index_type,\
                         weibo_xnr_fans_followers_index_name,weibo_xnr_fans_followers_index_type,\
                         index_sensing,type_sensing,weibo_bci_index_name_pre,weibo_bci_index_type,\
@@ -58,7 +58,7 @@ def uid2nick_name_photo(uid):
 def fb_uid2nick_name_photo(uid):
     uname_photo_dict = {}
     try:
-        user = es_flow_text.get(index=facebook_user_index_name,doc_type=facebook_user_index_type,id=uid)['_source']
+        user = es_fb_tw.get(index=facebook_user_index_name,doc_type=facebook_user_index_type,id=uid)['_source']
         nick_name = user['name']
         photo_url = ''#user['photo_url']
     except:
@@ -70,7 +70,7 @@ def fb_uid2nick_name_photo(uid):
 def tw_uid2nick_name_photo(uid):
     uname_photo_dict = {}
     try:
-        user = es_flow_text.get(index=twitter_user_index_name,doc_type=twitter_user_index_type,id=uid)['_source']
+        user = es_fb_tw.get(index=twitter_user_index_name,doc_type=twitter_user_index_type,id=uid)['_source']
         nick_name = user['username']
         photo_url = user['profile_image_url_https']
     except:
@@ -122,7 +122,7 @@ def xnr_user_no2uid(xnr_user_no):
 
 def fb_xnr_user_no2uid(xnr_user_no):
     try:
-        result = es_xnr.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
+        result = es_fb_tw.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
         uid = result['uid']
     except:
         uid = ''
@@ -131,7 +131,7 @@ def fb_xnr_user_no2uid(xnr_user_no):
 
 def tw_xnr_user_no2uid(xnr_user_no):
     try:
-        result = es_xnr.get(index=tw_xnr_index_name,doc_type=tw_xnr_index_type,id=xnr_user_no)['_source']
+        result = es_fb_tw.get(index=tw_xnr_index_name,doc_type=tw_xnr_index_type,id=xnr_user_no)['_source']
         uid = result['uid']
     except:
         uid = ''
@@ -364,7 +364,7 @@ def get_fb_influence_relative(uid,influence):
         },
         'sort':{'influence':{'order':'desc'}}
     }
-    results = es_xnr.search(index=fb_bci_index_name,doc_type=fb_bci_index_type,body=query_body)['hits']['hits']
+    results = es_fb_tw.search(index=fb_bci_index_name,doc_type=fb_bci_index_type,body=query_body)['hits']['hits']
     user_index_max = results[0]['_source']['influence']
     if not user_index_max:  #最大的为0，所有的都为0
         return 0
@@ -374,12 +374,12 @@ def get_fb_influence_relative(uid,influence):
 
 ## facebook判断关注类型
 def judge_fb_follow_type(xnr_user_no,uid):
-    exist_item = es_xnr.exists(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
+    exist_item = es_fb_tw.exists(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
                 id=xnr_user_no)
     if not exist_item:
         fb_type = 'stranger'
     else:
-        es_get = es_xnr.get(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
+        es_get = es_fb_tw.get(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
                 id=xnr_user_no)['_source']
         fans_list = ''
         if es_get.has_key('fans_list'):
@@ -402,7 +402,7 @@ def judge_fb_follow_type(xnr_user_no,uid):
 ## 判断是否为敏感人物传感器
 def judge_fb_sensing_sensor(xnr_user_no,uid):
     try:
-        exist_item = es_xnr.exists(index=fb_index_sensing,doc_type=fb_type_sensing,id=xnr_user_no)
+        exist_item = es_fb_tw.exists(index=fb_index_sensing,doc_type=fb_type_sensing,id=xnr_user_no)
     except Exception,e:
         print e
         return False
@@ -410,7 +410,7 @@ def judge_fb_sensing_sensor(xnr_user_no,uid):
     if not exist_item:
         return False 
     else:
-        get_result = es_xnr.get(index=fb_index_sensing,doc_type=fb_type_sensing,id=xnr_user_no)['_source']
+        get_result = es_fb_tw.get(index=fb_index_sensing,doc_type=fb_type_sensing,id=xnr_user_no)['_source']
         social_sensors = get_result['social_sensors']
         if uid in social_sensors:
             return True
@@ -419,12 +419,12 @@ def judge_fb_sensing_sensor(xnr_user_no,uid):
 
 ## twitter判断关注类型
 def judge_tw_follow_type(xnr_user_no,uid):
-    exist_item = es_xnr.exists(index=tw_xnr_fans_followers_index_name,doc_type=tw_xnr_fans_followers_index_type,\
+    exist_item = es_fb_tw.exists(index=tw_xnr_fans_followers_index_name,doc_type=tw_xnr_fans_followers_index_type,\
                 id=xnr_user_no)
     if not exist_item:
         tw_type = 'stranger'
     else:
-        es_get = es_xnr.get(index=tw_xnr_fans_followers_index_name,doc_type=tw_xnr_fans_followers_index_type,\
+        es_get = es_fb_tw.get(index=tw_xnr_fans_followers_index_name,doc_type=tw_xnr_fans_followers_index_type,\
                 id=xnr_user_no)['_source']
         fans_list = ''
         if es_get.has_key('fans_list'):
@@ -460,7 +460,7 @@ def get_tw_influence_relative(uid,influence):
         },
         'sort':{'influence':{'order':'desc'}}
     }
-    results = es_xnr.search(index=tw_bci_index_name,doc_type=tw_bci_index_type,body=query_body)['hits']['hits']
+    results = es_fb_tw.search(index=tw_bci_index_name,doc_type=tw_bci_index_type,body=query_body)['hits']['hits']
     user_index_max = results[0]['_source']['influence']
     if not user_index_max:  #最大的为0，所有的都为0
         return 0
@@ -471,7 +471,7 @@ def get_tw_influence_relative(uid,influence):
  ## 判断是否为敏感人物传感器
 def judge_tw_sensing_sensor(xnr_user_no,uid):
     try:
-        exist_item = es_xnr.exists(index=tw_index_sensing,doc_type=tw_type_sensing,id=xnr_user_no)
+        exist_item = es_fb_tw.exists(index=tw_index_sensing,doc_type=tw_type_sensing,id=xnr_user_no)
     except Exception,e:
         print e
         return False
@@ -479,7 +479,7 @@ def judge_tw_sensing_sensor(xnr_user_no,uid):
     if not exist_item:
         return False 
     else:
-        get_result = es_xnr.get(index=tw_index_sensing,doc_type=tw_type_sensing,id=xnr_user_no)['_source']
+        get_result = es_fb_tw.get(index=tw_index_sensing,doc_type=tw_type_sensing,id=xnr_user_no)['_source']
         social_sensors = get_result['social_sensors']
         if uid in social_sensors:
             return True
@@ -489,7 +489,7 @@ def judge_tw_sensing_sensor(xnr_user_no,uid):
 def fb_save_to_fans_follow_ES(xnr_user_no,uid,follow_type,trace_type):
 
  
-    results = es_xnr.get(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
+    results = es_fb_tw.get(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
             id=xnr_user_no)
 
     results = results["_source"]
@@ -515,7 +515,7 @@ def fb_save_to_fans_follow_ES(xnr_user_no,uid,follow_type,trace_type):
             
             # results['followers_list'] = followers_uids
             results['trace_follow_list'] = trace_follow_uids
-            es_xnr.update(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
+            es_fb_tw.update(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
                         id=xnr_user_no,body={'doc':results})
 
 
@@ -526,7 +526,7 @@ def fb_save_to_fans_follow_ES(xnr_user_no,uid,follow_type,trace_type):
             followers_uids = list(set(followers_uids).difference(set([uid])))
             results['trace_follow_pre_list'] = followers_uids
 
-            es_xnr.update(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
+            es_fb_tw.update(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
                         id=xnr_user_no,body={'doc':results})
         except:
             return False
@@ -537,7 +537,7 @@ def fb_save_to_fans_follow_ES(xnr_user_no,uid,follow_type,trace_type):
 def tw_save_to_fans_follow_ES(xnr_user_no,uid,follow_type,trace_type):
 
     try:
-        results = es_xnr.get(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
+        results = es_fb_tw.get(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
                 id=xnr_user_no)
 
         results = results["_source"]
@@ -569,12 +569,12 @@ def tw_save_to_fans_follow_ES(xnr_user_no,uid,follow_type,trace_type):
                     # results['followers_list'] = followers_uids
                 
                     results['trace_follow_list'] = trace_follow_uids
-                    es_xnr.update(index=tw_xnr_fans_followers_index_name,doc_type=tw_xnr_fans_followers_index_type,\
+                    es_fb_tw.update(index=tw_xnr_fans_followers_index_name,doc_type=tw_xnr_fans_followers_index_type,\
                                 id=xnr_user_no,body={'doc':results})
                 else:
                     results['trace_follow_list'] = [uid]
                     results['followers_list'] = [uid]
-                    es_xnr.index(index=tw_xnr_fans_followers_index_name,doc_type=tw_xnr_fans_followers_index_type,\
+                    es_fb_tw.index(index=tw_xnr_fans_followers_index_name,doc_type=tw_xnr_fans_followers_index_type,\
                         body=results,id=xnr_user_no)
 
             except:
@@ -588,7 +588,7 @@ def tw_save_to_fans_follow_ES(xnr_user_no,uid,follow_type,trace_type):
             followers_uids = list(set(followers_uids).difference(set([uid])))
             results['trace_follow_pre_list'] = followers_uids
 
-            es_xnr.update(index=tw_xnr_fans_followers_index_name,doc_type=tw_xnr_fans_followers_index_type,\
+            es_fb_tw.update(index=tw_xnr_fans_followers_index_name,doc_type=tw_xnr_fans_followers_index_type,\
                         id=xnr_user_no,body={'doc':results})
         except:
             return False
@@ -623,3 +623,4 @@ if __name__ == '__main__':
     #    id='AV4Zi0NasTFJ_K1Z2dDy')
     print r_operate_queue.lrange(operate_queue_name,0,8)
     # print r_operate_queue.rpop(operate_queue_name)
+
