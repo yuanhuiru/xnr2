@@ -52,14 +52,14 @@ def get_fb_retweet_network(item):
 
 			root_uname = repost_chains2[0]
 			root_uid = uname2uid(root_uname,ft_type=fb_uname2id)
-			print 'root_uname_retweeted.....',root_uname
+			#print 'root_uname_retweeted.....',root_uname
 	elif ' shared ' in text:
 		res = text.split(' shared ')
 		root_con = res[1]
 		if "'s" in root_con:
 			root_uname = root_con.split("'s")[0]
 			root_uid = uname2uid(root_uname,ft_type=fb_uname2id)
-			print 'root_uname_shared.....',root_uname
+			#print 'root_uname_shared.....',root_uname
 			
 		else:
 			root_uname = ''
@@ -73,7 +73,7 @@ def get_fb_retweet_network(item):
 	#print 'root_uid...',root_uid
 
 	if root_uid:
-		print 'root_uid...',root_uid
+		#print 'root_uid...',root_uid
 		save_retweet(uid, root_uid, timestamp,'fb')
 
 
@@ -98,14 +98,14 @@ def get_tw_retweet_network(item):
 		root_uname = ''
 		root_uid = ''
 
-	print 'root_uid...',root_uid
+	#print 'root_uid...',root_uid
 
 	if root_uid:
 		save_retweet(uid, root_uid, timestamp,'tw')
 
 if __name__ == '__main__':
 
-    ft_list = ['fb']
+    ft_list = ['fb','tw']
     #ft_list = ['fb']
 
     for ft_item in ft_list:
@@ -136,8 +136,8 @@ if __name__ == '__main__':
         current_time = start_ts - i*24*3600
         current_date = ts2datetime(current_time)
         index_name = index_name_pre + current_date
-        print 'index......',index_name
-        print 'index_type.',index_type
+        #print 'index......',index_name
+        #print 'index_type.',index_type
         query_body = {
             'query':{
                 'match_all':{}

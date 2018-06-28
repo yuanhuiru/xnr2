@@ -9,15 +9,26 @@ if (flag==1){
 public_ajax.call_request('get',field_user_url,field_user);
 var domainName='';
 function field_user(data) {
-    var str='',hadCD=0;
+    var str='',hadCD=0,plk=0;
     for (var k in data){
         var c='';
+		if(plk==0){ 
+			defalutDomain=data[k];
+			try	{
+	        	var creatDEFAULT='/'+url2+'/domain2role/?domain_name='+data[k];
+		        public_ajax.call_request('get',creatDEFAULT,creatrole)
+		     }catch(e) {
+        		$('#pormpt p').text('抱歉，该领域下没有对应的身份。');
+        		$('#pormpt').modal('show');
+   			 }
+		}
         if (data[k]==defalutDomain){c='checked';hadCD=1}
         str+=
             '<label class="demo-label" title="'+data[k]+'">'+
             '   <input class="demo-radio" type="radio" name="chara" id="'+k+'" value="'+data[k]+'" onclick="$domain(this)" '+c+'>'+
             '   <span class="demo-checkbox demo-radioInput"></span> '+data[k]+
             '</label>';
+		plk++;
     }
     if(hadCD==0){
         str+=
@@ -29,6 +40,18 @@ function field_user(data) {
     $('#container .tit-2 .field-1').html(str);
     //$('#container .tit-2 .field-1 input[value="'+defalutDomain+'"]').attr('checked','true');
     $domain(defalutDomain);
+}
+function creatrole(data){
+	if(data.length!=0){
+		defalutRole=data[0];
+		setTimeout(function(){
+			var default_allData_url=urlTotal+'/show_domain_role_info/?domain_name='+defalutDomain+'&role_name='+defalutRole;
+			public_ajax.call_request('get',default_allData_url,allDataChart)},700)
+     //		public_ajax.call_request('get',default_allData_url,allDataChart);
+	}else {
+		$('#pormpt p').text('抱歉，该领域下没有对应的身份。');
+        $('#pormpt').modal('show');
+	}
 }
 function $domain(_this) {
     domainName=$(_this).parent().attr('title')||_this;
@@ -54,7 +77,7 @@ function domain(data) {
         }
     }
     $('#container .tit-3 .field-2').html(str);
-    $('#container .tit-3 .field-2 input[value="'+defalutRole+'"]').attr('checked','true');
+    $('#container .tit-3 .field-2 input[value="'+data[0]+'"]').attr('checked','true');
     $('#container .tit-3').show();
 }
 function allDataFun(_this) {
@@ -63,8 +86,8 @@ function allDataFun(_this) {
     public_ajax.call_request('get',allData_url,allDataChart);
 }
 //默认
-var default_allData_url=urlTotal+'/show_domain_role_info/?domain_name='+defalutDomain+'&role_name='+defalutRole;
-public_ajax.call_request('get',default_allData_url,allDataChart);
+//var default_allData_url=urlTotal+'/show_domain_role_info/?domain_name='+defalutDomain+'&role_name='+defalutRole;
+//public_ajax.call_request('get',default_allData_url,allDataChart);
 //=======
 function allDataChart(data) {
     if(data['psy_feature']){
@@ -659,7 +682,7 @@ function active_daily(data,idClassName,name) {
                 name:name,
                 type:'bar',
                 barWidth:'60%',
-                data:data
+                data:data.splice(0,timeLEG.length)
             }
         ]
     };

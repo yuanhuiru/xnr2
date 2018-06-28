@@ -133,7 +133,7 @@ def newest_time_func(uid):
 def publish_tweet_func(account_name,password,text,p_url,rank,rankid,tweet_type,xnr_user_no):
     
     print 'account_name..',account_name,password,text,p_url
-    mark = weibo_publish_main(account_name,password,text,p_url)
+    mark = weibo_publish_main(account_name,password,text,file=p_url)
     print 'mark!!!!',mark
     '''
     xnr = SinaLauncher(account_name,password)

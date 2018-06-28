@@ -432,21 +432,23 @@
 <script>
     judgment('6');
 //    localStorage.removeItem('secondStep');WXNR  FXNR TXNR
-    var notNewBuild='{{notNew}}',_gostart_USER;
+    var notNewBuild='{{notNew}}',_gostart_USER,url2;
     if(notNewBuild=='yes'){
         _gostart_USER=localStorage.getItem('go_mod_user').toString();
     }else {_gostart_USER=''}
 //    var _gostart_USER=localStorage.getItem('go_mod_user').toString();
     var flag='{{flag}}',urlTotal,defalutDomain,defalutRole;
     if ((flag==1)||(_gostart_USER.indexOf('W')==0)){
-        urlTotal='/weibo_xnr_knowledge_base_management';
+        urlTotal='/weibo_xnr_knowledge_base_management';url2='weibo_xnr_create';
         defalutDomain='维权群体';defalutRole='其他';
     }else if (flag==4||(_gostart_USER.indexOf('F')==0)){
-        urlTotal='/fb_xnr_knowledge_base_management';
-        defalutDomain='脸书测试1';defalutRole='民间组织';
+        urlTotal='/fb_xnr_knowledge_base_management';url2='facebook_xnr_create';
+        //defalutDomain='脸书测试1';defalutRole='民间组织';
+		$('.options-3').hide();
     }else if (flag==5||(_gostart_USER.indexOf('T')==0)){
-        urlTotal='/tw_xnr_knowledge_base_management';
-        defalutDomain='推特测试1';defalutRole='商业人士';
+        urlTotal='/tw_xnr_knowledge_base_management';url2='twitter_xnr_create';
+       // defalutDomain='推特测试1';defalutRole='商业人士';
+  		$('.options-3').hide();
     }
     $('.buildNew').on('click',function () {
         //window.open('/knowledge/domainLibrary/?flag='+flag);

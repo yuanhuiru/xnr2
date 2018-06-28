@@ -1,7 +1,7 @@
 var xnrUser=ID_Num;
 //@用户推荐
 var recommendUrl='/weibo_xnr_operate/daily_recommend_at_user/?xnr_user_no='+xnrUser;
-public_ajax.call_request('get',recommendUrl,recommendlist);
+//public_ajax.call_request('get',recommendUrl,recommendlist);
 function recommendlist(data) {
     var str1='',str2='',b=0;
     for(var a in data){
@@ -29,7 +29,7 @@ function recommendlist(data) {
     });
     $('#moreThing .moreCon ul li a').on('click',function(){
         var t2=$(this).text();
-        $('#post-2-content').append('@'+t2+' ');
+ //       $('#post-2-content').append('@'+t2+' ');
     });
 }
 //------
@@ -67,7 +67,7 @@ $('#container .type_page #myTabs a').on('click',function () {
     if (arrow!='#reportNote'){
         $('.post_post').show();
         $('#user_recommend .tit').text(arrowName);
-        public_ajax.call_request('get',recommendUrl,recommendlist);
+       // public_ajax.call_request('get',recommendUrl,recommendlist);
     }
 })
 //=========跟踪转发===========

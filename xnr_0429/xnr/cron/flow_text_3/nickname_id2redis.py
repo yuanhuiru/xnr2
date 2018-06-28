@@ -57,7 +57,7 @@ def fb2redis():
                 uname_1 = item['name']
                 uname_2 = item['name']
 
-            print uid,uname_1,uname_2	
+            #print uid,uname_1,uname_2	
             R_UNAME2ID_FT.hset(fb_uname2id,uname_1,uid)
             R_UNAME2ID_FT.hset(fb_uname2id,uname_2,uid)
 

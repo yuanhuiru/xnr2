@@ -119,6 +119,7 @@ def scan_retweet(ft_type):
     print 'end'
 
 if __name__ == '__main__':
-
-    ft_type = 'tw' #'tw'
-    scan_retweet(ft_type)
+	
+    ft_type_list = ['tw','fb']
+    for ft_type in ft_type_list:
+        scan_retweet(ft_type)

@@ -2,7 +2,7 @@
 
 import json
 from elasticsearch import Elasticsearch
-from global_utils import es_xnr as es
+from global_utils import es_xnr_2 as es
 
 #use to mappings for be_retweet es
 def be_retweet_es_mappings(db_number,ft_type):

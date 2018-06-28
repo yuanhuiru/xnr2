@@ -140,11 +140,11 @@ if __name__ == '__main__':
     username = 'weiboxnr01@126.com' #输入你的用户名
     password = 'xnr123456' #输入你的密码
     text = '测试oook'.decode('utf-8')
-    #file = '/home/ubuntu8/yuanhuiru/xnr/xnr1/xnr/sina/640.jpg'
-    weibo_publish_main(username,password,text)
-    '''
+    file = '/home/xnr1/xnr_0429/xnr/static/images/icon.png'
+    #weibo_publish_main(username,password,text)
+    
     if file:
         weibo_publish_with_picture(username,password,text,file)
     else:
         weibo_publish(username,password,text)
-    '''
+    

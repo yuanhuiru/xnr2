@@ -298,6 +298,9 @@ new_xnr_flow_text_index_type = 'text'
 # 日常发帖
 daily_interest_index_name_pre = 'daily_inerest_flow_text_'
 daily_interest_index_type = 'text'
+# 业务发帖
+weibo_business_tweets_index_name_pre = 'weibo_business_tweets_'
+weibo_business_tweets_index_type = 'text'
 
 # 主动社交
 active_social_index_name_pre = 'active_social_recommendation_'

@@ -20,7 +20,8 @@ from xnr.global_utils import weibo_hot_keyword_task_index_name,weibo_hot_keyword
                             weibo_hot_content_recommend_results_index_type,\
                             weibo_hot_subopinion_results_index_name,weibo_hot_subopinion_results_index_type,\
                             weibo_bci_index_name_pre,weibo_bci_index_type,portrait_index_name,portrait_index_type,\
-                            es_user_portrait,es_user_profile,active_social_index_name_pre,active_social_index_type
+                            es_user_portrait,es_user_profile,active_social_index_name_pre,active_social_index_type,\
+							weibo_business_tweets_index_name_pre, weibo_business_tweets_index_type
 from xnr.global_utils import weibo_feedback_comment_index_name,weibo_feedback_comment_index_type,\
                             weibo_feedback_retweet_index_name,weibo_feedback_retweet_index_type,\
                             weibo_feedback_private_index_name,weibo_feedback_private_index_type,\
@@ -549,6 +550,19 @@ def get_tweets_from_user_portrait(monitor_keywords_list,sort_item_new):
     
     return es_results
 
+## 业务发帖 -- 直接读取结果
+def get_bussiness_recomment_tweets_from_es(xnr_user_no,sort_item):
+    
+	
+    current_date = ts2datetime(time.time())
+    index_name = weibo_business_tweets_index_name_pre + current_date
+    _id = xnr_user_no +'_'+ sort_item
+    
+    try:
+        result = json.loads(es.get(index=index_name, doc_type=weibo_business_tweets_index_type,id=_id)['_source']['result'])
+    except:
+        result = []
+    return result
 def get_bussiness_recomment_tweets(xnr_user_no,sort_item):
     
     get_results = es.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']

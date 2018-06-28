@@ -3,7 +3,7 @@ import sys
 import json
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import scan
-from global_utils import es_xnr as es
+from global_utils import es_xnr_2 as es
 from global_utils import tw_domain_index_name,tw_domain_index_type,\
                         tw_role_index_name,tw_role_index_type, \
                         tw_example_model_index_name, tw_example_model_index_type

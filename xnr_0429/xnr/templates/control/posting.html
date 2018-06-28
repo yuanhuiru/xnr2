@@ -205,7 +205,7 @@
                 </div>
                 <!--cols="101" rows="6"-->
                 <div id="post-2-content" class="content" contentEditable="true"
-                style="width: 736px;height: 132px;overflow: auto;">
+                style="height: 132px;overflow: auto;">
 
                 </div>
                 <img src='' alt='' id='imgimg' style="display: none;"/>
@@ -236,7 +236,8 @@
                             <li><img src="/static/images/post-10.png"> <span>群可见</span></li>
                         </ul>
                     </div>
-                    <div style="margin: 0;">
+					<div style="float:right;">
+                    <div>
                         <label class="demo-label timingss">
                             <input class="demo-radio timing" type="checkbox" name="demo">
                             <span class="demo-checkbox demo-radioInput"></span> 定时
@@ -258,8 +259,9 @@
                             data-toggle="modal" data-target="#sameRoad">发布</button>
                     <button type="button" class="btn btn-info btn-xs" id="oneClick">一键审核</button>
                 </div>
+				</div>
             </div>
-            <div id="user_recommend">
+            <div id="user_recommend" style="display:none!important;">
                 <p class="tit" style="text-align: center;padding: 5px;border-bottom: 1px solid #656e7b;">@用户推荐</p>
                 <ul class="user_example_list" style="padding: 10px 20px;">
 
@@ -369,6 +371,30 @@
                                 <input class="demo-radio" type="radio" name="theme2h" value='民生类_法律' checked>
                                 <span class="demo-checkbox demo-radioInput"></span> 民生类_法律
                             </label>
+                            <label class="demo-label" title="民生类_就业">
+                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_就业'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_就业
+                            </label>
+							 <label class="demo-label" title="民生类_环保">
+                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_环保'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_环保
+                            </label>
+                            <label class="demo-label" title="民生类_健康">
+                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_健康'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_健康
+                            </label>
+                            <label class="demo-label" title="民生类_住房">
+                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_住房'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_住房
+                            </label>
+							 <label class="demo-label" title="民生类_交通">
+                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_交通'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_交通
+                            </label>
+                            <label class="demo-label" title="民生类_社会保障">
+                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_社会保障'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_社会保障
+                            </label>
                             <label class="demo-label" title="文体类_娱乐">
                                 <input class="demo-radio" type="radio" name="theme2h" value='文体类_娱乐'>
                                 <span class="demo-checkbox demo-radioInput"></span> 文体类_娱乐
@@ -385,49 +411,25 @@
                                 <input class="demo-radio" type="radio" name="theme2h" value='教育类'>
                                 <span class="demo-checkbox demo-radioInput"></span> 教育类
                             </label>
-                            <label class="demo-label" title="民生类_环保">
-                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_环保'>
-                                <span class="demo-checkbox demo-radioInput"></span> 民生类_环保
-                            </label>
-                            <label class="demo-label" title="民生类_健康">
-                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_健康'>
-                                <span class="demo-checkbox demo-radioInput"></span> 民生类_健康
-                            </label>
                             <label class="demo-label" title="军事类">
                                 <input class="demo-radio" type="radio" name="theme2h" value='军事类'>
                                 <span class="demo-checkbox demo-radioInput"></span> 军事类
-                            </label>
-                            <label class="demo-label" title="政治类_外交">
-                                <input class="demo-radio" type="radio" name="theme2h" value='政治类_外交'>
-                                <span class="demo-checkbox demo-radioInput"></span> 政治类_外交
                             </label>
                             <label class="demo-label" title="文体类_体育">
                                 <input class="demo-radio" type="radio" name="theme2h" value='文体类_体育'>
                                 <span class="demo-checkbox demo-radioInput"></span> 文体类_体育
                             </label>
-                            <label class="demo-label" title="民生类_交通">
-                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_交通'>
-                                <span class="demo-checkbox demo-radioInput"></span> 民生类_交通
-                            </label>
-                            <label class="demo-label" title="其他类">
-                                <input class="demo-radio" type="radio" name="theme2h" value='其他类'>
-                                <span class="demo-checkbox demo-radioInput"></span> 其他类
+                            <label class="demo-label" title="政治类_外交">
+                                <input class="demo-radio" type="radio" name="theme2h" value='政治类_外交'>
+                                <span class="demo-checkbox demo-radioInput"></span> 政治类_外交
                             </label>
                             <label class="demo-label" title="政治类_反腐">
                                 <input class="demo-radio" type="radio" name="theme2h" value='政治类_反腐'>
                                 <span class="demo-checkbox demo-radioInput"></span> 政治类_反腐
                             </label>
-                            <label class="demo-label" title="民生类_就业">
-                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_就业'>
-                                <span class="demo-checkbox demo-radioInput"></span> 民生类_就业
-                            </label>
                             <label class="demo-label" title="政治类_暴恐">
                                 <input class="demo-radio" type="radio" name="theme2h" value='政治类_暴恐'>
                                 <span class="demo-checkbox demo-radioInput"></span> 政治类_暴恐
-                            </label>
-                            <label class="demo-label" title="民生类_住房">
-                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_住房'>
-                                <span class="demo-checkbox demo-radioInput"></span> 民生类_住房
                             </label>
                             <label class="demo-label" title="政治类_地区和平">
                                 <input class="demo-radio" type="radio" name="theme2h" value='政治类_地区和平'>
@@ -437,9 +439,9 @@
                                 <input class="demo-radio" type="radio" name="theme2h" value='政治类_宗教'>
                                 <span class="demo-checkbox demo-radioInput"></span> 政治类_宗教
                             </label>
-                            <label class="demo-label" title="民生类_社会保障">
-                                <input class="demo-radio" type="radio" name="theme2h" value='民生类_社会保障'>
-                                <span class="demo-checkbox demo-radioInput"></span> 民生类_社会保障
+							 <label class="demo-label" title="其他类">
+                                <input class="demo-radio" type="radio" name="theme2h" value='其他类'>
+                                <span class="demo-checkbox demo-radioInput"></span> 其他类
                             </label>
                         </div>
                     </div>

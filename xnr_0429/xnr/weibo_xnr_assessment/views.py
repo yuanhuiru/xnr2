@@ -215,7 +215,7 @@ def ajax_compare_assessment():
 
 	xnr_user_no_list = request.args.get('xnr_user_no_list','') # 多个虚拟人，用英文逗号 ‘,’ 分开 
 	dim = request.args.get('dim','') # 要对比的维度，用英文参数：influence -影响力，penetration - 渗透力 ，safe - 安全性
-	start_time = int(request.args.get('start_time','')) # 开始时间
+	start_time = int(request.args.get('start_time',''))-1 # 开始时间
 	end_time = int(request.args.get('end_time','')) # 终止时间
 
 	if S_TYPE == 'test':

@@ -24,13 +24,19 @@ function field(data) {
         $('#pormpt').modal('show');
         return false;
     }else {
-        var str='';
+        var str='',plk=0;
         for (var k in data){
+			if(plk==0){ 
+				defalutDomain=data[k];
+	        	var creatDEFAULT=WFT_url+'/domain2role/?domain_name='+data[k];
+	            public_ajax.call_request('get',creatDEFAULT,creatrole)
+			}
             str+=
                 '<label class="demo-label" title="'+data[k]+'">'+
                 '   <input class="demo-radio" type="radio" name="demo1" id="'+k+'" value="'+data[k]+'">'+
                 '   <span class="demo-checkbox demo-radioInput"></span> '+data[k]+
                 '</label>';
+			plk++;
         }
         $('#container .tit-2 .field').html(str);
         $('input[name=demo1]').on('click',function () {
@@ -41,6 +47,14 @@ function field(data) {
         });
     }
 
+}
+function creatrole(data){
+	if(data.length!=0){
+		defalutRole=data[0];
+	}else {
+		$('#pormpt p').text('抱歉，该领域下没有对应的身份。');
+        $('#pormpt').modal('show');
+	}
 }
 var $one=JSON.parse(localStorage.getItem(firstStep));
 if ($one){

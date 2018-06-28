@@ -248,6 +248,7 @@ def create_personal_warning(xnr_user_no,start_time,end_time):
     xnr_uid=lookup_xnr_uid(xnr_user_no)
 
     #计算敏感度排名靠前的用户
+    '''
     query_body={
         # 'query':{
         #     'filtered':{
@@ -269,36 +270,52 @@ def create_personal_warning(xnr_user_no,start_time,end_time):
                     'sensitive_num':{
                         'sum':{'field':'sensitive'}
                     }
-                },
+                }                  
+            }
+            },
+        'size':MAX_SEARCH_SIZE
+    }
+    '''
+    query_body={
+        # 'query':{
+        #     'filtered':{
+        #         'filter':{
+        #             'terms':{'uid':followers_list}
+        #         }
+        #     }
+        # },
+        'aggs':{
+            'followers_sensitive_num':{
+                'terms':{'field':'uid'},
                 'aggs':{
-                    'influence_num':{
-                        'sum':{'field':'retweeted'}
+                    'sensitive_num':{
+                        'sum':{'field':'sensitive'}
                     }
                 }                        
             }
             },
         'size':MAX_SEARCH_SIZE
     }
-
     flow_text_index_name=get_day_flow_text_index_list(end_time)
     
-    try:   
-        first_sum_result=es_flow_text.search(index=flow_text_index_name,doc_type=flow_text_index_type,\
+   # try:   
+    first_sum_result=es_flow_text.search(index=flow_text_index_name,doc_type=flow_text_index_type,\
         body=query_body)['aggregations']['followers_sensitive_num']['buckets']
-    except:
-        first_sum_result=[]
+    #except:
+     #`   first_sum_result=[]
 
     #print first_sum_result
     top_userlist=[]
     for i in xrange(0,len(first_sum_result)):
         user_sensitive=first_sum_result[i]['sensitive_num']['value']
-        user_influence=first_sum_result[i]['influence_num']['value']
-        if (user_sensitive > 0) or (user_influence > 0) :
+        #ser_influence=first_sum_result[i]['influence_num']['value']
+        #if (user_sensitive > 0) or (user_influence > 0) :
+        if user_sensitive > 0:
             user_dict=dict()
             user_dict['uid']=first_sum_result[i]['key']
             followers_mark=judge_user_type(user_dict['uid'],followers_list)
             user_dict['sensitive']=user_sensitive*followers_mark
-            user_dict['influence']=user_influence*followers_mark
+           # user_dict['influence']=user_influence*followers_mark
             top_userlist.append(user_dict)
         else:
             pass
@@ -315,7 +332,7 @@ def create_personal_warning(xnr_user_no,start_time,end_time):
         user_detail=dict()
         user_detail['uid']=user['uid']
         user_detail['user_sensitive']=user['sensitive']
-        user_detail['user_influence']=user['influence']
+        #user_detail['user_influence']=user['influence']
         # user_lookup_id=xnr_uid+'_'+user['uid']
         # print user_lookup_id
         # try:
@@ -332,8 +349,8 @@ def create_personal_warning(xnr_user_no,start_time,end_time):
                         'bool':{
                             'must':[
                                 {'term':{'uid':user['uid']}},
-                                {'range':{'timestamp':{'gte':start_time,'lte':end_time}}}
-                            #    {'range':{'sensitive':{'gte':1}}},
+                            #    {'range':{'timestamp':{'gte':start_time,'lte':end_time}}}
+                                {'range':{'sensitive':{'gte':1}}},
                             #    {'range':{'retweeted':{'gte':1}}}
                             ]
                         }
@@ -369,10 +386,10 @@ def create_personal_warning(xnr_user_no,start_time,end_time):
 
         user_detail['xnr_user_no']=xnr_user_no
         user_detail['validity']=0
-        user_detail['timestamp']=today_datetime
+        user_detail['timestamp']=end_time
 
         results.append(user_detail)
-
+    #print 'person_wa:::',results
     return results
 
 
@@ -398,11 +415,12 @@ def save_user_warning(xnr_user_no,start_time,end_time):
                 #组合,更新数据库
                 task_id = xnr_user_no+'_'+item['uid']
                 old_user = es_xnr.get(index=weibo_user_warning_index_name,doc_type=weibo_user_warning_index_type,id=task_id)['_source']
+                old_user['content'] = json.loads(old_user['content'])
                 old_user['content'].extend(item['content'])
                 old_user['user_sensitive'] = old_user['user_sensitive'] + item['user_sensitive']
-                old_user['user_influence'] = old_user['user_influence'] + item['user_influence']
+                #old_user['user_influence'] = old_user['user_influence'] + item['user_influence']
                 try:
-                    es_xnr.update(index=weibo_user_warning_index_name,doc_type=weibo_user_warning_index_type,body=old_user,id=task_id)
+                    es_xnr.index(index=weibo_user_warning_index_name,doc_type=weibo_user_warning_index_type,body=old_user,id=task_id)
                     mark=True
                 except:
                     mark=False
@@ -419,7 +437,7 @@ def save_user_warning(xnr_user_no,start_time,end_time):
             results.append(mark)
     else:
         pass
-
+    print 'person_mark::',results
     return results
 
 def lookup_history_speech_warming(xnr_user_no,start_time,end_time):  
@@ -488,7 +506,7 @@ def create_speech_warning(xnr_user_no,start_time,end_time):
         item['validity']=0
         item['xnr_user_no']=xnr_user_no
 
-        task_id=xnr_user_no+'_'+item['_source']['mid']
+        task_id=xnr_user_no+'_'+item['mid']
 
         #写入数据库
         today_date=ts2datetime(end_time)
@@ -502,7 +520,7 @@ def create_speech_warning(xnr_user_no,start_time,end_time):
             mark=False
 
         result.append(mark)
-
+    print 'speech_result::',result
     return result
 
 
@@ -595,7 +613,7 @@ def get_hashtag(today_datetime):
 
 def create_event_warning(xnr_user_no,start_time,end_time):
     #获取事件名称
-    today_datetime = end_time
+    today_datetime = start_time
     hashtag_list = get_hashtag(today_datetime)
     #print 'hashtag_list::',hashtag_list
 
@@ -645,6 +663,7 @@ def create_event_warning(xnr_user_no,start_time,end_time):
         }
         #try:         
         event_results=es_flow_text.search(index=flow_text_index_name,doc_type=flow_text_index_type,body=query_body)['hits']['hits']
+        print 'event:::',len(event_results),start_time,end_time
         if event_results:
             weibo_result=[]
             fans_num_dict=dict()
@@ -796,10 +815,10 @@ def save_event_warning(xnr_user_no,start_time,end_time):
     new_event_warning = create_event_warning(xnr_user_no,start_time,end_time)    
 
     today_history_event_warning,old_name_list = lookup_history_event_warming(xnr_user_no,today_datetime,end_time)
-
+    print 'warning!!!',len(new_event_warning)
     results = [] 
     if new_event_warning:
-        for item in new_waining_list:
+        for item in new_event_warning:
             event_mark = set_intersection(item['event_name'],old_name_list)
             if event_mark == 1:
                 task_id = xnr_user_no+'_'+ item['event_name']
@@ -842,7 +861,7 @@ def save_event_warning(xnr_user_no,start_time,end_time):
                 old_event['main_weibo_info'].extend(new_main_weibo_info)
 
                 old_event['event_influence']=old_event['event_influence']+item['event_influence']
-
+               
                 try:
                     es_xnr.update(index=weibo_event_warning_index_name,doc_type=weibo_event_warning_index_type,id=task_id)
                     mark=True
@@ -860,7 +879,7 @@ def save_event_warning(xnr_user_no,start_time,end_time):
             results.append(mark)
     else:
         pass
-
+    print 'event_waring::',results
     return results
 
 
@@ -1006,7 +1025,7 @@ def create_weibo_warning():
         now_time=int(time.time())
         today_datetime=datetime2ts(ts2datetime(now_time)) - DAY 
         start_time=today_datetime    #前一天0点
-        end_time=today_datetime          #定时文件启动的0点
+        end_time=today_datetime + DAY         #定时文件启动的0点
         operate_date=ts2datetime(start_time)
     
     print 'today_datetime',today_datetime,'operate_date',operate_date
@@ -1016,12 +1035,12 @@ def create_weibo_warning():
 
         for xnr_user_no in xnr_list:
             #人物行为预警
-            personal_mark=save_user_warning(xnr_user_no,start_time,end_time)
+           # personal_mark=save_user_warning(xnr_user_no,start_time,end_time)
             #言论内容预警
-            speech_mark=create_speech_warning(xnr_user_no,start_time,end_time)
+           # speech_mark=create_speech_warning(xnr_user_no,start_time,end_time)
             speech_mark=True
             #事件涌现预警
-            save_event_warning(xnr_user_no,start_time,end_time)
+            #save_event_warning(xnr_user_no,start_time,end_time)
 
     #时间预警
     date_mark=create_date_warning(start_time,end_time)
