@@ -7,11 +7,10 @@ from xnr.global_config import S_TYPE,S_DATE_TW as S_DATE
 from xnr.global_utils import es_xnr_2 as es
 from xnr.global_utils import tw_role_index_name, tw_role_index_type
 #facebook_user
-from xnr.global_utils import r, es_tw_user_profile as es_user_profile, \
+from xnr.global_utils import r,\
                             twitter_user_index_type as profile_index_type, \
                             twitter_user_index_name as profile_index_name
-from xnr.global_utils import es_tw_user_portrait as es_user_portrait,\
-                            tw_portrait_index_name as portrait_index_name, \
+from xnr.global_utils import tw_portrait_index_name as portrait_index_name, \
                             tw_portrait_index_type as portrait_index_type,\
                             twitter_flow_text_index_name_pre as flow_text_index_name_pre, \
                             twitter_flow_text_index_type as flow_text_index_type,\
@@ -26,8 +25,10 @@ from textrank4zh import TextRank4Keyword, TextRank4Sentence
 from xnr.parameter import MAX_VALUE,MAX_SEARCH_SIZE,tw_domain_ch2en_dict,fb_tw_topic_en2ch_dict,tw_domain_en2ch_dict,\
                         EXAMPLE_MODEL_PATH,TOP_ACTIVE_TIME,TOP_PSY_FEATURE
 from xnr.time_utils import ts2datetime,datetime2ts,get_twitter_flow_text_index_list as get_flow_text_index_list
-es_flow_text = es
 
+es_flow_text = es
+es_user_portrait = es
+es_user_profile = es
 
 '''
 领域知识库
@@ -258,39 +259,34 @@ def get_show_domain_group_detail_portrait(domain_name):
         item['home_page'] = ""
         item['influence'] = ''
         if result['found']:
-            item['uid'] = result['_id']
+            _id = result['_id']
             result = result['_source']
+
+            item['uid'] = _id
+            item['home_page'] = "https://www.facebook.com/profile.php?id=" + str(_id)
+
             if result.has_key('uname'):
                 item['nick_name'] = result['uname']
-            if result.has_key('photo_url'):
-                item['photo_url'] = result['photo_url']
             if result.has_key('domain'):
                 item['domain'] = result['domain']
             if result.has_key('sensitive'):
                 item['sensitive'] = result['sensitive']
             if result.has_key('location'):
                 item['location'] = result['location']
+            if result.has_key('influence'):
+                item['influence'] = get_influence_relative(item['uid'],result['influence'])
+            if result.has_key('screenname'):
+                item['home_page'] = "https://twitter.com/" + result['screenname']
+            if result.has_key('photo_url'):
+                item['photo_url'] = result['photo_url']
             if result.has_key('fansnum'):
                 item['fans_num'] = result['fansnum']
             if result.has_key('friends_num'):
                 item['friends_num'] = result['friendsnum']
             # item['gender'] = result['gender']
-            if result.has_key('screenname'):
-                item['home_page'] = "https://twitter.com/" + result['screenname']
             if result.has_key('influence'):
                 item['influence'] = get_influence_relative(item['uid'],result['influence'])
-        # else:
-        #     item['uid'] = result['_id']
-        #     item['nick_name'] = ''
-        #     item['photo_url'] = ''
-        #     item['domain'] = ''
-        #     item['sensitive'] = ''
-        #     item['location'] = ''
-        #     item['fans_num'] = ''
-        #     item['friends_num'] = ''
-        #     # item['gender'] = ''
-        #     item['home_page'] = ""
-        #     item['influence'] = ''
+
         result_all.append(item)
     return result_all
 
@@ -304,7 +300,7 @@ def get_show_domain_description(domain_name):
     topic_preference_list = json.loads(es_result['topic_preference'])
     topic_preference_list_chinese = []
     for topic_preference_item in topic_preference_list:
-        topic_preference_item_chinese = tw_tw_topic_en2ch_dict[topic_preference_item[0]]
+        topic_preference_item_chinese = fb_tw_topic_en2ch_dict[topic_preference_item[0]]
         topic_preference_list_chinese.append([topic_preference_item_chinese,topic_preference_item[1]])
 
     item['topic_preference'] = topic_preference_list_chinese
@@ -474,3 +470,4 @@ def delete_corpus(corpus_id):
     except:
         result=False
     return result
+

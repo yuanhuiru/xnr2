@@ -40,7 +40,7 @@ def get_friends_list(recommend_set_list):
 
     friend_list = []
     if len(recommend_set_list) == 0:
-		return friend_list
+        return friend_list
     now_ts = time.time()
     now_date_ts = datetime2ts(ts2datetime(now_ts))
     #get redis db number
@@ -210,10 +210,10 @@ def get_related_recommendation(task_detail):
                 item['_source']['weibo_type'] = weibo_type
                 item['_source']['sensor_mark'] = sensor_mark
                 try:
-				    del item['_source']['group']
-				    del item['_source']['activity_geo_dict']
+                    del item['_source']['group']
+                    del item['_source']['activity_geo_dict']
                 except:
-					pass
+                    pass
 
 
                 if sort_item == 'friend':
@@ -330,51 +330,196 @@ def get_all_xnrs():
         result = result_item['_source']
         print result['xnr_user_no']
         all_xnr_list.add(result['xnr_user_no'])
-	
+    
     return list(all_xnr_list)
 
 def save_results_to_es(xnr_user_no,current_date,sort_item,result):
 
-	item_body = {}
-	item_body['xnr_user_no'] = xnr_user_no
-	item_body['sort_item'] = sort_item
-	item_body['result'] = json.dumps(result)
-	item_body['timestamp'] = datetime2ts(current_date)
+    item_body = {}
+    item_body['xnr_user_no'] = xnr_user_no
+    item_body['sort_item'] = sort_item
+    item_body['result'] = json.dumps(result)
+    item_body['timestamp'] = datetime2ts(current_date)
 
-	_id = xnr_user_no +'_'+ sort_item
-	
-	index_name = active_social_index_name_pre + current_date
+    _id = xnr_user_no +'_'+ sort_item
+    
+    index_name = active_social_index_name_pre + current_date
 
-	es.index(index=index_name,doc_type=active_social_index_type,body=item_body,id=_id)
+    es.index(index=index_name,doc_type=active_social_index_type,body=item_body,id=_id)
 
 
+def load_user_index_res():
+
+    avg_sort_uid_dict = {}
+    current_date = ts2datetime(time.time()-24*3600)
+    date = ''.join(current_date.split('-'))
+    index_name = weibo_bci_index_name_pre + date
+    query_body = {
+        'query': {
+            'match_all': {},
+        },
+        'size': TOP_ACTIVE_SOCIAL,
+        'sort': {"user_index": {"order": "desc"}},
+    }
+    uid_list = []
+    try:
+        search_res = es_user_portrait.search(index=index_name, doc_type=weibo_bci_index_type, body=query_body)['hits']['hits']
+        for r in search_res:
+            uid = r['_id']
+            uid_list.append(uid)
+            avg_sort_uid_dict[uid] = {}
+            avg_sort_uid_dict[uid]['sort_item_value'] = round(r['_source']['user_index'],2)
+    except Exception,e:
+        print e
+
+
+    results_all = []
+
+    sort_item = ''
+    for uid in uid_list:
+        #if sort_item == 'friend':
+        query_body = {
+            'query':{
+                'filtered':{
+                    'filter':{
+                        'term':{'uid':uid}
+                    }
+                }
+            }
+        }
+
+        es_results = es_user_portrait.search(index=portrait_index_name,doc_type=portrait_index_type,body=query_body)['hits']['hits']
+
+        if es_results:
+            #print 'portrait--',es_results[0]['_source'].keys()
+            for item in es_results:
+                uid = item['_source']['uid']
+                #nick_name,photo_url = uid2nick_name_photo(uid)
+                item['_source']['nick_name'] = uid #nick_name
+                item['_source']['photo_url'] = ''#photo_url
+                # weibo_type = judge_follow_type(xnr_user_no,uid)
+                weibo_type = ''
+                # sensor_mark = judge_sensing_sensor(xnr_user_no,uid)
+                sensor_mark = ''
+
+                item['_source']['weibo_type'] = weibo_type
+                item['_source']['sensor_mark'] = sensor_mark
+                try:
+                    del item['_source']['group']
+                    del item['_source']['activity_geo_dict']
+                except:
+                    pass
+
+
+                item['_source']['user_index'] = avg_sort_uid_dict[uid]['sort_item_value']
+
+                current_time = datetime2ts(current_date)
+
+                index_name = get_flow_text_index_list(current_time)
+
+                query_body = {
+                    'query':{
+                        'bool':{
+                            'must':[
+                                {'term':{'uid':uid}},
+                                {'terms':{'message_type':[1,3]}}
+                            ]
+                        }
+                    },
+                    'sort':{'retweeted':{'order':'desc'}},
+                    'size':5
+                }
+
+                es_weibo_results = es_flow_text.search(index=index_name,doc_type=flow_text_index_type,body=query_body)['hits']['hits']
+
+                weibo_list = []
+                for weibo in es_weibo_results:
+                    weibo = weibo['_source']
+                    weibo_list.append(weibo)
+                item['_source']['weibo_list'] = weibo_list
+                item['_source']['portrait_status'] = True
+                results_all.append(item['_source'])
+        else:
+            item_else = dict()
+            item_else['uid'] = uid
+            #nick_name,photo_url = uid2nick_name_photo(uid)
+            item_else['nick_name'] = uid#nick_name
+            item_else['photo_url'] = ''#photo_url
+            # weibo_type = judge_follow_type(xnr_user_no,uid)
+            weibo_type = ''
+            # sensor_mark = judge_sensing_sensor(xnr_user_no,uid)
+            sensor_mark = ''
+            item_else['weibo_type'] = weibo_type
+            item_else['sensor_mark'] = sensor_mark
+            item_else['portrait_status'] = False
+            #if sort_item != 'friend':
+            #item_else['sort_item_value'] = avg_sort_uid_dict[uid]['sort_item_value']
+            # else:
+            #     item_else['sort_item_value'] = ''
+            
+
+            current_time = datetime2ts(current_date)
+
+            index_name = get_flow_text_index_list(current_time)
+
+            query_body = {
+                'query':{
+                    'term':{'uid':uid}
+                },
+                'sort':{'retweeted':{'order':'desc'}}
+            }
+
+            es_weibo_results = es_flow_text.search(index=index_name,doc_type=flow_text_index_type,body=query_body)['hits']['hits']
+
+            weibo_list = []
+            for weibo in es_weibo_results:
+                item_else['fansnum'] = weibo['_source']['user_fansnum']
+                weibo = weibo['_source']
+                weibo_list.append(weibo)
+            item_else['weibo_list'] = weibo_list
+            item_else['friendsnum'] = 0
+            item_else['statusnum'] = 0
+
+            item_else['user_index'] = avg_sort_uid_dict[uid]['sort_item_value']
+
+            results_all.append(item_else)
+            
+    
+    return results_all
 
 def active_social_recommend_daily(current_date):
 
-	# 1. 获得所有已完成虚拟人
+    # 1. 获得所有已完成虚拟人
 
-	all_xnrs = get_all_xnrs()
-	print 'all_xnrs',all_xnrs
-	# 2. 对于每个虚拟人，计算 按粉丝数、按敏感度、按朋友圈 三个结果 并保存
-	for xnr_user_no in all_xnrs:
-		for sort_item in ['influence','sensitive','friend']:
-			task_detail = {}
-			print 'sort_item..',sort_item
-			task_detail['xnr_user_no'] = xnr_user_no
-			task_detail['sort_item'] = sort_item
+    all_xnrs = get_all_xnrs()
+    print 'all_xnrs',all_xnrs
+    # 2. 对于每个虚拟人，计算 按粉丝数、按敏感度、按朋友圈 三个结果 并保存
+    for xnr_user_no in all_xnrs:
+        for sort_item in ['influence','sensitive','friend']:
+            task_detail = {}
+            print 'sort_item..',sort_item
+            task_detail['xnr_user_no'] = xnr_user_no
+            task_detail['sort_item'] = sort_item
 
-			# 计算
-			result = get_related_recommendation(task_detail)	
-			print 'result',len(result)
-			# 保存
-			save_results_to_es(xnr_user_no,current_date,sort_item,result)	
+            # 计算
+            result = get_related_recommendation(task_detail)    
+            print 'result',len(result)
+            # 保存
+            save_results_to_es(xnr_user_no,current_date,sort_item,result)   
+
+    # 3. 常规关注推荐：做一个日更新任务，把画像的全网用户排行结果提到本地服务器，配合明明的前端提供查询
+    res = load_user_index_res()
+    #print res[0].keys()
+    #['portrait_status', 'statusnum', 'nick_name', 'sensor_mark', 'friendsnum', 'weibo_list', 'weibo_type', 'fansnum', 'user_index', 'photo_url', 'uid']
+    save_results_to_es('all_xnr',current_date,'user_index',res)
 
      
 if __name__ == '__main__':
-	
-	current_time = time.time()
-	current_date = ts2datetime(current_time)
-	start_ts = time.time()
-	active_social_recommend_daily(current_date)
-	end_ts = time.time()
-	print 'cost..',end_ts - start_ts
+    
+    current_time = time.time()
+    current_date = ts2datetime(current_time)
+    start_ts = time.time()
+    active_social_recommend_daily(current_date)
+    end_ts = time.time()
+    print 'cost..',end_ts - start_ts
+
