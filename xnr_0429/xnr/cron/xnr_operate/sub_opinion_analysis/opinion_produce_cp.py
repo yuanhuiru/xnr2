@@ -27,16 +27,11 @@ def opinion_main(weibo_data,k_cluster):
         word_result：子话题关键词对，{topic1:[w1,w2,...],topic2:[w1,w2,...],...}
         text_list：子话题对应的文本，{topic1:[text1,text2,...],topic2:[text1,text2,..],..}
     '''
-
+    
     weibo_new = []
     for i in range(0,len(weibo_data)):
-        text = weibo_data[i][1]
-        mid = weibo_data[i][0]
-        uid = weibo_data[i][2]
-        timetamp = weibo_data[i][3]
-        uname = weibo_data[i][4]
-        forwarding_count = weibo_data[i][5]
-        comment_count = weibo_data[i][6]
+        text = weibo_data[i]
+        
         #print 'text..',text
         #print 'type..text..',type(text)
         text = text.encode('utf-8')
@@ -47,15 +42,13 @@ def opinion_main(weibo_data,k_cluster):
         value = cut_filter(text)
         if len(value) > 0:
             if text != '转发微博':
-                weibo_new.append((value,mid,uid,timetamp,uname,forwarding_count,comment_count))
+                weibo_new.append(value)
     
     word_result,word_weight = word_net(weibo_new,k_cluster)#提取关键词对
     
     text_list,opinion_name = text_net(word_result,word_weight,weibo_new)#提取代表文本
 
     return opinion_name,word_result,text_list
-
-
 
 if __name__ == '__main__':
     main('0521',5)#生成训练集

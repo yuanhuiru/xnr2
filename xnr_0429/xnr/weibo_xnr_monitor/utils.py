@@ -17,7 +17,8 @@ from xnr.global_utils import es_flow_text,flow_text_index_name_pre,flow_text_ind
                              es_user_portrait,weibo_bci_index_name_pre,weibo_bci_index_type,\
                              weibo_keyword_count_index_name,weibo_keyword_count_index_type,\
                              weibo_full_keyword_index_name,weibo_full_keyword_index_type,\
-                             weibo_sensitive_post_index_name_pre,weibo_sensitive_post_index_type
+                             weibo_sensitive_post_index_name_pre,weibo_sensitive_post_index_type,\
+                             weibo_active_user_index_name_pre,weibo_active_user_index_type
 from xnr.weibo_publish_func import retweet_tweet_func,comment_tweet_func,like_tweet_func,follow_tweet_func                             
 from xnr.parameter import MAX_FLOW_TEXT_DAYS,MAX_VALUE,DAY,MID_VALUE,MAX_SEARCH_SIZE,HOT_WEIBO_NUM,INFLUENCE_MIN
 from xnr.save_weibooperate_utils import save_xnr_like,save_xnr_followers
@@ -549,6 +550,42 @@ def attach_fans_batch(xnr_user_no_list,fans_id_list,trace_type):
 #input:classify_id,weiboxnr_id
 #output:active weibo_user info list
 def lookup_active_weibouser(classify_id,weiboxnr_id,start_time,end_time):
+    start_datetime = datetime2ts(ts2datetime(start_time-DAY))
+    end_datetime = datetime2ts(ts2datetime(end_time-DAY))
+    weibo_active_user_index_name_list = []
+    if start_datetime == end_datetime:
+        index_name=weibo_active_user_index_name_pre + ts2datetime(end_datetime)
+        if es_xnr.indices.exists(index=index_name):
+            weibo_active_user_index_name_list.append(index_name)
+    else:
+        day_num = int((end_datetime - start_datetime)/DAY) 
+        for i in range(0,day_num):
+            temp_date = ts2datetime(end_datetime - i*DAY)
+            index_name = weibo_active_user_index_name_pre + temp_date
+            if es_xnr.indices.exists(index=index_name):
+                weibo_active_user_index_name_list.append(index_name)
+
+    query_body={
+        'query':{
+            'match_all':{}
+        },
+        'size':100,
+        'sort':{'influence':{'order':'desc'}}
+    }
+    results = []
+   
+    try:
+        #print weibo_active_user_index_name_list
+        result = es_xnr.search(index=weibo_active_user_index_name_list,doc_type=weibo_active_user_index_type,body=query_body)['hits']['hits']
+        for item in result:
+            results.append(item['_source'])
+       # print results
+    except:
+       print 'active_user error!!'
+    return results
+
+'''
+def lookup_active_weibouser(classify_id,weiboxnr_id,start_time,end_time):
     print 'active user start!!!'
     time_gap = end_time - start_time
     now_time = time.time()
@@ -624,24 +661,12 @@ def lookup_active_weibouser(classify_id,weiboxnr_id,start_time,end_time):
                         'total_number':total_number, 'friends_num':friends_num,\
                         'uname': uname, 'location':location, 'url': url})
                 #print 'results:', results
-                '''
-                uid=item['_source']['uid']
-                #微博数
-                item['_source']['weibos_sum']=count_weibouser_weibosum(uid,end_time)
-                #影响力
-                user_index=count_weibouser_index(uid,end_time)
-                if user_max_index >0:
-                    item['_source']['influence']=user_index/user_max_index*100
-                else:
-                    item['_source']['influence']=0
-                if item['_source']['influence']>=INFLUENCE_MIN:
-                    results.append(item['_source'])
-                '''
+               
         except:
             results=[]
 
     return results
-
+'''
 #查询微博数
 def count_weibouser_weibosum(uid,end_time):
     date_time=ts2datetimestr(end_time-DAY)

@@ -1035,12 +1035,12 @@ def create_weibo_warning():
 
         for xnr_user_no in xnr_list:
             #人物行为预警
-           # personal_mark=save_user_warning(xnr_user_no,start_time,end_time)
+            personal_mark=save_user_warning(xnr_user_no,start_time,end_time)
             #言论内容预警
-           # speech_mark=create_speech_warning(xnr_user_no,start_time,end_time)
+            speech_mark=create_speech_warning(xnr_user_no,start_time,end_time)
             speech_mark=True
             #事件涌现预警
-            #save_event_warning(xnr_user_no,start_time,end_time)
+            save_event_warning(xnr_user_no,start_time,end_time)
 
     #时间预警
     date_mark=create_date_warning(start_time,end_time)

@@ -740,7 +740,8 @@ weibo_sensitive_post_task_queue_name = 'weibo_sensitive_post_task'
 
 weibo_sensitive_post_index_name_pre = 'weibo_sensitive_post_'
 weibo_sensitive_post_index_type = 'text'
-
+weibo_active_user_index_name_pre = 'weibo_active_user_'
+weibo_active_user_index_type = 'user'
 
 # 记录qq用户每天发言数
 r_qq_speak_num_pre = 'qq_speak_num_'  # qq_speak_num_2018-05-04
