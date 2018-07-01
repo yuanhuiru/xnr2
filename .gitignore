@@ -102,7 +102,7 @@ ENV/
 
 #
 *.csv
-*.json
+#*.json
 *.png
 *.gif
 *.mp3
