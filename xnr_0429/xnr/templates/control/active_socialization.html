@@ -108,24 +108,44 @@
         <div class="suggestion" style="margin: 20px 0 30px;">
             <ul id="myTabs" class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active" tp="influence">
-                    <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-info-sign"></b>&nbsp;按粉丝数</a>
+                    <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-share-alt"></b>&nbsp;常规推荐</a>
                 </li>
                 <li role="presentation" tp="sensitive">
-                    <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-dashboard"></b>&nbsp;按敏感度</a>
+                    <a href="#influe2" role="tab" data-toggle="tab"><b class="icon icon-external-link"></b>&nbsp;业务推荐</a>
                 </li>
-                <li role="presentation" tp="friend">
+               <!-- <li role="presentation" tp="friend">
                     <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-user"></b>&nbsp;按朋友圈</a>
-                </li>
+                </li>-->
             </ul>
             <div class="tab-content" id="content">
                 <div role="tabpanel" class="tab-pane active" id="influe">
+					<div style="margin:20px 0;">
+						 <label class="demo-label" style="">
+                        	 <input class="demo-radio" type="radio" name="xnr123" value='' tp="influence" checked>
+                       		 <span class="demo-checkbox demo-radioInput"></span>&nbsp;按粉丝数
+                   		 </label>
+						 <label class="demo-label" style="">
+                             <input class="demo-radio" type="radio" name="xnr123" value='' tp="sensitive">
+                             <span class="demo-checkbox demo-radioInput"></span>&nbsp;按敏感度
+                         </label>
+						 <label class="demo-label" style="">
+                             <input class="demo-radio" type="radio" name="xnr123" value='' tp="friend">
+                             <span class="demo-checkbox demo-radioInput"></span>&nbsp;按朋友圈
+                         </label>
+					</div>
                     <p style="width: 100%;text-align: center;margin-top: 40px;color: white;">正在拼命加载中...</p>
                     <div class="influence" style="display: none;">
                         <div id="influence">
                         </div>
                     </div>
                 </div>
-
+				<div role="tabpanel" class="tab-pane" id="influe2">
+                    <p style="width: 100%;text-align: center;margin-top: 40px;color: white;">正在拼命加载中...</p>
+                    <div class="influence2" style="display: none;">
+                        <div id="influence2">
+                        </div>
+                    </div>
+                </div>
                 <!--<div role="tabpanel" class="tab-pane" id="sensitive">-->
                     <!--<div class="Sensitivity">-->
                         <!--<div id="Sensitivity"></div>-->

@@ -87,11 +87,11 @@ function related(data) {
                 formatter: function (value, row, index) {
                     var fol='';
                     if (row.weibo_type=='follow'){
-                        fol='已关注';
+                        fol='已关注，点击取消关注';
                     }else if (row.weibo_type=='friends'){
-                        fol='相互关注';
+                        fol='相互关注，点击取消对他关注';
                     }else {//if (row.weibo_type=='stranger'||row.weibo_type=='followed')
-                        fol='未关注';
+                        fol='未关注，点击直接关注';
                     }
                     return '<span style="cursor: pointer;" onclick="lookDetails(\''+row.uid+'\')" title="查看详情"><i class="icon icon-file-alt"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+
                         '<span style="cursor: pointer;" onclick="driectFocus(\''+row.uid+'\',this)" title="'+fol+'"><i class="icon icon-star-empty"></i></span>';
@@ -111,7 +111,7 @@ function showHide(_tp$) {
         $('#influence').bootstrapTable('hideColumn', 'sensitive');
     }
 }
-$('#container .suggestion #myTabs li').on('click',function () {
+$('#inputList label input').on('click',function () {
     var ty=$(this).attr('tp');
     //idNAME=ty;
     $('.influence').hide();
@@ -211,7 +211,7 @@ function driectFocus(uid,_this) {
     var foc_url,mid='';
     if (!uid){uid=$(_this).prev().text()}
     var f=$(_this).find('b').text()||$(_this).text();
-    if (f=='未关注'){
+    if (f=='未关注，点击直接关注'){
         mid='follow_operate';
     }else {
         mid='unfollow_operate';

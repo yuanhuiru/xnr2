@@ -818,7 +818,7 @@ function hotWeibo(data) {
                         '               <span class="sureCom" onclick="comMent(this,\'热点跟随\')">评论</span>'+
                         '           </div>'+
                         '        </div>'+
-                        '        <div style="margin: 10px 0;">'+
+                        '        <div style="margin: 10px 0;display:none;">'+
                         '           <input type="text" class="point-view-1" placeholder="多个关键词请用逗号分开"/>'+
                         '           <button type="button" onclick="submitViews(this)" class="btn btn-primary btn-xs point-view-2" ' +
                         'style="height: 26px;position: relative;top: -1px;">提交子观点任务</button>'+
