@@ -20,7 +20,8 @@ from utils import push_keywords_task,get_submit_tweet,save_to_tweet_timing_list,
                 get_show_fans,get_add_sensor_user,get_delete_sensor_user,get_create_group_show_fans,\
                 get_trace_follow_operate,get_un_trace_follow_operate,get_show_retweet_timing_list,\
                 get_show_trace_followers,get_image_path,get_reply_total,get_show_domain,\
-                get_show_retweet_timing_list_future,get_related_recommendation_from_es,get_bussiness_recomment_tweets_from_es
+                get_show_retweet_timing_list_future,get_related_recommendation_from_es,get_bussiness_recomment_tweets_from_es,\
+                get_daily_recomment_tweets_from_es
 from utils import save_oprate_like
 from xnr.utils import add_operate2redis
 
@@ -232,6 +233,15 @@ def ajax_bussiness_recomment_tweets():
     #tweets = get_bussiness_recomment_tweets(xnr_user_no,sort_item)
     tweets = get_bussiness_recomment_tweets_from_es(xnr_user_no,sort_item)
     return json.dumps(tweets)
+
+# 微博推荐
+@mod.route('/daily_recomment_tweets/')
+def ajax_daily_recomment_tweets():
+    xnr_user_no = request.args.get('xnr_user_no','')
+    sort_item = request.args.get('sort_item','user_index') 
+    tweets = get_daily_recomment_tweets_from_es(xnr_user_no,sort_item)
+    return json.dumps(tweets)
+
 
 '''
 社交反馈模块
@@ -569,5 +579,6 @@ def ajax_un_trace_follow_operate():
     results = get_un_trace_follow_operate(xnr_user_no,uid_string,nick_name_string)
 
     return json.dumps(results)  # [mark,fail_uids,fail_nick_name_list]  fail_uids - 取消失败的uid  fail_nick_name_list -- 原因同上
+
 
 

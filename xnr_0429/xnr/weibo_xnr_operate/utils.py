@@ -563,6 +563,22 @@ def get_bussiness_recomment_tweets_from_es(xnr_user_no,sort_item):
     except:
         result = []
     return result
+
+## 日常 -- 直接读取结果
+def get_daily_recomment_tweets_from_es(xnr_user_no,sort_item):
+    
+    
+    current_date = ts2datetime(time.time())
+    index_name = active_social_index_name_pre + current_date
+#     _id = xnr_user_no +'_'+ sort_item
+    _id = 'all_xnr_user_index'
+    
+    try:
+        result = json.loads(es.get(index=index_name, doc_type=active_social_index_type,id=_id)['_source']['result'])
+    except:
+        result = []
+    return result
+
 def get_bussiness_recomment_tweets(xnr_user_no,sort_item):
     
     get_results = es.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
@@ -2071,6 +2087,7 @@ def save_oprate_like(task_detail):
 
 
         
+
 
 
 
