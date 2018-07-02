@@ -19,7 +19,7 @@ def opinion_main(weibo_data,k_cluster):
     '''
         观点挖掘主函数：
         输入数据：
-        weibo_data：微博列表，[weibo1,weibo2,...]
+        weibo_data：微博列表，[[mid,text,uid,timetamp,uname,forwarding_count,comment_count],...]
         k_cluster：子话题个数
 
         输出数据：
@@ -27,7 +27,7 @@ def opinion_main(weibo_data,k_cluster):
         word_result：子话题关键词对，{topic1:[w1,w2,...],topic2:[w1,w2,...],...}
         text_list：子话题对应的文本，{topic1:[text1,text2,...],topic2:[text1,text2,..],..}
     '''
-
+    
     weibo_new = []
     for i in range(0,len(weibo_data)):
         text = weibo_data[i][1]
@@ -54,8 +54,6 @@ def opinion_main(weibo_data,k_cluster):
     text_list,opinion_name = text_net(word_result,word_weight,weibo_new)#提取代表文本
 
     return opinion_name,word_result,text_list
-
-
 
 if __name__ == '__main__':
     main('0521',5)#生成训练集

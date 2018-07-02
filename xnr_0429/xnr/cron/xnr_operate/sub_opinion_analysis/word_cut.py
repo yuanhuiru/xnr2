@@ -126,7 +126,7 @@ def word_net(weibo,k_cluster):#词频词网
     total = 0#词的总数
     weibo_word = []
     for i in range(0,len(weibo)):
-        text = weibo[i]
+        text = weibo[i][0]
         words = sw.participle(text)
         row = []
         for word in words:
@@ -201,8 +201,8 @@ def word_net(weibo,k_cluster):#词频词网
         k1,k2 = w.split('_')
         c = []
         for i in range(0, len(weibo)):
-            n1 = weibo[i].count(str(k1))
-            n2 = weibo[i].count(str(k2))
+            n1 = weibo[i][0].count(str(k1))
+            n2 = weibo[i][0].count(str(k2))
             n = n1 + n2
             c.append(n)
         feature.append(c)
