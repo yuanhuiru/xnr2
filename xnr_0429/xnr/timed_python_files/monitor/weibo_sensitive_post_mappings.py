@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import sys
 import json
+sys.path.append('../../')
 from global_utils import es_xnr as es,weibo_sensitive_post_index_name_pre,weibo_sensitive_post_index_type 
 
 

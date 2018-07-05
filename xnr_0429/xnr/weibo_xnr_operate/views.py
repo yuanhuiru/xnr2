@@ -21,7 +21,7 @@ from utils import push_keywords_task,get_submit_tweet,save_to_tweet_timing_list,
                 get_trace_follow_operate,get_un_trace_follow_operate,get_show_retweet_timing_list,\
                 get_show_trace_followers,get_image_path,get_reply_total,get_show_domain,\
                 get_show_retweet_timing_list_future,get_related_recommendation_from_es,get_bussiness_recomment_tweets_from_es,\
-                get_daily_recomment_tweets_from_es, get_network_buzzwords
+                get_daily_recomment_tweets_from_es, get_network_buzzwords,get_root_weibo
 from utils import save_oprate_like
 from xnr.utils import add_operate2redis
 
@@ -254,6 +254,16 @@ def ajax_daily_recomment_tweets():
 社交反馈模块
 
 '''
+
+# 查看原文
+@mod.route('/get_root_weibo/')
+def ajax_get_root_weibo():
+	root_mid = request.args.get('root_mid','')
+	timestamp = request.args.get('timestamp','')
+	
+	result = get_root_weibo(root_mid,timestamp)
+	
+	return json.dumps(result)
 
 ## 转发、评论、at回复
 @mod.route('/reply_total/')

@@ -9,7 +9,7 @@
     #container .suggestion #myTabs a {
         color: white;
     }
-    .influence .fixed-table-toolbar .search,.searchResult .fixed-table-toolbar .search {
+    .influence .fixed-table-toolbar .search,.influence2 .fixed-table-toolbar .search,.searchResult .fixed-table-toolbar .search {
         width: 100%!important;
     }
     .searchResult {display: none;}
@@ -107,11 +107,11 @@
         <span style="display:inline-block;font-size: 18px;font-weight: 900;color: #fff">相关推荐</span>
         <div class="suggestion" style="margin: 20px 0 30px;">
             <ul id="myTabs" class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active" tp="influence">
-                    <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-share-alt"></b>&nbsp;常规推荐</a>
+                <li role="presentation" class="active" tp="influence" num='1'>
+                    <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-share-alt"></b>&nbsp;业务推荐</a>
                 </li>
-                <li role="presentation" tp="sensitive">
-                    <a href="#influe2" role="tab" data-toggle="tab"><b class="icon icon-external-link"></b>&nbsp;业务推荐</a>
+                <li role="presentation" tp="sensitive" num='2'>
+                    <a href="#influe2" role="tab" data-toggle="tab"><b class="icon icon-external-link"></b>&nbsp;常规推荐</a>
                 </li>
                <!-- <li role="presentation" tp="friend">
                     <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-user"></b>&nbsp;按朋友圈</a>
@@ -119,7 +119,7 @@
             </ul>
             <div class="tab-content" id="content">
                 <div role="tabpanel" class="tab-pane active" id="influe">
-					<div style="margin:20px 0;">
+					<div id="inputList" style="margin:20px 0;">
 						 <label class="demo-label" style="">
                         	 <input class="demo-radio" type="radio" name="xnr123" value='' tp="influence" checked>
                        		 <span class="demo-checkbox demo-radioInput"></span>&nbsp;按粉丝数

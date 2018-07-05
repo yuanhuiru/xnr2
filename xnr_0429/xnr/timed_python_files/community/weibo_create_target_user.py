@@ -373,8 +373,9 @@ def create_xnr_targetuser(xnr_user_no):
     expand_userid_list = get_expand_userid_list(xnr_keywords,xnr_relationer,datetime_list)
     print 'user_num::',len(expand_userid_list)
     user_num = len(expand_userid_list)
-    if user_num==0:
-        expand_userid_list = create_xnr_targetuser('WXNR0010')
+    if user_num <100:
+        temp_uidlist = create_xnr_targetuser('WXNR0010')
+        expand_userid_list.extend(temp_uidlist)
     return expand_userid_list 
 
 

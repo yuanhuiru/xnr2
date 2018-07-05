@@ -3492,3 +3492,206 @@ xnr_user_detail...count.... {'date_time': '2018-07-01', 'daily_post_num': 0, 'us
 start influence.......
 start penetration......
 total time:  117
+len.. 7
+date.. 2018-07-02
+xnr... WXNR0010
+start assessment....
+influence_mark.. 0.0
+len.. 7
+date.. 2018-07-03
+xnr... WXNR0010
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.17704476607202962}}
+pene_mark... 0.0
+domain_list_followers_today_count:: Counter({u'\u5a92\u4f53': 1})
+domain_distribute_dict:: {'radar': {u'\u5a92\u4f53': 1.0}}
+safe_mark.. 0.0833
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-03', 'daily_post_num': 0, 'user_fansnum': 42, 'business_post_num': 0, 'xnr_user_no': u'WXNR0010', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  24
+date.. 2018-07-03
+xnr... WXNR0065
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.17704476607202962}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-03', 'daily_post_num': 0, 'user_fansnum': 1, 'business_post_num': 0, 'xnr_user_no': u'WXNR0065', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  44
+date.. 2018-07-03
+xnr... WXNR0063
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.17704476607202962}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-03', 'daily_post_num': 0, 'user_fansnum': 37, 'business_post_num': 0, 'xnr_user_no': u'WXNR0063', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  65
+date.. 2018-07-03
+xnr... WXNR0068
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.1773133322096747}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0191
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-03', 'daily_post_num': 0, 'user_fansnum': 5, 'business_post_num': 0, 'xnr_user_no': u'WXNR0068', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  86
+date.. 2018-07-03
+xnr... WXNR0009
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.1773133322096747}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0191
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-03', 'daily_post_num': 0, 'user_fansnum': 5, 'business_post_num': 0, 'xnr_user_no': u'WXNR0009', 'total_post_sum': 19, 'trace_follow_tweet_num': 19, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  103
+date.. 2018-07-03
+xnr... WXNR0028
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.17704476607202962}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-03', 'daily_post_num': 0, 'user_fansnum': 0, 'business_post_num': 0, 'xnr_user_no': u'WXNR0028', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  118
+date.. 2018-07-03
+xnr... WXNR0042
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.1773133322096747}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-03', 'daily_post_num': 0, 'user_fansnum': 0, 'business_post_num': 0, 'xnr_user_no': u'WXNR0042', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  137
+len.. 7
+date.. 2018-07-04
+xnr... WXNR0010
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.20047895997263085}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-04', 'daily_post_num': 0, 'user_fansnum': 42, 'business_post_num': 0, 'xnr_user_no': u'WXNR0010', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  18
+date.. 2018-07-04
+xnr... WXNR0065
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.20047895997263085}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-04', 'daily_post_num': 0, 'user_fansnum': 1, 'business_post_num': 0, 'xnr_user_no': u'WXNR0065', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  37
+date.. 2018-07-04
+xnr... WXNR0063
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.20047895997263085}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-04', 'daily_post_num': 0, 'user_fansnum': 37, 'business_post_num': 0, 'xnr_user_no': u'WXNR0063', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  61
+date.. 2018-07-04
+xnr... WXNR0068
+start assessment....
+influence_mark.. 0.004
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.20047895997263085}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0325
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-04', 'daily_post_num': 0, 'user_fansnum': 5, 'business_post_num': 0, 'xnr_user_no': u'WXNR0068', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  80
+date.. 2018-07-04
+xnr... WXNR0009
+start assessment....
+influence_mark.. 0.004
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.20047895997263085}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0325
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-04', 'daily_post_num': 0, 'user_fansnum': 5, 'business_post_num': 0, 'xnr_user_no': u'WXNR0009', 'total_post_sum': 1268, 'trace_follow_tweet_num': 1268, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  100
+date.. 2018-07-04
+xnr... WXNR0028
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.20047895997263085}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-04', 'daily_post_num': 0, 'user_fansnum': 0, 'business_post_num': 0, 'xnr_user_no': u'WXNR0028', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  115
+date.. 2018-07-04
+xnr... WXNR0042
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.2006331279945243}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-04', 'daily_post_num': 0, 'user_fansnum': 0, 'business_post_num': 0, 'xnr_user_no': u'WXNR0042', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  140

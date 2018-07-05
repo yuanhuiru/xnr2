@@ -189,15 +189,15 @@ function flow_faw(data) {
                         '<div class="post_perfect" style="margin: 10px 0;width: 950px;">'+
                         '   <div class="post_center-hot">'+
                         '       <img src="'+img+'" class="center_icon">'+
-                        '       <div class="center_rel">'+
+                        '       <div class="center_rel" style="text-align:left;">'+
                         '           <a class="center_1" href="###" style="color: #f98077;">'+name+'</a>'+
                         '           <a class="center_1" href="###" style="color: blanchedalmond;"><i class="icon icon-time"></i>&nbsp;微博发布时间：'+postTime+'</a>&nbsp;&nbsp;'+
-                        '           <a class="center_1" href="###" style="color: blanchedalmond;"><i class="icon icon-time"></i>&nbsp;微博转发时间：'+retweedTime+'</a>&nbsp;&nbsp;'+
+                        '           <a class="center_1" href="###" style="color: blanchedalmond;"><i class="icon icon-time"></i>&nbsp;微博预计转发时间：'+retweedTime+'</a>&nbsp;&nbsp;'+
                         '           <a class="center_1" href="###" style="color: blanchedalmond;"><i class="icon icon-time"></i>&nbsp;转发状态：'+$_status+'</a>&nbsp;&nbsp;'+
                         '           <button data-all="0" style="display: '+all+'" type="button" class="btn btn-primary btn-xs allWord" onclick="allWord(this)">查看全文</button>'+
-                        '   <p class="allall1" style="display:none;">'+txt+'</p>'+
-                                '   <p class="allall2" style="display:none;">'+txt2+'</p>'+
-                                '   <span class="center_2" style="text-align: left;">'+txt2+'</span>'+
+                        '           <span class="allall1" style="display:none;">'+txt+'</span>'+
+                                '   <span class="allall2" style="display:none;">'+txt2+'</span>'+
+                                '   <span class="center_2">'+txt2+'</span>'+
 					    '       </div>'+
                         '   </div>'+
                         '</div>';

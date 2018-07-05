@@ -615,6 +615,17 @@ def get_bussiness_recomment_tweets(xnr_user_no,sort_item):
 社交反馈
 '''
 
+def get_root_weibo(root_mid,timestamp):
+
+	current_date = ts2datetime(int(timestamp))
+	
+	index_name = flow_text_index_name_pre + current_date
+	try:
+	    result = es_flow_text.get(index=index_name,doc_type=flow_text_index_type,id=root_mid)['_source']
+	    return [result]
+	except:
+	    return []
+
 def get_reply_total(task_detail):
 
     text = task_detail['text']

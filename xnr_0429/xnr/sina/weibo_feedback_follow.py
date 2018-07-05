@@ -31,25 +31,31 @@ class FeedbackFollow:
         list_data = []
         while True:
             print "comment_url**comment_url**comment_url**comment_url**", comment_url
-            try:
-                request = urllib2.Request(comment_url, headers=self._headers)
-                response = urllib2.urlopen(request, timeout=60)
-                html = response.read().decode('string_escape').replace('\\/', '/')
-            except Exception, e:
-                print "Network Exception!!! ", e
-            finally:
-                datas = getMatchList(html, '<li class="member_li S_bg1".*?</li>')
+            while True:
+                try:
+                    request = urllib2.Request(comment_url, headers=self._headers)
+                    print 1111111111111111
+                    response = urllib2.urlopen(request, timeout=60)
+                    print 2222222222222222
+                    html = response.read().decode('string_escape').replace('\\/', '/')
+                    print 3333333333333333
+                    break
+                except Exception, e:
+                    print "Network Exception!!! ", e
+                    continue
+            #finally:
+            datas = getMatchList(html, '<li class="member_li S_bg1".*?</li>')
                 # print len(datas)
                 # r_datas = datas.reverse()
-                list_data.append(datas)
+            list_data.append(datas)
 
                 # 分页
-                next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
-                print "next_pageUrl**next_pageUrl**next_pageUrl**next_pageUrl**",next_pageUrl
-                if next_pageUrl:
-                    comment_url = next_pageUrl[0]
-                else:
-                    break
+            next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
+            print "next_pageUrl**next_pageUrl**next_pageUrl**next_pageUrl**",next_pageUrl
+            if next_pageUrl:
+                comment_url = next_pageUrl[0]
+            else:
+                break
 
             r_list_data = reversed(list_data)
             for l_datas in r_list_data:
@@ -106,7 +112,10 @@ class FeedbackFollow:
                         'weibo_type': _type,
                         'update_time': self.update_time
                     }
-
+                    if wb_item['mid'] == None:
+                        wb_item['mid'] = ''
+                    print "follow, mid", wb_item['mid']
+                    print "follow, root_uid", wb_item['root_uid']
                     wb_json = json.dumps(wb_item)
                     # print wb_json
                     json_list.append(wb_json)
@@ -122,25 +131,28 @@ class FeedbackFollow:
         list_data = []
         while True:
             print comment_url
-            try:
-                request = urllib2.Request(comment_url, headers=self._headers)
-                response = urllib2.urlopen(request, timeout=60)
-                html = response.read().decode('string_escape').replace('\\/', '/')
-            except Exception, e:
-                print "Network Exception!!! ", e
-            finally:
-                datas = getMatchList(html, '<dl class="clearfix">.*?</dl>')
+            while True:
+                try:
+                    request = urllib2.Request(comment_url, headers=self._headers)
+                    response = urllib2.urlopen(request, timeout=60)
+                    html = response.read().decode('string_escape').replace('\\/', '/')
+                    break
+                except Exception, e:
+                    print "Network Exception!!! ", e
+                    continue
+            #finally:
+            datas = getMatchList(html, '<dl class="clearfix">.*?</dl>')
                 # print len(datas)
                 # r_datas = datas.reverse()
-                list_data.append(datas)
+            list_data.append(datas)
 
                 # 分页
-                next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
+            next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
                 # print next_pageUrl
-                if next_pageUrl:
-                    comment_url = next_pageUrl[0]
-                else:
-                    break
+            if next_pageUrl:
+                comment_url = next_pageUrl[0]
+            else:
+                break
 
         r_list_data = reversed(list_data)
         for l_datas in r_list_data:
@@ -200,7 +212,10 @@ class FeedbackFollow:
                     'weibo_type': _type,
                     'update_time': self.update_time
                 }
-
+                print 'fans, root_uid', wb_item['root_uid']
+                print 'fans, mid', wb_item['mid']
+                if wb_item['mid'] == None:
+                    wb_item['mid'] = ''
                 wb_json = json.dumps(wb_item)
                 
                 json_list.append(wb_json)
@@ -216,25 +231,29 @@ class FeedbackFollow:
         list_data = []
         while True:
             print comment_url
-            try:
-                request = urllib2.Request(comment_url, headers=self._headers)
-                response = urllib2.urlopen(request, timeout=60)
-                html = response.read().decode('string_escape').replace('\\/', '/')
-            except Exception, e:
-                print "Network Exception!!! ", e
-            finally:
-                datas = getMatchList(html, '<div class="mod_info">.*?</p>')
+            while True:
+                try:
+                    request = urllib2.Request(comment_url, headers=self._headers)
+                    response = urllib2.urlopen(request, timeout=60)
+                    html = response.read().decode('string_escape').replace('\\/', '/')
+                    break
+                except Exception, e:
+                #html = ''
+                    print "Network Exception!!! ", e
+                    continue
+            #finally:
+            datas = getMatchList(html, '<div class="mod_info">.*?</p>')
                 # print len(datas)
                 # r_datas = datas.reverse()
-                list_data.append(datas)
+            list_data.append(datas)
 
                 # 分页
-                next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
+            next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
                 # print next_pageUrl
-                if next_pageUrl:
-                    comment_url = next_pageUrl[0]
-                else:
-                    break
+            if next_pageUrl:
+                comment_url = next_pageUrl[0]
+            else:
+                break
 
         r_list_data = reversed(list_data)
         for l_datas in r_list_data:
@@ -253,7 +272,7 @@ class FeedbackFollow:
                     'timestamp': timestamp,
                     'update_time': self.update_time
                 }
-
+                print 'groups, mid', wb_item['mid']
                 wb_json = json.dumps(wb_item)
                 #wb_json = wb_item
                 # print wb_json

@@ -826,7 +826,7 @@ def save_event_warning(xnr_user_no,start_time,end_time):
 
                 #用户合并
                 old_event_main_info = json.loads(old_event['main_user_info'])
-                old_event_uid_list = [user['uid'] for user in old_main_user_info]
+                old_event_uid_list = [user['uid'] for user in old_event_main_info]
 
                 new_event_main_info = json.loads(item['main_user_info'])
                 new_event_uid_list = [user['uid'] for user in new_event_main_info]
@@ -834,12 +834,15 @@ def save_event_warning(xnr_user_no,start_time,end_time):
                 add_uid_list = list(set(new_event_uid_list) - set(old_event_uid_list)&set(new_event_uid_list))
 
                 new_main_user_info = []
+                item_main_user_info = json.loads(item['main_user_info'])
                 for uid in add_uid_list:
-                    uid_info = [u for u in item['main_user_info'] if u['uid'] == uid]
+                    
+                    uid_info = [u for u in item_main_user_info if u['uid'] == uid]
                     if uid_info:
                         new_main_user_info.append(uid_info[0])
                     else:
                         pass
+                old_event['main_user_info'] = json.loads(old_event['main_user_info'])
                 old_event['main_user_info'].extend(new_main_user_info)
 
 
@@ -858,6 +861,7 @@ def save_event_warning(xnr_user_no,start_time,end_time):
                         new_main_weibo_info.append(mid_info[0])
                     else:
                         pass
+                old_event['main_weibo_info'] = json.loads(old_event['main_weibo_info'])
                 old_event['main_weibo_info'].extend(new_main_weibo_info)
 
                 old_event['event_influence']=old_event['event_influence']+item['event_influence']
@@ -955,11 +959,12 @@ def create_date_warning(start_time,end_time):
             if date_warming:
                 if not es_xnr.indices.exists(index=weibo_timing_warning_index_name):
                     weibo_timing_warning_mappings(weibo_timing_warning_index_name)
-                try:
-                    es_xnr.index(index=weibo_timing_warning_index_name,doc_type=weibo_timing_warning_index_type,body=item['_source'],id=task_id)
-                    mark=True
-                except:
-                    mark=False
+                #try:
+                es_xnr.index(index=weibo_timing_warning_index_name,doc_type=weibo_timing_warning_index_type,body=item['_source'],id=task_id)
+                mark=True
+                #except:
+                 #   mark=False
+                  #  print 'write error!'
             else:
                 pass
             date_result.append(mark)

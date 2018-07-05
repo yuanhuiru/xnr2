@@ -32,7 +32,7 @@ NOFOLLOWER_INFLUENCE_MIN_JUDGE=1 #预警中非关注者影响力值降低倍数
 USER_XNR_NUM=50 #用户管理虚拟人数量
 # weibo
 SPEECH_WARMING_NUM=50 #言论预警数量
-HOT_WEIBO_NUM=15 #热门帖子、热门用户数量
+HOT_WEIBO_NUM=50 #热门帖子、热门用户数量
 INFLUENCE_MIN=1 #影响力阈值
 
 #预警和敏帖子扫描时间

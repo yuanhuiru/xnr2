@@ -341,7 +341,7 @@ if __name__ == '__main__':
         xnr_user_no_list = ['WXNR0004']
     else:
         #today_time = time.time()-1*DAY
-        today_time = datetime2ts('2018-06-17')
+        today_time = datetime2ts('2018-07-01')
         print ts2datetime(today_time)
         xnr_user_no_list = get_compelete_wbxnr()
 

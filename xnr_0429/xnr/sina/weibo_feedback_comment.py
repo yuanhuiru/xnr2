@@ -5,7 +5,7 @@ import urllib2
 
 import time
 
-from sina.weibo_feedback_follow import FeedbackFollow
+from weibo_feedback_follow import FeedbackFollow
 from tools.ElasticsearchJson import executeES
 from tools.HtmlExtractor import extractForHTML
 from tools.Launcher import SinaLauncher
@@ -39,87 +39,92 @@ class FeedbackComment:
         comment_url = cr_url
         while True:
             print comment_url
-            try:
-                request = urllib2.Request(comment_url, headers=self._headers)
-                response = urllib2.urlopen(request, timeout=60)
-                html = response.read().decode('string_escape').replace('\\/', '/')
-            except Exception, e:
-                print "Network Exception!!! ", e
-            finally:
-                datas = getMatchList(html, '<div class="WB_feed_detail clearfix">(*)<!--/主评论-->')
+            while True:
+                try:
+                    request = urllib2.Request(comment_url, headers=self._headers)
+                    response = urllib2.urlopen(request, timeout=60)
+                    html = response.read().decode('string_escape').replace('\\/', '/')
+                    print html
+                    break
+                except Exception, e:
+                    print "Network Exception!!! ", e
+                    time.sleep(5)
+                    continue
+            #finally:
+            datas = getMatchList(html, '<div class="WB_feed_detail clearfix">(*)<!--/主评论-->')
                 # print len(datas)
 
-                for data in datas:
-                    photo_url = "http:" + getMatch(data, '<img.*?src="(*)"')
-                    uid = getMatch(data, 'usercard="id=(*)"')
-                    nickname = getMatch(data, 'page_frame" title="(*)"')
-                    mid = getMatch(data, '&cid=(*)&')
-                    timestamp = getMatch(data, '<div class="WB_from S_txt2">(*)  来自')
-                    if timestamp:
-                        timestamp = long(getTimeStamp(timestamp))
-                    else:
-                        timestamp = 0
+            for data in datas:
+                photo_url = "http:" + getMatch(data, '<img.*?src="(*)"')
+                uid = getMatch(data, 'usercard="id=(*)"')
+                nickname = getMatch(data, 'page_frame" title="(*)"')
+                mid = getMatch(data, '&cid=(*)&')
+                timestamp = getMatch(data, '<div class="WB_from S_txt2">(*)  来自')
+                if timestamp:
+                    timestamp = long(getTimeStamp(timestamp))
+                else:
+                    timestamp = 0
                     
-                    if timestamp <= self.mlasttime:
-                        tags = True
-                        break
-
-                    text = getMatch(data, '<div class="WB_text">(*)</div>')
-                    if text:
-                        text = extractForHTML(text)
-                    else:
-                        text = ''
-                    r_mid = getMatch(data, 'mid=(*)&')
-                    r_uid = self.uid
-                    #commet_type = 'make'
-                    commet_type = 'receive'
-
-                    _type = 'stranger'
-                    type1 = ''
-                    type2 = ''
-                    for fljson in self.follow:
-                        fjson = json.loads(fljson)
-                        if fjson['uid'] == uid:
-                            type1 = 'follow'
-                            break
-                    for fljson in self.fans:
-                        fjson = json.loads(fljson)
-                        if fjson['uid'] == uid:
-                            type2 = 'followed'
-                            break
-                    if type1 and type2:
-                        _type = 'friend'
-                    elif type1:
-                        _type = type1
-                    elif type2:
-                        _type = type2
-                    if uid == r_uid:
-                        _type = 'self'
-
-                    wb_item = {
-                        'photo_url': photo_url,
-                        'uid': uid,
-                        'nick_name': nickname,
-                        'mid': mid,
-                        'timestamp': timestamp,
-                        'text': text,
-                        'root_mid': r_mid,
-                        'root_uid': r_uid,
-                        'weibo_type': _type,
-                        'comment_type': commet_type,
-                        'update_time': self.update_time
-                    }
-
-                    wb_json = json.dumps(wb_item)
-                    json_list.append(wb_json)
-
-                # 分页
-                next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
-                # print next_pageUrl
-                if next_pageUrl:
-                    comment_url = next_pageUrl[0]
-                elif not next_pageUrl or tags:
+                if timestamp <= self.mlasttime:
+                    tags = True
                     break
+
+                text = getMatch(data, '<div class="WB_text">(*)</div>')
+                if text:
+                    text = extractForHTML(text)
+                else:
+                    text = ''
+                r_mid = getMatch(data, 'mid=(*)&')
+                r_uid = self.uid
+                    #commet_type = 'make'
+                commet_type = 'receive'
+
+                _type = 'stranger'
+                type1 = ''
+                type2 = ''
+                for fljson in self.follow:
+                    fjson = json.loads(fljson)
+                    if fjson['uid'] == uid:
+                        type1 = 'follow'
+                        break
+                for fljson in self.fans:
+                    fjson = json.loads(fljson)
+                    if fjson['uid'] == uid:
+                        type2 = 'followed'
+                        break
+                if type1 and type2:
+                    _type = 'friend'
+                elif type1:
+                    _type = type1
+                elif type2:
+                    _type = type2
+                if uid == r_uid:
+                    _type = 'self'
+
+                wb_item = {
+                    'photo_url': photo_url,
+                    'uid': uid,
+                    'nick_name': nickname,
+                    'mid': mid,
+                    'timestamp': timestamp,
+                    'text': text,
+                    'root_mid': r_mid,
+                    'root_uid': r_uid,
+                    'weibo_type': _type,
+                    'comment_type': commet_type,
+                    'update_time': self.update_time
+                }
+
+                wb_json = json.dumps(wb_item)
+                json_list.append(wb_json)
+
+            # 分页
+            next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
+            # print next_pageUrl
+            if next_pageUrl:
+                comment_url = next_pageUrl[0]
+            elif not next_pageUrl or tags:
+                break
         return json_list
 
     def commentOutbox(self):
@@ -130,64 +135,67 @@ class FeedbackComment:
         comment_url = cr_url
         while True:
             print comment_url
-            try:
-                request = urllib2.Request(comment_url, headers=self._headers)
-                response = urllib2.urlopen(request, timeout=30)
-                html = response.read().decode('string_escape').replace('\\/', '/')
-            except Exception, e:
-                print "Network Exception!!! ", e
-            finally:
-                datas = getMatchList(html, '<div class="WB_cardwrap.*?<!--/主内容-->')
+            while True:
+                try:
+                    request = urllib2.Request(comment_url, headers=self._headers)
+                    response = urllib2.urlopen(request, timeout=30)
+                    html = response.read().decode('string_escape').replace('\\/', '/')
+                    break
+                except Exception, e:
+                    print "Network Exception!!! ", e
+                    continue
+            #finally:
+            datas = getMatchList(html, '<div class="WB_cardwrap.*?<!--/主内容-->')
                 # print len(datas)
 
-                for data in datas:
-                    photo_url = "http:" + getMatch(data, '<img.*?src="(*)"')
-                    uid = getMatch(data, 'usercard="id=(*)"')
-                    nickname = getMatch(data, 'page_frame" nick-name="(*)"')
-                    mid = getMatch(data, 'cid=(*)"')
-                    timestamp = getMatch(data, '<div class="WB_from S_txt2">(*)  来自')
-                    if timestamp:
-                        timestamp = long(getTimeStamp(timestamp))
-                    else:
-                        timestamp = 0
-                    print '111111'
-                    if timestamp <= self.rlasttime:
-                        tags = True
+            for data in datas:
+                photo_url = "http:" + getMatch(data, '<img.*?src="(*)"')
+                uid = getMatch(data, 'usercard="id=(*)"')
+                nickname = getMatch(data, 'page_frame" nick-name="(*)"')
+                mid = getMatch(data, 'cid=(*)"')
+                timestamp = getMatch(data, '<div class="WB_from S_txt2">(*)  来自')
+                if timestamp:
+                    timestamp = long(getTimeStamp(timestamp))
+                else:
+                    timestamp = 0
+                print '111111'
+                if timestamp <= self.rlasttime:
+                    tags = True
+                    break
+
+                text = getMatch(data, '<div class="WB_text">(*)</div>')
+                if text:
+                    text = extractForHTML(text)
+                else:
+                    text = ''
+                r_mid = ''
+                r_uid = self.uid
+                #commet_type = 'receive'
+                commet_type = 'make'
+
+                _type = 'stranger'
+                type1 = ''
+                type2 = ''
+                for fljson in self.follow:
+                    fjson = json.loads(fljson)
+                    if fjson['uid'] == uid:
+                        type1 = 'follow'
                         break
+                for fljson in self.fans:
+                    fjson = json.loads(fljson)
+                    if fjson['uid'] == uid:
+                        type2 = 'followed'
+                        break
+                if type1 and type2:
+                    _type = 'friend'
+                elif type1:
+                    _type = type1
+                elif type2:
+                    _type = type2
+                if uid == r_uid:
+                    _type = 'self'
 
-                    text = getMatch(data, '<div class="WB_text">(*)</div>')
-                    if text:
-                        text = extractForHTML(text)
-                    else:
-                        text = ''
-                    r_mid = ''
-                    r_uid = self.uid
-                    #commet_type = 'receive'
-                    commet_type = 'make'
-
-                    _type = 'stranger'
-                    type1 = ''
-                    type2 = ''
-                    for fljson in self.follow:
-                        fjson = json.loads(fljson)
-                        if fjson['uid'] == uid:
-                            type1 = 'follow'
-                            break
-                    for fljson in self.fans:
-                        fjson = json.loads(fljson)
-                        if fjson['uid'] == uid:
-                            type2 = 'followed'
-                            break
-                    if type1 and type2:
-                        _type = 'friend'
-                    elif type1:
-                        _type = type1
-                    elif type2:
-                        _type = type2
-                    if uid == r_uid:
-                        _type = 'self'
-
-                    wb_item = {
+                wb_item = {
                         'photo_url': photo_url,
                         'uid': uid,
                         'nick_name': nickname,
@@ -199,19 +207,19 @@ class FeedbackComment:
                         'weibo_type': _type,
                         'comment_type': commet_type,
                         'update_time': self.update_time
-                    }
+                }
 
-                    wb_json = json.dumps(wb_item)
-                    # print wb_json
-                    json_list.append(wb_json)
+                wb_json = json.dumps(wb_item)
+                # print wb_json
+                json_list.append(wb_json)
 
-                # 分页
-                next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
-                # print next_pageUrl
-                if next_pageUrl:
-                    comment_url = next_pageUrl[0]
-                elif not next_pageUrl or tags:
-                    break
+            # 分页
+            next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
+            # print next_pageUrl
+            if next_pageUrl:
+                comment_url = next_pageUrl[0]
+            elif not next_pageUrl or tags:
+                break
         return json_list
 
     def execute(self):
@@ -223,6 +231,6 @@ class FeedbackComment:
 
 
 if __name__ == '__main__':
-    xnr = SinaLauncher('', '')
+    xnr = SinaLauncher('weiboxnr04@126.com', 'xnr1234567')
     xnr.login()
     FeedbackComment(xnr.uid).execute()

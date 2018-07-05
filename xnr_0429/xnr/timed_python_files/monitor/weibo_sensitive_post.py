@@ -89,7 +89,7 @@ def set_intersection(str_A,list_B):
 
 
 #帖子去重处理
-def remove_repeat(post_result,warning_type,xnr_user_no):
+def remove_repeat(post_result,warning_type):
     origin_list = []
     filter_ids = []
     post_result_2 = post_result
@@ -105,19 +105,20 @@ def remove_repeat(post_result,warning_type,xnr_user_no):
                     filter_ids.append(re)
     #print 'filter', len(set(filter_ids))
     new_post_results = []
-    followers_list =  lookup_weiboxnr_concernedusers(xnr_user_no)
+    # followers_list =  lookup_weiboxnr_concernedusers(xnr_user_no)
     for item in post_result:
         set_flag = set_intersection(item['_source']['mid'],filter_ids)
         if set_flag == 0 :
             if warning_type == 'user':
-            	item['_source']['xnr_user_no'] = xnr_user_no
+            	item['_source']['xnr_user_no'] = ''
                 item['_source']['nick_name'] = get_user_nickname(item['_source']['uid'])
                 #好友判断
-                followers_mark = set_intersection(item['_source']['uid'],followers_list)
-                if followers_mark == 0:
-                	item['_source']['search_type'] = -1
-                else:
-                	item['_source']['search_type'] = 1
+                item['_source']['search_type'] = 0
+                # followers_mark = set_intersection(item['_source']['uid'],followers_list)
+                # if followers_mark == 0:
+                # 	item['_source']['search_type'] = -1
+                # else:
+                # 	item['_source']['search_type'] = 1
 
             new_post_results.append(item['_source'])
 
@@ -160,7 +161,7 @@ def get_user_nickname(uid):
 
 
 #查询敏感帖子
-def lookup_sensitive_posts(xnr_user_no,start_time,end_time):
+def lookup_sensitive_posts(start_time,end_time):
     start_date = ts2datetime(start_time)
     end_date = ts2datetime(end_time)
      
@@ -213,10 +214,11 @@ def lookup_sensitive_posts(xnr_user_no,start_time,end_time):
 
         warning_type = 'user'
         print 'repeat!!!'
-        hot_result = remove_repeat(es_result,warning_type,xnr_user_no)
+        hot_result = remove_repeat(es_result,warning_type)
         print 'save!!!'
         for item in hot_result:
             task_id = item['mid']
+            # item['order_type']='sensitive'
             post_index_name = weibo_sensitive_post_index_name_pre + ts2datetime(item['timestamp'])
             es_xnr.index(index=post_index_name,doc_type=weibo_sensitive_post_index_type,body=item,id=task_id)
         # hot_result=[]
@@ -231,27 +233,173 @@ def lookup_sensitive_posts(xnr_user_no,start_time,end_time):
     return mark_result
 
 
-def create_sensitive_post():
+
+#查询高影响力帖子
+def lookup_influence_posts(start_time,end_time):
+    start_date = ts2datetime(start_time)
+    end_date = ts2datetime(end_time)
+     
+    flow_text_index_name_list = []
+    if start_date == end_date:
+        print '11'
+        index_name = flow_text_index_name_pre + end_date
+        flow_text_index_name_list.append(index_name)
+        sensitive_index_name = weibo_sensitive_post_index_name_pre + end_date
+        if es_xnr.indices.exists(index=sensitive_index_name):
+            pass
+        else:
+            weibo_sensitive_post_mappings(sensitive_index_name)
+            print '111'
+    else:
+        start_index_name = flow_text_index_name_pre + start_date
+        end_index_name = flow_text_index_name_pre + end_date
+        flow_text_index_name_list.append(start_index_name)
+        flow_text_index_name_list.append(end_index_name)
+
+        sensitive_start_index = weibo_sensitive_post_index_name_pre + start_date
+        sensitive_end_index = weibo_sensitive_post_index_name_pre + end_date
+        if not es_xnr.indices.exists(index=sensitive_start_index):
+            weibo_sensitive_post_mappings(sensitive_start_index)
+        if not es_xnr.indices.exists(index=sensitive_end_index):
+            weibo_sensitive_post_mappings(sensitive_end_index)
+
+      
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'bool':{
+                        'must':[
+                             {'range':{'timestamp':{'gte':start_time,'lte':end_time}}}
+                        ]
+                    }
+                }
+            }
+        },
+        'sort':{'retweeted':{'order':'desc'}},
+        'size':50
+    }
+    print 'start search!!!'
+    print flow_text_index_name_list
+    try:
+        es_result=es_flow_text.search(index=flow_text_index_name_list,doc_type=flow_text_index_type,\
+            body=query_body)['hits']['hits']
+
+        warning_type = 'user'
+        print 'repeat!!!'
+        hot_result = remove_repeat(es_result,warning_type)
+        print 'save!!!'
+        for item in hot_result:
+            task_id = item['mid']
+            # item['order_type']='influence'
+            post_index_name = weibo_sensitive_post_index_name_pre + ts2datetime(item['timestamp'])
+            es_xnr.index(index=post_index_name,doc_type=weibo_sensitive_post_index_type,body=item,id=task_id)
+        # hot_result=[]
+        # for item in es_result:
+        #     item['_source']['nick_name']=get_user_nickname(item['_source']['uid'])
+        #     hot_result.append(item['_source'])
+        mark_result = True
+        print 'finish!'
+    except:
+        mark_result = False
+    
+    return mark_result
+
+
+#查询最新帖子
+def lookup_timestamp_posts(start_time,end_time):
+    start_date = ts2datetime(start_time)
+    end_date = ts2datetime(end_time)
+     
+    flow_text_index_name_list = []
+    if start_date == end_date:
+        print '11'
+        index_name = flow_text_index_name_pre + end_date
+        flow_text_index_name_list.append(index_name)
+        sensitive_index_name = weibo_sensitive_post_index_name_pre + end_date
+        if es_xnr.indices.exists(index=sensitive_index_name):
+            pass
+        else:
+            weibo_sensitive_post_mappings(sensitive_index_name)
+            print '111'
+    else:
+        start_index_name = flow_text_index_name_pre + start_date
+        end_index_name = flow_text_index_name_pre + end_date
+        flow_text_index_name_list.append(start_index_name)
+        flow_text_index_name_list.append(end_index_name)
+
+        sensitive_start_index = weibo_sensitive_post_index_name_pre + start_date
+        sensitive_end_index = weibo_sensitive_post_index_name_pre + end_date
+        if not es_xnr.indices.exists(index=sensitive_start_index):
+            weibo_sensitive_post_mappings(sensitive_start_index)
+        if not es_xnr.indices.exists(index=sensitive_end_index):
+            weibo_sensitive_post_mappings(sensitive_end_index)
+
+      
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'bool':{
+                        'must':[
+                             {'range':{'timestamp':{'gte':start_time,'lte':end_time}}}
+                        ]
+                    }
+                }
+            }
+        },
+        'sort':{'timestamp':{'order':'desc'}},
+        'size':50
+    }
+    print 'start search!!!'
+    print flow_text_index_name_list
+    try:
+        es_result=es_flow_text.search(index=flow_text_index_name_list,doc_type=flow_text_index_type,\
+            body=query_body)['hits']['hits']
+
+        warning_type = 'user'
+        print 'repeat!!!'
+        hot_result = remove_repeat(es_result,warning_type)
+        print 'save!!!'
+        for item in hot_result:
+            task_id = item['mid']
+            # item['order_type']='timestamp'
+            post_index_name = weibo_sensitive_post_index_name_pre + ts2datetime(item['timestamp'])
+            es_xnr.index(index=post_index_name,doc_type=weibo_sensitive_post_index_type,body=item,id=task_id)
+        # hot_result=[]
+        # for item in es_result:
+        #     item['_source']['nick_name']=get_user_nickname(item['_source']['uid'])
+        #     hot_result.append(item['_source'])
+        mark_result = True
+        print 'finish!'
+    except:
+        mark_result = False
+    
+    return mark_result
+
+
+
+def create_post_task():
 
     now_time = int(time.time())
     start_time = now_time - WEIBO_SENSITIVE_POST_TIME 
     end_time = now_time
 
-    account_list=get_user_account_list()
+    # account_list=get_user_account_list()
     #print account_list
-    for account in account_list:
-        xnr_list=get_user_xnr_list(account)
-        if xnr_list:
-            print xnr_list
-            for xnr_user_no in xnr_list:
-                task_dict = dict()
-                task_dict['xnr_user_no'] = xnr_user_no
-                task_dict['start_time'] = start_time
-                task_dict['end_time'] = end_time
-                #将计算任务加入队列
-                r_sensitive.lpush(weibo_sensitive_post_task_queue_name ,json.dumps(task_dict))
+    # for account in account_list:
+    #     xnr_list=get_user_xnr_list(account)
+    #     if xnr_list:
+    #         print xnr_list
+    #         for xnr_user_no in xnr_list:
+    task_dict = dict()
+    # task_dict['xnr_user_no'] = xnr_user_no
+    task_dict['start_time'] = start_time
+    task_dict['end_time'] = end_time
+    #将计算任务加入队列
+    r_sensitive.lpush(weibo_sensitive_post_task_queue_name ,json.dumps(task_dict))
 
 
 
 if __name__ == '__main__':
-    create_sensitive_post()
+    create_post_task()

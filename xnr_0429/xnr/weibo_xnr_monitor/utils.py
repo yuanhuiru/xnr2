@@ -188,6 +188,63 @@ def lookup_today_keywords(from_ts,to_ts,xnr_user_no):
 #lookup hot posts
 #input:from_ts,to_ts,weiboxnr_id,classify_id,search_content,order_id
 #output:weibo hot_posts content
+def lookup_hot_posts(start_time,end_time,weiboxnr_id,classify_id,order_id):
+
+#weiboxnr_id,classify_id暂时不用
+
+    print 'post request start!!!!!'
+    weibo_sensitive_post_index_name_list = []
+    days_num = int((end_time - start_time)/DAY) + 1
+    for i in range(0,days_num):
+        date_ts = end_time - i*DAY
+        index_name = weibo_sensitive_post_index_name_pre + ts2datetime(date_ts)
+        if es_xnr.indices.exists(index=index_name):
+            weibo_sensitive_post_index_name_list.append(index_name)
+
+
+
+    sort_condition_list = []
+    if order_id==1:         #按时间排序
+        sort_condition_list=[{'timestamp':{'order':'desc'}}] 
+    
+    elif order_id==2:       #按热度排序
+        sort_condition_list=[{'retweeted':{'order':'desc'}}]
+
+    elif order_id==3:       #按敏感度排序
+        sort_condition_list=[{'sensitive':{'order':'desc'}}]
+
+    
+    query_body={
+        'query':{
+            'filtered':{
+                'filter':{
+                    'bool':{
+                        'must':[{'range':{'timestamp':{'gte':int(start_time),'lt':int(end_time)}}}]
+                    }
+                }
+            }
+
+        },
+        'size':HOT_WEIBO_NUM,     
+        'sort':sort_condition_list
+        }
+    try:
+        es_result=es_xnr.search(index=weibo_sensitive_post_index_name_list,doc_type=weibo_sensitive_post_index_type,\
+            body=query_body)['hits']['hits']
+        hot_result=[]
+        for item in es_result:
+            hot_result.append(item['_source'])
+    except:
+        hot_result=[]
+
+    return hot_result
+
+
+
+
+
+
+'''
 def lookup_hot_posts(from_ts,to_ts,weiboxnr_id,classify_id,order_id):
     print 'post request start!!!!!'
     #step 1 :adjust the time condition for time
@@ -272,7 +329,7 @@ def lookup_hot_posts(from_ts,to_ts,weiboxnr_id,classify_id,order_id):
     #print 'hot_result:', hot_result
     # post_result = remove_repeat(hot_result)
     return hot_result
-
+'''
 
 def search_sensitive_post(xnr_user_no,classify_id,start_time,end_time):
     weibo_sensitive_post_index_name_list = []

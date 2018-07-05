@@ -908,7 +908,7 @@ def compute_intelligent_recommend(task_detail):
     create_time = task_detail['create_time']
     #print 'event_keywords...',event_keywords
     # 根据对应主题把事件相关帖子都找出来，并一个事件存为一个index,不同渠道用task_source做为index_type
-    #print 'find flow text...'
+    print 'find flow text...'
     get_topic_tweets(task_id, task_source, event_keywords, create_time)
 
     # 主题河

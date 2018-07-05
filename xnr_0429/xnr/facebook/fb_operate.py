@@ -345,17 +345,16 @@ class Operation():
 
 # 分享
 	def share(self, uid, fid, text):
-		driver = self.launcher.login()
+		driver = self.launcher.login_mobile()
 		#driver,display = self.launcher.login()
 		#try:
 		print 'uid, fid, text...',uid, fid, text
-		post_url = 'https://www.facebook.com/' + uid + '/posts/' + fid
-		video_url = 'https://www.facebook.com/' + uid + '/videos/' + fid
+		post_url = 'https://m.facebook.com/' + uid + '/posts/' + fid
+		video_url = 'https://m.facebook.com/' + uid + '/videos/' + fid
 		driver.get(post_url)
 		time.sleep(30)
-		driver.save_screenshot("test.png")
 		html = driver.page_source
-		with open('test.html', 'wb') as f:
+		with open("test0.html", "wb") as f:
 			f.write(html)
 			#try:
 				# 退出通知弹窗进入页面
@@ -374,22 +373,25 @@ class Operation():
 				#except:
 					#pass
 
-		driver.find_element_by_xpath('//a[@title="发送给好友或发布到你的时间线上。"]').click()
+		driver.find_element_by_xpath('//td[@class="t ci ct ck"]/a[@class="cl cm cn co"]').click()
 				#driver.find_element_by_xpath('//a[@title="发送给好友或发布到你的时间线上。"]').click()
-		time.sleep(3)
-		driver.find_element_by_xpath('//ul[@class="_54nf"]/li[2]').click()
+		html = driver.page_source
+		with open("test.html", "wb") as f:
+			f.write(html)
+		#time.sleep(3)
+		#driver.find_element_by_xpath('//ul[@class="_54nf"]/li[2]').click()
 		time.sleep(3)
 				#try:
-		driver.find_element_by_xpath('//div[@class="notranslate _5rpu"]').click()
+		driver.find_element_by_xpath('//textarea[@name="xc_message"]').click()
 		time.sleep(1)
-		driver.find_element_by_xpath('//div[@class="notranslate _5rpu"]').send_keys(text)
-		time.sleep(1)
+		driver.find_element_by_xpath('//textarea[@name="xc_message"]').send_keys(text)
+		time.sleep(5)
 				#except:
 					#driver.find_element_by_xpath('//div[@class="_1mwp navigationFocus _395  _21mu _5yk1"]/div').click()
 					#time.sleep(1)
 					#driver.find_element_by_xpath('//div[@class="_1mwp navigationFocus _395  _21mu _5yk1"]/div').send_keys(text)
 					#time.sleep(1)
-		driver.find_element_by_xpath('//button[@data-testid="react_share_dialog_post_button"]').click()
+		driver.find_element_by_xpath('//input[@value="分享"]').click()
 			#except:
 				# 退出通知弹窗进入页面
 				#time.sleep(1)
@@ -424,51 +426,62 @@ class Operation():
 
 #添加好友
 	def add_friend(self, uid):
-		try:
-			driver = self.launcher.target_page(uid)
+		#try:
+		driver = self.launcher.target_page(uid)
+		html = driver.page_source
+		with open("add_friend.html", "wb") as f:
+			f.write(html)
 			#driver,display = self.launcher.target_page(uid)
-			driver.find_element_by_xpath('//button[@class="_42ft _4jy0 FriendRequestAdd addButton _4jy4 _517h _9c6"]').click()
-			time.sleep(5)
-			driver.quit()
-			return [True, '']
-		except Exception as e:
-			return [False, e]
+		driver.find_element_by_xpath('//table[@class="by"]/tbody/tr/td[1]/a').click()
+		time.sleep(5)
+		driver.quit()
+		return [True, '']
+		#except Exception as e:
+		#	return [False, e]
 		#finally:
 			#driver.quit()
 			#display.popen.kill()
 
 #确认好友请求
 	def confirm(self, uid):
-		try:
-			driver = self.launcher.target_page(uid)
+		#try:
+		driver = self.launcher.target_page(uid)
+		#driver = self.launcher.login_mobile()
 			#driver,display = self.launcher.target_page(uid)
-			time.sleep(5)
-			driver.find_element_by_xpath('//div[@class="incomingButton"]/button').click()
-			time.sleep(1)
-			driver.find_element_by_xpath('//li[@data-label="确认"]/a').click()
-			time.sleep(5)
-			driver.quit()
-			return [True, '']
-		except Exception as e:
-			return [False, e]
+		time.sleep(5)
+		html = driver.page_source
+		with open("confirm.html", "wb") as f:
+			f.write(html)
+		driver.find_element_by_xpath('//table[@class="by"]/tbody/tr/td[1]/a').click()
+		time.sleep(1)
+		html = driver.page_source
+		with open("confirm1.html", "wb") as f:
+			f.write(html)
+		#driver.find_element_by_xpath('//li[@data-label="确认"]/a').click()
+		time.sleep(5)
+		driver.quit()
+		return [True, '']
+		#except Exception as e:
+		#	return [False, e]
 		#finally:
 			#driver.quit()
 			#display.popen.kill()
 
 #删除好友
 	def delete_friend(self, uid):
-		try:
-			driver = self.launcher.target_page(uid)
+		#try:
+		driver = self.launcher.target_page(uid)
 			#driver,display = self.launcher.target_page(uid)
-			time.sleep(1)
-			driver.find_element_by_xpath('//div[@id="pagelet_timeline_profile_actions"]/div/a').click()
-			time.sleep(2)
-			driver.find_element_by_xpath('//li[@data-label="删除好友"]/a').click()
-			time.sleep(5)
-			driver.quit()
-			return [True, '']
-		except Exception as e:
-			return [False, e]
+		time.sleep(1)
+		driver.find_element_by_xpath('//table[@class="bw"]/tbody/tr/td[2]/a').click()
+		time.sleep(2)
+		driver.find_element_by_xpath('//ul[@class="bt bu"]/li[1]/a').click()
+		time.sleep(5)
+		driver.find_element_by_xpath('//input[@name="confirm"]').click()
+		driver.quit()
+		return [True, '']
+		#except Exception as e:
+		#	return [False, e]
 		#finally:
 			#driver.quit()
 			#display.popen.kill()
@@ -487,13 +500,19 @@ if __name__ == '__main__':
 	#operation.mention('张静明','2018年6月16日')
 	#print "发布成功！"
 	#operation.not_follow('100023080760480')
-	operation.send_message('100023080760480', 'hi, nice to meet u')
-	print "私信成功！"
-	operation.like('183774741715570','1487409108018787')
+	#operation.send_message('100023080760480', 'hi, nice to meet u')
+	#print "私信成功！"
+	#operation.like('183774741715570','1487409108018787')
 	#operation.like('100012258524129', '418205591931388')
-	print "点赞成功！"
-	operation.comment('100012258524129','418205591931388','awesome！')
-	print "评论成功！"
+	#print "点赞成功！"
+	#operation.comment('100012258524129','418205591931388','awesome！')
+	#print "评论成功！"
 	#operation.share('183774741715570','1487409108018787','emmmm')
 	#print "分享成功！"
 	#operation.add_friend('183774741715570')
+	#operation.add_friend('100026978657712')
+	#print "添加好友成功！"
+	#operation.confirm('100026978657712')
+	#print "确认成功！"
+	operation.delete_friend('100026978657712')
+	print "删除好友成功！"

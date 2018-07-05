@@ -1049,15 +1049,20 @@ function focusOn(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     var ID=row.uid;
-                    return '<span style="cursor: pointer;" onclick="joinHeavy(\''+ID+'\')" title="加入重点关注"><i class="icon icon-star"></i></span>';
+                    return '<span style="cursor: pointer;" onclick="joinWindow(\''+ID+'\')" title="加入重点关注"><i class="icon icon-star"></i></span>';
                 }
             },
         ],
     });
     $('#focus p').slideUp(700);
 }
-function joinHeavy(_id){
-	var useradd_url='/weibo_xnr_operate/trace_follow/?xnr_user_no='+ID_Num+'&uid_string='+_id;
+var $id_='';
+function joinWindow(id){
+	$id_=id;
+	 $('#joinHW').modal('show');
+}
+function joinHeavy(){
+	var useradd_url='/weibo_xnr_operate/trace_follow/?xnr_user_no='+ID_Num+'&uid_string='+$id_;
 	public_ajax.call_request('get',useradd_url,addSuccess)
 }
 function addSuccess(data) {

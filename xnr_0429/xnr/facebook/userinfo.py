@@ -10,8 +10,11 @@ class Userinfo:
 		self.launcher = Launcher(username, password)
 
 	def getUserinfo(self):
-		driver,display = self.launcher.login()
-		time.sleep(2)
+		driver = self.launcher.login()
+		time.sleep(10)
+		html = driver.page_source
+		with open("Userinfo.html", "wb") as f:
+			f.write(html)
 		driver.find_element_by_xpath('//a[@title="个人主页"]').click()
 		time.sleep(1)
 		driver.find_element_by_xpath('//a[@data-tab-key="about"]').click()
@@ -36,10 +39,9 @@ class Userinfo:
 
 		dict = {'id':id,'career':career,'location':location,'age':age,'description':description}
 		driver.quit()
-		display.popen.kill()
 		return dict
 
 if __name__ == '__main__':
 	#userinfo = Userinfo('8618348831412','Z1290605918')
-	userinfo = Userinfo('feifanhanmc@163.com','han8528520258')
+	userinfo = Userinfo('+8613269704912','chenhuiping')
 	userinfo.getUserinfo()

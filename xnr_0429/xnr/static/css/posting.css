@@ -344,7 +344,47 @@ body {
     border-radius: 5px;
     padding: 3px 6px;
 }
-
+/*智能发贴*/
+#container .type_page #content .intelliGence-2 .post_perfect {
+    position: relative;
+    padding: 10px 10px 10px 30px;
+    background: #06162d;
+    margin-bottom: 10px;
+    width: 920px;
+}
+#container .type_page #content .intelliGence-2 .post_center-intel .center_icon {
+    position: absolute;
+    top:10px;
+    left:3px;
+    width: 20px;
+    height:20px;
+}
+#container #content .intelliGence-2 .post_perfect .center_3 {
+    margin: 10px 0;
+    text-align: center;
+    border-top: 1px solid slategrey;
+    padding-top: 5px;
+}
+#container #content .intelliGence-2 .post_perfect .center_3 span {
+    display: inline-block;
+    width: 16%;
+    padding: 3px 7px;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    font-size: 12px;
+}
+#container #content .intelliGence-2 .post_perfect .center_3 span:nth-child(2),
+#container #content .intelliGence-2 .post_perfect .center_3 span:nth-child(4){
+    border-left:1px solid slategrey;
+    border-right:1px solid slategrey;
+}
+#container #content .intelliGence-2 .post_perfect .center_3 span:nth-child(6){
+    border-left:1px solid slategrey;
+}
+#container #content .intelliGence-2 .post_perfect .center_3 span:hover {
+    color:#eb7350;
+}
 /*推荐微博*/
 #content_recommend #post_center-recommend {
     position: relative;

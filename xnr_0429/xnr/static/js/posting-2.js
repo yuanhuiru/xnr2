@@ -264,7 +264,7 @@ function intelligentList(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
 					var t=row.compute_status,tls='';
-                        if (t==4){tls=''}else{tls='disableCss';}
+                    if (t==4){tls=''}else{tls='disableCss';}
                     return '<i class="icon icon-file '+tls+'" onclick="lookType(\''+row.task_id+'\',\''+row.create_time+'\')" title="查看" style="color: white;font-size: 12px;cursor: pointer;"></i>&nbsp;&nbsp;&nbsp;'+
                         '<i class="icon icon-trash" onclick="delEvent(\''+row.task_id+'\')" title="删除" style="color: white;font-size: 12px;cursor: pointer;"></i>'
                 }
@@ -458,8 +458,10 @@ $('#intelligenceTabs a.viewHave').on('click',function () {
         // return false;
     }else {
         var view_type=$(this).attr('view-type');
-        viewThis_url='/intelligent_writing/opinions_all/?task_id='+task_id+'&intel_type='+view_type;
-    }
+       //这是真的url,暂时注释。下面的是假的
+		 viewThis_url='/intelligent_writing/opinions_all/?task_id='+task_id+'&intel_type='+view_type;
+    	//viewThis_url='/intelligent_writing/opinions_all/?task_id=weibo_wxnr0009_shi_jie_bei&intel_type=all';
+	}
     // var viewThis_url='/intelligent_writing/opinions_all/?task_id=twitter_txnr0001_ce_shi_ren_wu___0_2_2_6___0_4&intel_type='+view_type;
     public_ajax.call_request('get',viewThis_url,viewData);
 });
@@ -571,8 +573,11 @@ function thisButton_Content(data) {
     $(boxView+' .'+tableView).hide();
     $(boxView).find('center').show();
     var modifyData=[];
-    $.each(data,function (index,item) {
-        modifyData.push({'text':item});
+    //$.each(data,function (index,item) {
+    //    modifyData.push({'text':item});
+    // });
+	$.each(data,function (index,item) {
+        modifyData.push({'text':item[0],'mid':item[1],'uid':item[2], 'timestamp':item[3],'nick_name':item[4],'retweet':item[5],'comment':item[6]});
     });
 	if(modifyData.length==0){
 		$(boxView).find('center').slideUp(700);
@@ -607,10 +612,70 @@ function thisButton_Content(data) {
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
-                formatter: function (value, row, index) {
+               /* formatter: function (value, row, index) {
                     var str='<p style="text-align: left;">• '+value+'</p>';
                     return str;
-                }
+                }*/
+				formatter: function (value, row, index) {
+    var name,txt,txt2,img;
+    if (row.nick_name==''||row.nick_name=='null'||row.nick_name=='unknown'){
+        name=row.uid;
+    }else {
+        name=row.nick_name;
+    };
+    if (row.photo_url==''||row.photo_url=='null'||row.photo_url=='unknown'||!row.photo_url){
+        img='/static/images/unknown.png';
+    }else {
+        img=row.photo_url;
+    };
+    var all='';
+    if (row.text==''||row.text=='null'||row.text=='unknown'){
+        txt='暂无内容';
+    }else {
+        txt=row.text;
+        if (row.text.length>=160){
+            txt2=row.text.substring(0,160)+'...';
+            all='inline-block';
+        }else {
+            txt2=row.text;
+            all='none';
+        }
+    };
+    var str=
+        '<div class="post_perfect" style="text-align:left;">'+
+        '   <div class="post_center-intel">'+
+        '       <img src="'+img+'" class="center_icon">'+
+        '       <div class="center_rel">'+
+        '           <a class="center_1" href="###" style="color: #f98077;">'+name+'</a>'+
+        '           <span class="time" style="font-weight: 900;color:blanchedalmond;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span>  '+
+        '           <button data-all="0" style="display: '+all+'" type="button" class="btn btn-primary btn-xs allWord" onclick="allWord(this)">查看全文</button>'+
+        '   <p class="allall1" style="display:none;">'+txt+'</p>'+
+        '   <p class="allall2" style="display:none;">'+txt2+'</p>'+
+        '   <span class="center_2" style="text-align: left;">'+txt2+'</span>'+
+        '           <i class="mid" style="display: none;">'+row.mid+'</i>'+
+        '           <i class="uid" style="display: none;">'+row.uid+'</i>'+
+        '           <i class="timestamp" style="display: none;">'+row.timestamp+'</i>'+
+        '           <div class="center_3">'+
+        '               <span class="cen3-5" onclick="copyPost(this)"><i class="icon icon-copy"></i>&nbsp;&nbsp;复制</span>'+
+        '               <span class="cen3-1" onclick="retweet(this,\'智能发帖\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发（<b class="forwarding">'+row.retweet+'</b>）</span>'+
+        '               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论（<b class="comment">'+row.comment+'</b>）</span>'+
+        '               <span class="cen3-3" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
+        '               <span class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
+        '               <span class="cen3-4" onclick="joinlab(this)"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+
+        '           </div>'+
+        '           <div class="forwardingDown" style="width: 100%;display: none;">'+
+        '               <input type="text" class="forwardingIput" placeholder="转发内容"/>'+
+        '               <span class="sureFor" onclick="forwardingBtn()">转发</span>'+
+        '           </div>'+
+        '           <div class="commentDown" style="width: 100%;display: none;">'+
+        '               <input type="text" class="comtnt" placeholder="评论内容"/>'+
+        '               <span class="sureCom" onclick="comMent(this,\'智能发帖\')">评论</span>'+
+        '           </div>'+
+        '       </div>'+
+        '   </div>'+
+        '</div>';
+    return str;
+}
             },
         ],
     });

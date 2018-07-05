@@ -488,6 +488,11 @@ def load_user_index_res():
     return results_all
 
 def active_social_recommend_daily(current_date):
+    # 0. 常规关注推荐：做一个日更新任务，把画像的全网用户排行结果提到本地服务器，配合明明的前>端提供查询
+    res = load_user_index_res()
+    #print res[0].keys()
+    #['portrait_status', 'statusnum', 'nick_name', 'sensor_mark', 'friendsnum', 'weibo_list', 'weibo_type', 'fansnum', 'user_index', 'photo_url', 'uid']
+    save_results_to_es('all_xnr',current_date,'user_index',res)
 
     # 1. 获得所有已完成虚拟人
 
@@ -506,13 +511,6 @@ def active_social_recommend_daily(current_date):
             print 'result',len(result)
             # 保存
             save_results_to_es(xnr_user_no,current_date,sort_item,result)   
-
-    # 3. 常规关注推荐：做一个日更新任务，把画像的全网用户排行结果提到本地服务器，配合明明的前端提供查询
-    res = load_user_index_res()
-    #print res[0].keys()
-    #['portrait_status', 'statusnum', 'nick_name', 'sensor_mark', 'friendsnum', 'weibo_list', 'weibo_type', 'fansnum', 'user_index', 'photo_url', 'uid']
-    save_results_to_es('all_xnr',current_date,'user_index',res)
-
      
 if __name__ == '__main__':
     

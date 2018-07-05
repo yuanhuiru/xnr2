@@ -189,6 +189,7 @@ function com(data) {
                             '                <div class="com-img" style="display: inline-block;">'+star+
                             '                </div>'+
                             '            </div>'+
+							'			 <button class="btn-primary btn-sm" onclick="lookAll(\''+row.root_mid+'\',\''+row.timestamp+'\')" style="margin-left:20px;">查看原文</button>'+
                             '        </div>'+
                             '        <div class="com com-2">'+
                             '            <b class="com-2-name" style="color: #fa7d3c;cursor: pointer;">'+name+'</b>的'+repFor+'：'+
@@ -440,7 +441,8 @@ function reply(data) {
                         '                <span style="display: inline-block;">敏感度：</span>'+
                         '                <div class="rep-img" style="display: inline-block;">'+star+'</div>'+
                         '            </div>'+
-                        // '            <div class="rep-1-time">'+time+'</div>'+
+                    	 '            <button class="btn-primary btn-sm" onclick="lookAll(\''+row.root_mid+'\',\''+row.timestamp+'\')" style="margin-left:20px;">查看原文</button>'+ 
+					   // '            <div class="rep-1-time">'+time+'</div>'+
                         '        </div>'+
                         '        <div class="rep rep-2">'+
                         '            <b style="color: #fa7d3c;cursor: pointer;">'+name+'</b>的回复：'+
@@ -624,6 +626,22 @@ function postYES(data) {
     }
     $('#pormpt p').text(f);
     $('#pormpt').modal('show');
+}
+//查看原文
+function lookAll(_id,_time){
+	var allURL='/weibo_xnr_operate/get_root_weibo/?root_mid='+_id+'&timestamp='+_time;
+	 public_ajax.call_request('get',allURL,allTEXT);
+}
+function allTEXT(data){
+	var txt=data.text;
+	if(txt){
+		$('#pormpt h4').text('原文内容');
+		$('#pormpt p').text(txt);
+   	    $('#pormpt').modal('show');
+	}else {
+    	 $('#pormpt p').text('非常抱歉，原文内容暂时没有。');
+       $('#pormpt').modal('show');
+	}
 }
 //转发
 function showfor(_this) {

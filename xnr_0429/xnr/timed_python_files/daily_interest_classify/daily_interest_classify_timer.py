@@ -14,6 +14,7 @@ from global_utils import es_xnr,es_flow_text, flow_text_index_name_pre, flow_tex
 from global_config import S_TYPE, S_DATE
 from weibo_xnr_flow_text_mappings import daily_inerests_flow_text_mappings
 from time_utils import ts2datetime,datetime2ts
+from parameter import TOP_WEIBOS_LIMIT_DAILY
 
 def read_flow_text(flow_text_index_name,current_date):
 	
@@ -59,7 +60,7 @@ def read_flow_text(flow_text_index_name,current_date):
 			label = label_list[j]
 			search_results[j]['_source']['label'] = label
 			try:
-				if label_count_dict[label] < 20:
+				if label_count_dict[label] < TOP_WEIBOS_LIMIT_DAILY:
 					content_dict[label].append(search_results[j]['_source'])
 					label_count_dict[label] += 1
 
@@ -74,7 +75,7 @@ def read_flow_text(flow_text_index_name,current_date):
 
 		# 循环终止条件
 		min_label_count = min(label_count_dict, key=label_count_dict.get)
-		if label_count_dict[min_label_count] >= 20:
+		if label_count_dict[min_label_count] >= TOP_WEIBOS_LIMIT_DAILY:
 			break
 	print 'label_count_dict::',label_count_dict
 

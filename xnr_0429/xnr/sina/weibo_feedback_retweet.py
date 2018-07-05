@@ -43,13 +43,15 @@ class FeedbackRetweet:
         while True:
             wbUrl = at_MBurl % (pre_page, page, pagebar)
             print "current url: ", wbUrl
-            
-            request = urllib2.Request(wbUrl, headers=self._headers)
-            response = urllib2.urlopen(request, timeout=60)
-
-            mb_content = json.loads(response.read())
-            # except Exception, e:
-            #    print "Network Exception!!! ", e
+            while True:
+                try:
+                    request = urllib2.Request(wbUrl, headers=self._headers)
+                    response = urllib2.urlopen(request, timeout=60)
+                    mb_content = json.loads(response.read())
+                    break
+                except Exception, e:
+                    print "Network Exception!!! ", e
+                    continue
             # finally:
             html = mb_content["data"]
             print "html****html****html****html****html****", html
