@@ -34,7 +34,8 @@ from xnr.global_utils import weibo_feedback_comment_index_name,weibo_feedback_co
                             index_sensing,type_sensing,weibo_xnr_retweet_timing_list_index_name,\
                             weibo_domain_index_name,weibo_domain_index_type,weibo_xnr_retweet_timing_list_index_type,weibo_private_white_uid_index_name,\
                             weibo_private_white_uid_index_type,daily_interest_index_name_pre,\
-                            daily_interest_index_type, be_retweet_index_name_pre, be_retweet_index_type, es_retweet
+                            daily_interest_index_type, be_retweet_index_name_pre, be_retweet_index_type, es_retweet,\
+							network_buzzwords_index_name, network_buzzwords_index_type
 
 from xnr.global_utils import weibo_xnr_save_like_index_name,weibo_xnr_save_like_index_type
 
@@ -85,6 +86,12 @@ def get_image_path(image_code):
     
     return image_path_list
 
+def get_network_buzzwords(xnr_user_no):
+    try:
+        li = es.search(network_buzzwords_index_name, network_buzzwords_index_type, {})['hits']['hits'][0]['_source']['text_list']
+        return random.choice(li)
+    except:
+        return []
 
 def push_keywords_task(task_detail):
 
@@ -1888,7 +1895,8 @@ def get_show_retweet_timing_list_future(xnr_user_no):
             'bool':{
                 'must':[
                     {'term':{'xnr_user_no':xnr_user_no}},
-                    {'range':{'timestamp_set':{'gte':start_ts}}}
+                    {'term':{'compute_status':0}}#,
+                    #{'range':{'timestamp_set':{'gte':start_ts}}}
                 ]
             }
         },
@@ -1911,8 +1919,9 @@ def get_show_retweet_timing_list_future(xnr_user_no):
     return result_all
 
 def get_show_trace_followers(xnr_user_no):
-
+	#print '=='
     weibo_user_info = []
+    #print '=='
     
     try:
         es_get_result = es.get(index=weibo_xnr_fans_followers_index_name,doc_type=weibo_xnr_fans_followers_index_type,\
@@ -1938,6 +1947,8 @@ def get_show_trace_followers(xnr_user_no):
 
     # results = es_user_profile.search(index=profile_index_name,doc_type=profile_index_type,\
     #                 body=query_body)['hits']['hits']
+    '''
+	跨网段查询较慢，且基本上无信息，故删除
     if trace_follow_list:
         mget_results = es_user_profile.mget(index=profile_index_name,doc_type=profile_index_type,\
                             body={'ids':trace_follow_list})['docs']
@@ -1951,7 +1962,14 @@ def get_show_trace_followers(xnr_user_no):
                 weibo_user_info.append({'uid':uid,'statusnum':0,'fansnum':0,'friendsnum':0,'photo_url':'','sex':'','nick_name':'','user_location':''})
     else:
         weibo_user_info = []
-
+	'''
+    #print 'trace;;',trace_follow_list
+    if trace_follow_list:
+        for uid in trace_follow_list:
+			weibo_user_info.append({'uid':uid,'statusnum':0,'fansnum':0,'friendsnum':0,'photo_url':'','sex':'','nick_name':'','user_location':''})
+    else:
+        weibo_user_info
+		
     return weibo_user_info
 
 def get_add_private_white_uid(xnr_user_no,white_uid_string):

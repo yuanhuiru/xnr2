@@ -44,6 +44,10 @@ be_comment_index_type = 'user'
 profile_index_name = 'weibo_user'  # user profile es
 profile_index_type = 'user'
 
+# 网络流行语
+network_buzzwords_index_name = 'network_buzzwords'
+network_buzzwords_index_type = 'text'
+
 #use to save xnr info
 xnr_index_name = 'xnr'
 xnr_index_type = 'user'
