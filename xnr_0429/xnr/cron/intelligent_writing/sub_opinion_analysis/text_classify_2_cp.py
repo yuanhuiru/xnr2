@@ -39,7 +39,7 @@ def get_text_net(word, weibo_text,word_weight,max_n,min_n):
         w_list = []
         for w in word:
             k1,k2 = w.split('_')
-            c[str(i)] = c[str(i)] + weibo_text[i][0].count(str(k1))*word_weight[str(w)] + weibo_text[i][0].count(str(k2))*word_weight[str(w)]
+            c[str(i)] = c[str(i)] + weibo_text[i].count(str(k1))*word_weight[str(w)] + weibo_text[i].count(str(k2))*word_weight[str(w)]
             if w not in w_list:
                 w_list.append(str(w))
         weight[str(i)] = float(len(w_list))/float(len(word))#c[str(k)]*(float(len(w_list))/float(len(word)))
@@ -106,9 +106,10 @@ def text_net(word_result,word_weight,weibo):#提取代表性微博_词网
     text_list = []
     for i in range(0,len(weibo)):
         row = dict()
+        # row['_id'] = i
         row['_id'] = i
         row['title'] = ''
-        row['content'] = weibo[i][0].decode('utf-8')
+        row['content'] = weibo[i].decode('utf-8')
         text_list.append(row)
 
     results = duplicate(text_list)

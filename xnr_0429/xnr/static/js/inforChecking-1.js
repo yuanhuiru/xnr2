@@ -241,7 +241,7 @@ function hotPost(data) {
                         '<div class="post_perfect" style="margin-bottom:10px;width:920px;">'+
                         '   <div class="post_center-hot">'+
                         '       <img src="'+img+'" alt="" class="center_icon">'+
-                        '       <div class="center_rel">'+
+                        '       <div class="center_rel" style="text-align:left;">'+
                         '           <a class="center_1" href="###" style="color: #f98077;">'+name+'</a>&nbsp;'+
                         '           <i class="mid" style="display: none;">'+row.mid+'</i>'+
                         '           <i class="uid" style="display: none;">'+row.uid+'</i>'+

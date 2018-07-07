@@ -11,7 +11,7 @@ from datetime import date
 import heapq
 import math
 import numpy as np
-from config import *
+from config_2 import *
 
 
 class TopkHeap(object):
@@ -115,7 +115,7 @@ def kmeans(feature,k,name):
     return results
 
 def word_net(weibo,k_cluster):#词频词网
-    #print 'weibo::',weibo
+    print 'weibo::',len(weibo)
     #print '============================================='
     black = load_black_words()
     sw = load_scws()

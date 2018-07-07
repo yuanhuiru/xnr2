@@ -583,7 +583,7 @@ function defalutWords(data) {
         data:data,
         search: true,//是否搜索
         pagination: true,//是否分页
-        pageSize: 2,//单页记录数
+        pageSize: 10,//单页记录数
         pageList: [2, 5, 10,20],//分页步进值
         sidePagination: "client",//服务端分页
         searchAlign: "left",
@@ -740,7 +740,7 @@ function hotWeibo(data) {
         data:data,
         search: true,//是否搜索
         pagination: true,//是否分页
-        pageSize: 2,//单页记录数
+        pageSize: 10,//单页记录数
         pageList: [2, 5, 10, 20],//分页步进值
         sidePagination: "client",//服务端分页
         searchAlign: "left",
@@ -1089,7 +1089,7 @@ function businessWeibo(data) {
         data:data,
         search: true,//是否搜索
         pagination: true,//是否分页
-        pageSize: 5,//单页记录数
+        pageSize: 10,//单页记录数
         pageList: [2 , 5, 10, 20 ],//分页步进值
         sidePagination: "client",//服务端分页
         searchAlign: "left",

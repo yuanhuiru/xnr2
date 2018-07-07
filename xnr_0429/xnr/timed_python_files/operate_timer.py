@@ -52,63 +52,69 @@ def operate_out_of_redis():
 				try:
 					print 'task_detail..',task_detail
 					mark = get_submit_tweet_fb(task_detail)
-				except:
+				except Exception, e:
 					#add_operate2redis(queue_dict)
+					print 111111111111111, e
 					pass
 
 			elif operate_type == 'retweet':
 				try:
 					mark = get_retweet_operate_fb(task_detail)
 				except Exception,e:
-					print e
+					print 222222222222222, e
 					# add_operate2redis(queue_dict)
 			elif operate_type == 'comment':
 				try:
 					mark = get_comment_operate_fb(task_detail)
-				except:
+				except Exception, e:
 					#add_operate2redis(queue_dict)
+					print 333333333333333, e
 					pass
-
 			elif operate_type == 'like':
 				try:
 					mark = get_like_operate_fb(task_detail)
-				except:
+				except Exception, e:
 					#add_operate2redis(queue_dict)
+					print 444444444444444, e
 					pass
-
 			elif operate_type == 'at':
 				try:
 					mark = get_at_operate_fb(task_detail)
-				except:
+				except Exception, e:
 					#add_operate2redis(queue_dict)
+					print 55555555555555, e
 					pass
 
 			elif operate_type == 'private':
 				try:
 					mark = get_private_operate_fb(task_detail)
-				except:
+				except Exception, e:
 					#add_operate2redis(queue_dict)
+					print 66666666666666, e
 					pass
 
 			elif operate_type == 'add':
 				try:
 					mark = get_add_friends(task_detail)
-				except:
+				except Exception, e:
 					#add_operate2redis(queue_dict)
+					print 77777777777777, e
 					pass
 
 			elif operate_type == 'confirm':
 				try:
 					mark = get_confirm_friends(task_detail)
-				except:
+				except Exception, e:
 					#add_operate2redis(queue_dict)
+					print 8888888888888, e
 					pass
 
 			elif operate_type == 'delete':
 				try:
 					mark = get_delete_friends(task_detail)
-				except:
+				except Exception, e:
 					#add_operate2redis(queue_dict)
+					print 99999999999999, e
 					pass
 
 

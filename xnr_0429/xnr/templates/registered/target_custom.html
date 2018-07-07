@@ -440,15 +440,15 @@
     var flag='{{flag}}',urlTotal,defalutDomain,defalutRole;
     if ((flag==1)||(_gostart_USER.indexOf('W')==0)){
         urlTotal='/weibo_xnr_knowledge_base_management';url2='weibo_xnr_create';
-        defalutDomain='维权群体';defalutRole='其他';
+        defalutDomain='维权群体';defalutRole='其他';flag=1;
     }else if (flag==4||(_gostart_USER.indexOf('F')==0)){
         urlTotal='/fb_xnr_knowledge_base_management';url2='facebook_xnr_create';
         //defalutDomain='脸书测试1';defalutRole='民间组织';
-		$('.options-3').hide();
+		$('.options-3').hide();flag=4;
     }else if (flag==5||(_gostart_USER.indexOf('T')==0)){
         urlTotal='/tw_xnr_knowledge_base_management';url2='twitter_xnr_create';
        // defalutDomain='推特测试1';defalutRole='商业人士';
-  		$('.options-3').hide();
+  		$('.options-3').hide();flag=5;
     }
     $('.buildNew').on('click',function () {
         //window.open('/knowledge/domainLibrary/?flag='+flag);

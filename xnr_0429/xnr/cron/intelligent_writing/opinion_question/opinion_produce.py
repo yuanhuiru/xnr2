@@ -19,7 +19,7 @@ def opinion_main(weibo_data,k_cluster):
     '''
         观点挖掘主函数：
         输入数据：
-        weibo_data：微博列表，[weibo1,weibo2,...]
+        weibo_data：微博列表，[[mid,text,uid,timetamp,uname,forwarding_count,comment_count],...]
         k_cluster：子话题个数
 
         输出数据：
@@ -30,14 +30,24 @@ def opinion_main(weibo_data,k_cluster):
     
     weibo_new = []
     for i in range(0,len(weibo_data)):
-        text = weibo_data[i]
+        text = weibo_data[i][1]
+        mid = weibo_data[i][0]
+        uid = weibo_data[i][2]
+        timetamp = weibo_data[i][3]
+        uname = weibo_data[i][4]
+        forwarding_count = weibo_data[i][5]
+        comment_count = weibo_data[i][6]
+        #print 'text..',text
+        #print 'type..text..',type(text)
+        text = text.encode('utf-8')
         n = str(text).count('@')
         if n >= 5:
             continue
+        
         value = cut_filter(text)
         if len(value) > 0:
             if text != '转发微博':
-                weibo_new.append(value)
+                weibo_new.append((value,mid,uid,timetamp,uname,forwarding_count,comment_count))
     
     word_result,word_weight = word_net(weibo_new,k_cluster)#提取关键词对
     

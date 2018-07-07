@@ -54,17 +54,17 @@
                     检测关键词：<img src="/static/images/what.png" title="点击关键词可编辑" class="MWhat"
                                style="display: none;position: absolute;top:-6px;left:104px;"><span id="character7" style="width:80%;"></span>
                 </div>
-                <div id="role_example" style="margin-top: 20px;">
+               <!-- <div id="role_example" style="margin-top: 20px;">
                     <p style="text-align: center;color:white;padding: 5px;border-bottom: 1px solid #656e7b;">角色示例</p>
                     <ul class="role_example_list" style="padding: 10px 20px;">
 
                     </ul>
-                </div>
+                </div>-->
             </div>
 
         </div>
     </div>
-    <div class="account" style="margin: 20px 0;">
+    <div class="account" style="margin: 20px 0;display:none;">
         <b style="font-size: 18px;">账户创建信息：</b>
         <div style="padding: 10px 15px;border: 1px solid silver;margin-top: 20px;">
             <div class="account-1">
@@ -72,7 +72,7 @@
                     <img src="/static/images/icon.png" alt="">
                     <span>昵称：</span>
                     <input type="text" id="name" placeholder="昵称" readonly/>
-                    <!--<a class="recommend" href="###">查看推荐</a>-->
+                   <!-- <a class="recommend" href="###">查看推荐</a>-->
                 </div>
                 <div class="options age"  style="display:none;">
                     <img src="/static/images/icon.png" alt="">
@@ -410,12 +410,12 @@
         secondStep='TWsecondStep';
     };
     if (go_on=='1'){
-        $('#name').removeAttr('readonly');
+        /*$('#name').removeAttr('readonly');
         $('#age').removeAttr('readonly');
         $('#place').removeAttr('readonly');
         $('#career').removeAttr('readonly');
         $('#description').removeAttr('disabled');
-        $('#gender input').removeAttr('disabled');
+        $('#gender input').removeAttr('disabled');*/
         $('.page .previous').hide();
         $('.page .next').hide();
     }
@@ -440,7 +440,7 @@
         filling();
     }
     //
-    var $two=JSON.parse(localStorage.getItem(secondStep));
+    /*var $two=JSON.parse(localStorage.getItem(secondStep));
     if ($two){
         $('#name').val($two.nick_name);
         $('#age').val($two.age);
@@ -463,7 +463,7 @@
         }else if (posyNum>=3&&posyNum<=5){
             $(".other-2 input[name='Posting'][type='checkbox'][value='3-5']").attr("checked",true);
         }
-    }
+    }*/
     //
     function filling() {
         $('#character1').attr('title',basicData.domain_name).text(basicData.domain_name);
@@ -473,7 +473,7 @@
         $('#character5').attr('title',basicData.business_goal).text(basicData.business_goal);
         $('#character6').attr('title',basicData.daily_interests).text(basicData.daily_interests);
         $('#character7').attr('title',basicData.monitor_keywords.replace(/&/g,',')).text(basicData.monitor_keywords.replace(/&/g,','));
-        if (go_on){
+        /*if (go_on){
             $('#name').val(basicData.nick_name);
             $('#age').val(basicData.age);
             $(".gender input[type='radio'][value='"+basicData.sex+"']").attr("checked",true);
@@ -497,7 +497,7 @@
             }else {
                 $(".other_basic .other-2 input[type='radio'][value='"+$px+"']").attr("checked",true);
             }
-        }
+        }*/
     }
     if (go_on==1){
         $('#character7').attr('contentEditable','true');

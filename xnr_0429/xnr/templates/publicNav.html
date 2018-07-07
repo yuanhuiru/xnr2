@@ -30,7 +30,7 @@
             text-overflow: ellipsis;
             margin: 5px 10px;
         }
-        #wordcloud #cloud-2 .demo-label{width:auto}
+        #wordcloud #cloud-2 .demo-label, #RobotType .demo-label{width:auto}
 	#sameRoad .modActCC .tt {
             font-size: 18px;
             font-weight: 700;
@@ -361,6 +361,33 @@
             </div>
             <div class="modal-body">
                 <p style="text-align: center;font-size: 18px;color: #fff;font-weight: 900;"></p>
+            </div>
+        </div>
+    </div>
+</div>
+<!--机器人回复-->
+<div class="modal fade" id="RobotType" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">选择机器人回复类型</h4>
+            </div>
+            <div class="modal-body">
+                <div class="srType" style="padding: 10px 25px;">
+                    <label class="demo-label">
+                        <input class="demo-radio" type="radio" name="rbt" value='1' checked>
+                        <span class="demo-checkbox demo-radioInput"></span> 常规推荐
+                    </label>
+                    <label class="demo-label">
+                        <input class="demo-radio" type="radio" name="rbt" value='2'>
+                        <span class="demo-checkbox demo-radioInput"></span> 网络流行语推荐
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="sureRobotType()">确定</button>
             </div>
         </div>
     </div>

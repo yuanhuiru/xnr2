@@ -38,6 +38,10 @@ class Operation():
 		driver.save_screenshot("publish1.png")
 		driver.find_element_by_xpath('//input[@type="submit"]').click()
 		print "publish111111"
+		html = driver.page_source
+		with open('publish.html', 'wb') as f:
+			f.write(html)
+		driver.save_screenshot('publish.png')
 		driver.find_element_by_xpath('//textarea[@name="xc_message"]').send_keys(text)
 		print "publish222222"
 		driver.find_element_by_xpath('//input[@name="view_post"]').click()

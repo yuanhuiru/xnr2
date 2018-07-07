@@ -14,7 +14,7 @@ from global_utils import es_xnr, es_intel, writing_task_index_name, writing_task
 
 def save2topic_es(task_source,task_id,search_results):
 
-
+    print 'topic flow text start save to es'
     bulk_action = []
     count = 0
     for tweet in search_results:
@@ -26,33 +26,38 @@ def save2topic_es(task_source,task_id,search_results):
 
         count += 1
 
-        if count % 1000 == 0:
-            es_intel.bulk(bulk_action,index=task_id,doc_type=task_source,timeout=600)
+        if count % 10000 == 0:
+            print count
+            time.sleep(2)
+            es_intel.bulk(bulk_action,index=task_id,doc_type=task_source,request_timeout=6000)
+            
     
     if bulk_action:
-        es_intel.bulk(bulk_action,index=task_id,doc_type=task_source,timeout=600)
+        es_intel.bulk(bulk_action,index=task_id,doc_type=task_source,request_timeout=6000)
+    print 'topic flow text save over..'
     
 
 def save_intelligent_opinion_results(task_id,sub_opinion_results,summary, intel_type):
 
-    try:
-        item_exist = dict()
-        item_exist['task_id'] = task_id
-        item_exist['subopinion_tweets'] = json.dumps(sub_opinion_results)
-        item_exist['summary'] = summary
-        # 保存子观点结果
-        es_intel.index(index=intel_opinion_results_index_name,doc_type=intel_type,\
+    #try:
+    item_exist = dict()
+    item_exist['task_id'] = task_id
+    item_exist['subopinion_tweets'] = json.dumps(sub_opinion_results)
+    item_exist['summary'] = summary
+    # 保存子观点结果
+    es_intel.index(index=intel_opinion_results_index_name,doc_type=intel_type,\
                 id=task_id,body=item_exist)
 
-        item_task = dict() 
-        item_task['compute_status'] = 2  ## 保存子观点结果，更新计算状态
-        es_xnr.update(index=writing_task_index_name,doc_type=writing_task_index_type,\
-             id=task_id, body={'doc':{'compute_status':2}})
+    item_task = dict() 
+    item_task['compute_status'] = 2  ## 保存子观点结果，更新计算状态
+    print 'subopinion save status..',item_task
+    es_xnr.update(index=writing_task_index_name,doc_type=writing_task_index_type,\
+             id=task_id, body={'doc':item_task})
 
-        mark = True
+    mark = True
 
-    except:
-        mark = False
+    #except:
+    #    mark = False
 
     return mark
 
@@ -71,9 +76,9 @@ def save2models_text(task_id,model_text_dict):
                 id=task_id,body=item_exist)
 
     item_task = dict() 
-    item_task['compute_status'] = 4  ## 保存智能发帖模板文本结果，更新计算状态，计算完成
+    item_task['compute_status'] = 4  ## 保存智能发帖模板文本结果，更新计算状态
     es_xnr.update(index=writing_task_index_name,doc_type=writing_task_index_type,\
-            id=task_id, body={'doc':{'compute_status':4}})
+            id=task_id, body={'doc':item_task})
 
 
 def save2opinion_corpus(task_id,opinion_results):
@@ -88,6 +93,7 @@ def save2opinion_corpus(task_id,opinion_results):
 
     item_task = dict() 
     item_task['compute_status'] = 3  ## 保存观点语料结果，更新计算状态
+    print 'opinion save status..',item_task
     es_xnr.update(index=writing_task_index_name,doc_type=writing_task_index_type,\
             id=task_id, body={'doc':item_task})
 

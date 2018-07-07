@@ -98,25 +98,33 @@ function inModalData(data) {
         $$psy_feature=data.psy_feature.split(',');
     }*/
 
-    var bus=data.business_goal.toString().indexOf('&')==-1?data.business_goal.split(',|，'):data.business_goal.split('&');
-    for (var f of bus){
-        $(".build-4 input[name='demo66'][type='checkbox'][value='"+f+"']").attr("checked",true);
-    }
-    var day=data.daily_interests.toString().indexOf('&')==-1?data.daily_interests.split(',|，'):data.daily_interests.split('&');;
-    for (var f of day){
-        $(".build-5 input[name='demo6'][type='checkbox'][value='"+f+"']").attr("checked",true);
-    }
+	try{
+		var bus=data.business_goal.toString().indexOf('&')==-1?data.business_goal.split(',|，'):data.business_goal.split('&');
+	    for (var f of bus){
+        	$(".build-4 input[name='demo66'][type='checkbox'][value='"+f+"']").attr("checked",true);
+    	}
+	}catch(e){
+		$(".build-4 input[name='demo66'][type='checkbox'][value='"+data.business_goal+"']").attr("checked",true);
+	}
+	try{
+		var day=data.daily_interests.toString().indexOf('&')==-1?data.daily_interests.split(',|，'):data.daily_interests.split('&');;
+    	for (var f of day){
+        	$(".build-5 input[name='demo6'][type='checkbox'][value='"+f+"']").attr("checked",true);
+    	}
+	}catch(e){
+	    $(".build-5 input[name='demo6'][type='checkbox'][value='"+data.daily_interests+"']").attr("checked",true);
+	}
     if (data.monitor_keywords){
         $('.build-6 .keywords').val(data.monitor_keywords.toString().replace(/&/g,'，'))
     }else {
-        $('.build-6 .keywords').val('暂无关键词');
+        $('.build-6 .keywords').attr(placeholder,'暂无关键词');
     }
     var active_time,day_post_num;
     if (data.active_time=='unknown'||data.active_time=='null'||data.active_time==''||!data.active_time){active_time='未知'}else{active_time=data.active_time};
     if (data.day_post_num=='unknown'||data.day_post_num=='null'||data.day_post_num==''||!data.day_post_num){day_post_num='未知'}else{day_post_num=data.day_post_num};
 
     //第二步
-    if(!$one){
+    /*if(!$one){
         var nickName,age,location,sex,career,description;
 
         if (data.nick_name=='unknown'||data.nick_name=='null'||data.nick_name==''||!data.nick_name){nickName='无昵称'}else{nickName=data.nick_name};
@@ -136,7 +144,7 @@ function inModalData(data) {
             'day_post_num':day_post_num,
         }
         localStorage.setItem(secondStep,JSON.stringify(second));
-    }
+    }*/
 
 
 }
@@ -235,7 +243,7 @@ $('.nextButton').on('click',function () {
     });
     var businessGoal= business.join(',');
     var monitorKeywords= $('.opt-6 .keywords').val().toString().replace(/，/g,',');
-    if (!(domainName||roleName||psyFeature.length==0||dailyInterests.length==0||politicalSide||businessGoal||monitorKeywords)){
+    if (domainName==''||roleName==''||psyFeature.length==0||dailyInterests.length==0||politicalSide==''||businessGoal==''||monitorKeywords==''){
         $('#prompt p').text('请检查您选择和添加的信息。（不能为空）');
         $('#prompt').modal('show');
     }else {

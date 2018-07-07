@@ -198,17 +198,33 @@ function thumbs(_this) {
     public_ajax.call_request('get',likePost_url,operatSuccess);
 };
 //机器人回复
-var robotThis;
+var robotThis,robotTxt;
 function robot(_this) {
     robotThis=_this;
     $(_this).parents('.center_rel').find('.commentDown').show();
-    var txt= $(_this).parents('.center_rel').find('.center_2').text();
-    // var robot_url='/'+urlFirst_zpd+'/robot_reply/?question='+Check(txt);
-    var robot_url='/facebook_xnr_operate/robot_reply/?question='+Check(txt);
-    public_ajax.call_request('get',robot_url,robotTxt);
+    robotTxt= $(_this).parents('.center_rel').find('.center_2').text();
+    //var robot_url='/facebook_xnr_operate/robot_reply/?question='+Check(txt);
+    //public_ajax.call_request('get',robot_url,robotTxt);
+	$('#RobotType').modal('show');
 }
-function robotTxt(data) {
-    $(robotThis).parents('.center_rel').find('.robotQuestion').remove();
+function sureRobotType(){
+	//var robotTYPE=$('#RobotType input[name="rbt"]:checked').val();
+	var robotTYPE=$("#RobotType input[name='rbt']:checked").val();
+	if(robotTYPE=='1'){
+		var robot_url='/facebook_xnr_operate/robot_reply/?question='+Check(robotTxt);
+        public_ajax.call_request('get',robot_url,robotTxt1);
+	}else {
+		var robot2='/weibo_xnr_operate/network_buzzwords/';
+		public_ajax.call_request('get',robot2,robotTxt2);
+	}
+}
+function robotTxt2(data){
+	$(robotThis).parents('.center_rel').find('.commentDown').children('input').val(data);
+	$(robotThis).parents('.center_rel').find('.commentDown').show();
+}
+function robotTxt1(data) {
+    $(robotThis).parents('.center_rel').find('.commentDown').show();
+	$(robotThis).parents('.center_rel').find('.robotQuestion').remove();
     var txt=data['tuling'];
     if (isEmptyObject(data)||!txt){txt='机器人无答复'};
     $(robotThis).parents('.center_rel').find('.commentDown').children('input').val(txt);
@@ -235,6 +251,7 @@ function robotTxt(data) {
     robot2+=robot3+'</div>';
     str+=robot1+robot2+'</div>';
     $(robotThis).parents('.center_rel').find('.commentDown').after(str);
+	$(robotThis).parents('.center_rel').find('.commentDown').show();
 }
 //加入预警库
 function getInfo(_this) {

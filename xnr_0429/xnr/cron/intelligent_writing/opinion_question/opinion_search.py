@@ -11,7 +11,8 @@ import heapq
 import math
 from opinion_question_config import cut_des,K1,B,K3
 sys.path.append('../../../')
-from parameter import CORPUS_PATH
+from parameter import CORPUS_PATH,MAX_SEARCH_SIZE
+from global_utils import es_xnr as es, all_opinion_corpus_index_name,all_opinion_corpus_index_type
 
 class TopkHeap(object):
     def __init__(self, k):
@@ -49,9 +50,31 @@ def load_text_list(file_name):#从文件读取text文本
     
     return text_list        
 
+def load_text_list_from_es(file_name):
+
+    query_body = {
+        "query":{
+             "term":{"label":file_name}  
+        },
+        "size":MAX_SEARCH_SIZE,
+        "sort":"timestamp"
+    }
+
+    results = es.search(index=all_opinion_corpus_index_name,doc_type=all_opinion_corpus_index_type,body=query_body)['hits']['hits']
+    
+    text_list = []
+    if results:
+        for result in results:
+            result = result['_source']
+            text = result['text']
+            text_list.append(text)
+
+    return text_list
+
 def get_related_text(keywords,file_name):#通过keywords获取相关的文本
 
-    text_list = load_text_list(file_name)
+    #text_list = load_text_list(file_name)
+    text_list = load_text_list_from_es(file_name)
     keyword_count = dict()
     word_set = []
     related_text = []

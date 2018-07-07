@@ -633,13 +633,14 @@ function lookAll(_id,_time){
 	 public_ajax.call_request('get',allURL,allTEXT);
 }
 function allTEXT(data){
-	var txt=data.text;
+	var txt;
+	try{txt=data[0].text}catch(e){txt=''};
 	if(txt){
 		$('#pormpt h4').text('原文内容');
-		$('#pormpt p').text(txt);
+		$('#pormpt p').text('原文内容：'+txt).css({textAlign:'left'});
    	    $('#pormpt').modal('show');
 	}else {
-    	 $('#pormpt p').text('非常抱歉，原文内容暂时没有。');
+    	 $('#pormpt p').text('非常抱歉，原文内容暂时没有。').css({textAlign:'center'});
        $('#pormpt').modal('show');
 	}
 }

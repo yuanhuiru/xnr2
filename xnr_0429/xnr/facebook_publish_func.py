@@ -8,7 +8,8 @@ from facebook.fb_operate import Operation
 from timed_python_files.fb_xnr_flow_text_mappings import fb_xnr_flow_text_mappings
 from global_utils import es_xnr as es, fb_xnr_index_name, fb_xnr_index_type,\
                         fb_xnr_flow_text_index_name_pre,fb_xnr_flow_text_index_type
-from utils import fb_save_to_fans_follow_ES
+from utils import fb_save_to_fans_follow_ES, fb_xnr_user_no2uid
+from time_utils import ts2datetime
 
 def fb_save_to_xnr_flow_text(tweet_type,xnr_user_no,text, message_type):
 
@@ -32,7 +33,7 @@ def fb_save_to_xnr_flow_text(tweet_type,xnr_user_no,text, message_type):
         
     result = fb_xnr_flow_text_mappings(xnr_flow_text_index_name)
         
-    index_result = es.index(index=xnr_flow_text_index_name,doc_type=xnr_flow_text_index_type,\
+    index_result = es.index(index=xnr_flow_text_index_name, doc_type=fb_xnr_flow_text_index_type,\
                 id=task_id,body=item_detail)
         
     mark = True
@@ -258,8 +259,9 @@ operation.follow('100022568024116')
 #operation.share('tl_unit_-8182132709408758851','100022568024116','12.26 test')
 '''
 if __name__ == '__main__':
-    account_name = 'feifanhanmc@163.com'
-    password = 'han8528520258'
-    uid = '100023849442394'
-    print fb_add_friend(account_name,password, uid)
+    #account_name = 'feifanhanmc@163.com'
+    #password = 'han8528520258'
+    #uid = '100023849442394'
+    #print fb_add_friend(account_name,password, uid)
+    print fb_publish('+8613520874771', '13018119931126731x', 'boom boom boom', 'Facebook', 'Xnr01')
 

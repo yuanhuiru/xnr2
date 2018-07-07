@@ -45,9 +45,12 @@ def get_submit_tweet_fb(task_detail):
 	fb_mail_account = es_xnr_result['fb_mail_account']
 	fb_phone_account = es_xnr_result['fb_phone_account']
 	password = es_xnr_result['password']
-
+	print password
 	if fb_phone_account:
 		account_name = fb_phone_account
+		if '+86' not in account_name:
+			account_name = '+86' + account_name
+		print account_name
 	elif fb_mail_account:
 		account_name = fb_mail_account
 	else:
