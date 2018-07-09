@@ -446,17 +446,19 @@ function timeEvent(data) {
     $('#eventSurvey .VivaTimeline p').slideUp(300);
 }
 //各种观点
-var boxView='',tableView;
+var boxView='',tableView,onlyText;
 $('#intelligenceTabs a.viewHave').on('click',function () {
     boxView=$(this).attr('href');
     tableView=$(this).attr('table-view');
     var viewThis_url;
     if (tableView=='view-5'){
+		onlyText=1;
         viewThis_url='/intelligent_writing/show_opinion_corpus_name/';
         // public_ajax.call_request('get',viewThis_url,intelligentCorpus);
         // public_ajax.call_request('get',viewThis_url,viewData);
         // return false;
     }else {
+		onlyText=0;
         var view_type=$(this).attr('view-type');
        //这是真的url,暂时注释。下面的是假的
 		 viewThis_url='/intelligent_writing/opinions_all/?task_id='+task_id+'&intel_type='+view_type;
@@ -573,12 +575,14 @@ function thisButton_Content(data) {
     $(boxView+' .'+tableView).hide();
     $(boxView).find('center').show();
     var modifyData=[];
-    //$.each(data,function (index,item) {
-    //    modifyData.push({'text':item});
-    // });
+	if(onlyText==1){
+    	$.each(data,function (index,item) {
+    	    modifyData.push({'text':item});
+        });
+	}else {
 	$.each(data,function (index,item) {
         modifyData.push({'text':item[0],'mid':item[1],'uid':item[2], 'timestamp':item[3],'nick_name':item[4],'retweet':item[5],'comment':item[6]});
-    });
+    });}
 	if(modifyData.length==0){
 		$(boxView).find('center').slideUp(700);
 		$(boxView+' .'+tableView).show();
@@ -617,6 +621,10 @@ function thisButton_Content(data) {
                     return str;
                 }*/
 				formatter: function (value, row, index) {
+					 if(onlyText==1){
+						 var str='<p style="text-align: left;">• '+value+'</p>';
+                   		 return str;
+					 }else {
     var name,txt,txt2,img;
     if (row.nick_name==''||row.nick_name=='null'||row.nick_name=='unknown'){
         name=row.uid;
@@ -674,7 +682,7 @@ function thisButton_Content(data) {
         '       </div>'+
         '   </div>'+
         '</div>';
-    return str;
+    return str;}
 }
             },
         ],

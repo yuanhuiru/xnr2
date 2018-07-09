@@ -35,12 +35,12 @@ from xnr.global_utils import weibo_feedback_comment_index_name,weibo_feedback_co
                             weibo_domain_index_name,weibo_domain_index_type,weibo_xnr_retweet_timing_list_index_type,weibo_private_white_uid_index_name,\
                             weibo_private_white_uid_index_type,daily_interest_index_name_pre,\
                             daily_interest_index_type, be_retweet_index_name_pre, be_retweet_index_type, es_retweet,\
-							network_buzzwords_index_name, network_buzzwords_index_type
+							network_buzzwords_index_name, network_buzzwords_index_type,new_xnr_flow_text_index_name_pre,new_xnr_flow_text_index_type
 
 from xnr.global_utils import weibo_xnr_save_like_index_name,weibo_xnr_save_like_index_type
 
 from xnr.time_utils import ts2datetime,datetime2ts,get_flow_text_index_list,\
-                            get_timeset_indexset_list, get_db_num
+                            get_timeset_indexset_list, get_db_num,get_new_xnr_flow_text_index_list
 from xnr.weibo_publish_func import publish_tweet_func,retweet_tweet_func,comment_tweet_func,private_tweet_func,\
                                 like_tweet_func,follow_tweet_func,unfollow_tweet_func,create_group_func,\
                                 reply_tweet_func #,at_tweet_func
@@ -617,14 +617,16 @@ def get_bussiness_recomment_tweets(xnr_user_no,sort_item):
 
 def get_root_weibo(root_mid,timestamp):
 
-	current_date = ts2datetime(int(timestamp))
+	#current_date = ts2datetime(int(timestamp))
 	
-	index_name = flow_text_index_name_pre + current_date
-	try:
-	    result = es_flow_text.get(index=index_name,doc_type=flow_text_index_type,id=root_mid)['_source']
-	    return [result]
-	except:
-	    return []
+	index_name_list = get_new_xnr_flow_text_index_list(int(timestamp)+24*3600) # 最多往前查7天
+	for index_name in index_name_list:
+		try:
+			result = es.get(index=index_name,doc_type=new_xnr_flow_text_index_type,id=root_mid)['_source']
+			return [result]
+		except:
+			continue
+	return []
 
 def get_reply_total(task_detail):
 

@@ -127,7 +127,7 @@ def get_day_flow_text_index_list(date_ts):
     return index_name
 
 
-def get_new_xnr_flow_text_index_list(date_range_end_ts):
+def get_new_xnr_flow_text_index_list(date_range_end_ts,MAX_FLOW_TEXT_DAYS=7):
     index_name_list = []
     days_num = MAX_FLOW_TEXT_DAYS
     for i in range(1,(days_num+1)):

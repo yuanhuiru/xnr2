@@ -376,6 +376,7 @@ def create_xnr_targetuser(xnr_user_no):
     if user_num <100:
         temp_uidlist = create_xnr_targetuser('WXNR0010')
         expand_userid_list.extend(temp_uidlist)
+        list(set(expand_userid_list))
     return expand_userid_list 
 
 

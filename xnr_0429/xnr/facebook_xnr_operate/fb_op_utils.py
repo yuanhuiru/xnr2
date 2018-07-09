@@ -43,14 +43,14 @@ def get_submit_tweet_fb(task_detail):
 	es_xnr_result = es.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
 
 	fb_mail_account = es_xnr_result['fb_mail_account']
-	fb_phone_account = es_xnr_result['fb_phone_account']
-	password = es_xnr_result['password']
-	print password
+	fb_phone_account = es_xnr_result['fb_phone_account'].strip()
+	password = str(es_xnr_result['password'].strip())
+	print type(password), password
+	print type('13018119931126731x'), '13018119931126731x'
 	if fb_phone_account:
-		account_name = fb_phone_account
-		if '+86' not in account_name:
-			account_name = '+86' + account_name
-		print account_name
+		account_name = str(fb_phone_account)
+		print type(account_name), account_name
+		print type('+8613520874771'), '+8613520874771'
 	elif fb_mail_account:
 		account_name = fb_mail_account
 	else:
@@ -58,7 +58,7 @@ def get_submit_tweet_fb(task_detail):
 
 	if account_name:
 		mark = fb_publish(account_name, password, text, tweet_type, xnr_user_no)
-
+		#mark = fb_publish('+8613520874771', '13018119931126731x', text, tweet_type, xnr_user_no)
 	else:
 		mark = False
 
@@ -512,8 +512,8 @@ def get_comment_operate_fb(task_detail):
 		account_name = False
 
 	if account_name:
-		mark = fb_comment(account_name, password, _id, uid, text, tweet_type, xnr_user_no)
-
+		#mark = fb_comment(account_name, password, _id, uid, text, tweet_type, xnr_user_no)
+		mark = fb_comment('13520874771', '13018119931126731x', _id, uid, text, tweet_type, xnr_user_no)
 	else:
 		mark = False
 
@@ -542,8 +542,8 @@ def get_retweet_operate_fb(task_detail):
 		account_name = False
 
 	if account_name:
-		mark = fb_retweet(account_name, password, _id, uid, text, tweet_type, xnr_user_no)
-
+		#mark = fb_retweet(account_name, password, _id, uid, text, tweet_type, xnr_user_no)
+		mark = fb_retweet('13520874771', '13018119931126731x', _id, uid, text, tweet_type, xnr_user_no)
 	else:
 		mark = False
 
@@ -571,8 +571,8 @@ def get_at_operate_fb(task_detail):
 		account_name = False
 
 	if account_name:
-		mark = fb_mention(account_name,password, user_name, text, xnr_user_no, tweet_type)
-
+		#mark = fb_mention(account_name,password, user_name, text, xnr_user_no, tweet_type)
+		mark = fb_mention('13520874771', '13018119931126731x', text, xnr_user_no, tweet_type)
 	else:
 		mark = False
 
@@ -599,8 +599,8 @@ def get_like_operate_fb(task_detail):
 		account_name = False
 
 	if account_name:
-		mark = fb_like(account_name,password, _id, uid)
-
+		#mark = fb_like(account_name,password, _id, uid)
+		mark = fb_like('13520874771', '13018119931126731x', _id, uid)
 	else:
 		mark = False
 
@@ -626,8 +626,8 @@ def get_follow_operate_fb(task_detail):
 		account_name = False
 
 	if account_name:
-		mark = fb_follow(account_name, password, uid, xnr_user_no, trace_type)
-
+		#mark = fb_follow(account_name, password, uid, xnr_user_no, trace_type)
+		mark = fb_follow('13520874771', '13018119931126731x', uid, xnr_user_no, trace_type)
 	else:
 		mark = False
 
@@ -652,8 +652,8 @@ def get_unfollow_operate_fb(task_detail):
 		account_name = False
 
 	if account_name:
-		mark = fb_unfollow(account_name, password, uid, xnr_user_no)
-
+		#mark = fb_unfollow(account_name, password, uid, xnr_user_no)
+		mark = fb_unfollow('13520874771', '13018119931126731x', uid, xnr_user_no)
 	else:
 		mark = False
 
@@ -680,7 +680,8 @@ def get_private_operate_fb(task_detail):
         account_name = False
 
     if account_name:
-        mark = fb_message(account_name, password,  text, uid)
+        #mark = fb_message(account_name, password,  text, uid)
+        mark = fb_message('13520874771', '13018119931126731x', text, uid)
         print 'private!!'
         #mark = fb_message('8618348831412','Z1290605918',  text, uid)
 
@@ -709,8 +710,8 @@ def get_add_friends(task_detail):
         account_name = False
 
     if account_name:
-        mark = fb_add_friend(account_name, password, uid)
-        
+        #mark = fb_add_friend(account_name, password, uid)
+        mark = fb_add_friend('13520874771', '13018119931126731x', uid)
         #mark = fb_message('8618348831412','Z1290605918',  text, uid)
 
     else:
@@ -738,7 +739,8 @@ def get_confirm_friends(task_detail):
         account_name = False
 
     if account_name:
-        mark = fb_confirm(account_name, password, uid)
+        #mark = fb_confirm(account_name, password, uid)
+        mark = fb_confirm('13520874771', '13018119931126731x', uid)
         #mark = fb_message('8618348831412','Z1290605918',  text, uid)
 
     else:
@@ -767,7 +769,7 @@ def get_delete_friend(task_detail):
 
     if account_name:
         mark = fb_delete_friend(account_name, password, uid)
-        
+        mark = fb_delete_friend('13520874771', '13018119931126731x', uid)
         #mark = fb_message('8618348831412','Z1290605918',  text, uid)
 
     else:

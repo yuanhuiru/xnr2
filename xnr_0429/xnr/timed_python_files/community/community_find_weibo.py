@@ -71,6 +71,7 @@ def get_users(xnr_user_no,nodes=None):
         uids = nodes
     print 'uids:::',len(uids)
     if uids:
+        print 'uid!!!!!!',uids
         retweet_result = user_es.mget(index=retweet_index, doc_type=retweet_type,body={'ids':uids}, _source=True)['docs']
    # comment_result = user_es.mget(index=comment_index, doc_type=comment_type,body={'ids':uids}, _source=True)['docs']
    # print 'retweet_index::',retweet_index
