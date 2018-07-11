@@ -71,8 +71,16 @@ def get_users(xnr_user_no,nodes=None):
         uids = nodes
     print 'uids:::',len(uids)
     if uids:
-        print 'uid!!!!!!',uids
-        retweet_result = user_es.mget(index=retweet_index, doc_type=retweet_type,body={'ids':uids}, _source=True)['docs']
+        #print 'uid!!!!!!',uids
+        print '#####'
+        uid_list=[uids[i:i+100] for i in xrange(0,len(uids),100)]
+        retweet_result = []
+        for uid_item in uid_list:
+            try:
+                retweet_result_temp = user_es.mget(index=retweet_index, doc_type=retweet_type,body={'ids':uid_item}, _source=True)['docs']
+                retweet_result.extend(retweet_result_temp)
+            except:
+                print 'uid error!!'
    # comment_result = user_es.mget(index=comment_index, doc_type=comment_type,body={'ids':uids}, _source=True)['docs']
    # print 'retweet_index::',retweet_index
    # print 'retweet_result:::',retweet_result
@@ -342,7 +350,7 @@ if __name__ == '__main__':
         xnr_user_no_list = ['WXNR0004']
     else:
         #today_time = time.time()-1*DAY
-        today_time = datetime2ts('2018-07-01')
+        today_time = datetime2ts('2018-07-08')
         print ts2datetime(today_time)
         xnr_user_no_list = get_compelete_wbxnr()
 
