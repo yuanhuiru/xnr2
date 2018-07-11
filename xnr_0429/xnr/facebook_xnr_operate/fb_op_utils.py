@@ -57,8 +57,8 @@ def get_submit_tweet_fb(task_detail):
 		account_name = False
 
 	if account_name:
-		mark = fb_publish(account_name, password, text, tweet_type, xnr_user_no)
-		#mark = fb_publish('+8613520874771', '13018119931126731x', text, tweet_type, xnr_user_no)
+		#mark = fb_publish(account_name, password, text, tweet_type, xnr_user_no)
+		mark = fb_publish('+8613520874771', '13018119931126731x', text, tweet_type, xnr_user_no)
 	else:
 		mark = False
 
