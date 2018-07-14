@@ -19,7 +19,9 @@ task_detail["task_name"] = id_sensing
 task_detail["remark"] = "大V感知热门事件"
 task_detail["social_sensors"] = json.dumps(list(social_sensors))
 task_detail["history_status"] = json.dumps([])
+
 print es.index(index=index_sensing, doc_type=type_sensing, id=id_sensing, body=task_detail)
+
 
 
 
