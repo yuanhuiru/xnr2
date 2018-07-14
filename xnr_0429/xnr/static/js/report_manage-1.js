@@ -433,9 +433,9 @@ $('.type2 .demo-label').on('click',function () {
     $('.person').hide();
     var newReport_url;
     if (flagType==1||flagType==4||flagType==5){
-        var a='';
-		if(flagType==1){a='_new';}
-		newReport_url='/'+beginUrl+'/show_reportcontent'+a+'/?report_type='+types.join(',')+
+        var a='',b='_';
+		if(flagType==1){a='_new',b='';}
+		newReport_url='/'+beginUrl+'/show_report'+b+'content'+a+'/?report_type='+types.join(',')+
             '&start_time='+time1+'&end_time='+time2;
         public_ajax.call_request('get',newReport_url,reportDefaul);
      }else if(flagType==2){
@@ -467,9 +467,9 @@ $('.choosetime .demo-label input').on('click',function () {
         $(this).parents('.choosetime').find('#sure').hide();
         var weiboUrl;
         if (flagType==1||flagType==4||flagType==5){
-	    	var a='';
-            if(flagType==1){a='_new';}
-            weiboUrl='/'+beginUrl+'/show_reportcontent'+a+'/?report_type='+valCH.join(',')+
+	    	var a='',b='_';
+            if(flagType==1){a='_new',b='';}
+            weiboUrl='/'+beginUrl+'/show_report'+b+'content'+a+'/?report_type='+valCH.join(',')+
                 '&start_time='+getDaysBefore(_val)+'&end_time='+time2;
  	        public_ajax.call_request('get',weiboUrl,reportDefaul); 
        }else if(flagType==2){
@@ -499,9 +499,9 @@ $('#sure').on('click',function () {
     }else {
         var weiboUrl;
         if (flagType==1||flagType==4||flagType==5){
-			var a='';
-            if(flagType==1){a='_new';}
-            weiboUrl='/'+beginUrl+'/show_reportcontent'+a+'/?report_type='+valCH.join(',')+
+			var a='',b='_';
+            if(flagType==1){a='_new',b='';}
+            weiboUrl='/'+beginUrl+'/show_report'+b+'content'+a+'/?report_type='+valCH.join(',')+
                 '&start_time='+(Date.parse(new Date(s))/1000)+'&end_time='+(Date.parse(new Date(d))/1000);
             public_ajax.call_request('get',weiboUrl,reportDefaul);
         }else if(flagType==2){

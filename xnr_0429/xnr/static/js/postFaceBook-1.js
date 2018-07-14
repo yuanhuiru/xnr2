@@ -683,6 +683,7 @@ function defalutWords(data) {
                         '           <i class="timestamp" style="display: none;">'+row.timestamp+'</i>'+
                         '           <span class="center_2">'+txt+
                         '           </span>'+
+                        '           <div class="_translate" style="display: none;"><b style="color: #f98077;">译文：</b><span class="tsWord"></span></div>'+
                         '           <div class="center_3">'+
                         '               <span class="cen3-1" onclick="copyPost(this)"><i class="icon icon-copy"></i>&nbsp;&nbsp;复制</span>'+
                        /* '               <span class="cen3-2" onclick="retweet(this,\'daily_post\')"><i class="icon icon-share"></i>&nbsp;&nbsp;分享（<b class="forwarding">'+row.share+'</b>）</span>'+
@@ -804,6 +805,7 @@ function hotWeibo(data) {
                         '           <i class="uid" style="display: none;">'+row.uid+'</i>'+
                         '           <i class="timestamp" style="display: none;">'+row.timestamp+'</i>'+
                         '           <span class="center_2">'+txt+'</span>'+
+						'           <div class="_translate" style="display: none;"><b style="color: #f98077;">译文：</b><span class="tsWord"></span></div>'+
                         '           <div class="center_3">'+
                         '               <span onclick="related(this)" title="事件子观点及相关帖子"><i class="icon icon-stethoscope"></i>&nbsp;&nbsp;事件子观点及相关发帖</span>'+
                         '               <span onclick="copyPost(this)" title="复制"><i class="icon icon-copy"></i>&nbsp;&nbsp;复制</span>'+
@@ -1138,6 +1140,7 @@ function businessWeibo(data) {
                         '           <i class="timestamp" style="display: none;">'+row.timestamp+'</i>'+
                         '           <span class="center_2">'+txt+
                         '           </span>'+
+                        '           <div class="_translate" style="display: none;"><b style="color: #f98077;">译文：</b><span class="tsWord"></span></div>'+
                         '           <div class="center_3">'+
                         // '               <span class="cen3-4" onclick="joinlab(this)"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+
                         '               <span class="cen3-5" onclick="copyPost(this)"><i class="icon icon-copy"></i>&nbsp;&nbsp;复制</span>'+

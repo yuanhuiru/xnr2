@@ -1,11 +1,12 @@
 var relatedUrl='/facebook_xnr_operate/related_recommendation/?xnr_user_no='+ID_Num+'&sort_item=sensitive';
 public_ajax.call_request('get',relatedUrl,related);
+var idBox='influence',idBoxZONG='influe';
 function related(data) {
     $.each(data,function (index,item) {
         detList[item.uid]=item;
     });
-    $('#influence').bootstrapTable('load', data);
-    $('#influence').bootstrapTable({
+    $('#'+idBox).bootstrapTable('load', data);
+    $('#'+idBox).bootstrapTable({
         data:data,
         search: true,//是否搜索
         pagination: true,//是否分页
@@ -116,7 +117,36 @@ function showHide(_tp$) {
         }
 	 }
 }
-$('#container .suggestion #myTabs li').on('click',function () {
+$('#myTabs li').on('click',function () {
+    var ty=$(this).attr('num'),urlREL;
+    //idNAME=ty;
+	if(ty==1){
+		idBox='influence',idBoxZONG='influe';
+		 $('.influence').hide();
+  	    $('#influe p').show();
+		var ytl=$('#inputList input:radio[name="xnr123"]:checked').attr('tp');
+		urlREL='/facebook_xnr_operate/related_recommendation/?xnr_user_no='+ID_Num+'&sort_item='+ytl;				
+		showHide(ytl);
+	}else {
+		idBox='influence2',idBoxZONG='influe2';
+		$('.influence2').hide();
+    	$('#influe2 p').show();
+		urlREL='facebook_xnr_operate/daily_recomment_tweets/?xnr_user_no='+ID_Num+'&sort_item=user_index';
+	}
+    public_ajax.call_request('get',urlREL,related);
+ 
+})
+
+$('#inputList label input').on('click',function () {
+    var ty=$(this).attr('tp');
+    //idNAME=ty;
+    $('.influence').hide();
+    $('#influe p').show();
+    var relatedUrl='/facebook_xnr_operate/related_recommendation/?xnr_user_no='+ID_Num+'&sort_item='+ty;
+    public_ajax.call_request('get',relatedUrl,related);
+    showHide(ty);
+})
+/*$('#container .suggestion #myTabs li').on('click',function () {
     var ty=$(this).attr('tp');
     //idNAME=ty;
     $('.influence').hide();
@@ -140,7 +170,7 @@ $('.findSure').on('click',function () {
         public_ajax.call_request('get',searchUrl,related);
         $('.searchResult').slideDown(30);
     }
-});
+});*/
 //查看详情
 var detList={};
 function lookDetails(puid) {

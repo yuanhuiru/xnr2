@@ -1132,9 +1132,39 @@ function fans(data) {
                     //'<span style="cursor: pointer;" onclick="revoked(\''+ID+'\',\'attach_fans_follow\')" title="直接关注"><i class="icon icon-heart"></i></span>';
                 }
             },
+			{
+                title: "加入重点关注",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    var ID=row.uid;
+                    return '<span style="cursor: pointer;" onclick="joinWindow(\''+ID+'\')" title="加入重点关注"><i class="icon icon-star"></i></span>';
+                }
+            },
         ],
     });
     $('#fans p').slideUp(700);
+}
+var $id_='';
+function joinWindow(id){
+	$id_=id;
+	 $('#joinHW').modal('show');
+}
+function joinHeavy(){
+	var useradd_url='/twitter_xnr_operate/trace_follow/?xnr_user_no='+ID_Num+'&uid_string='+$id_;
+	public_ajax.call_request('get',useradd_url,addSuccess)
+}
+function addSuccess(data) {
+    if (data[0]||data){
+        $('#pormpt p').text('加入成功。');
+        $('#pormpt').modal('show');
+    }else {
+        $('#pormpt p').text('加入失败');
+        $('#pormpt').modal('show');
+    }
 }
 //======查看详情===关注与否====
 
