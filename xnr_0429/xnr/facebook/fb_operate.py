@@ -217,14 +217,16 @@ class Operation():
 		driver = self.launcher.login_mobile()
 		#driver,display = self.launcher.login()
 		#try:
-		post_url = 'https://m.facebook.com/' + uid + '/posts/' + fid
+		#post_url = 'https://m.facebook.com/' + uid + '/posts/' + fid
+		post_url = 'https://m.facebook.com/story.php?story_fbid=' + fid + '&id=' + uid
 		#	video_url = 'https://m.facebook.com/' + uid + '/videos/' + fid
 		driver.get(post_url)
 		time.sleep(10)
 		html = driver.page_source
 		with open('like.html', 'wb') as f:
 			f.write(html)
-		driver.find_element_by_xpath('//div[@class="cb cc"]/div[@class="cd ce cf cg"]/table[@role="presentation"]/tbody/tr/td[1]/a').click()
+		#driver.find_element_by_xpath('//div[@class="cb cc"]/div[@class="cd ce cf cg"]/table[@role="presentation"]/tbody/tr/td[1]/a').click()
+		driver.find_element_by_xpath('//div[@id="m_story_permalink_view"]//table[@role="presentation"]/tbody/tr/td[1]').click()
 		driver.quit()
 		print "like Success!!!!!!"
 		return [True, '']
@@ -275,7 +277,9 @@ class Operation():
 		#driver,display = self.launcher.login()
 		#try:
 		post_url = 'https://m.facebook.com/' + uid + '/posts/' + fid
-		video_url = 'https://m.facebook.com/' + uid + '/videos/' + fid
+		#post_url = 'https://m.facebook.com/story.php?story_fbid=' + fid + '&id=' + uid
+		#video_url = 'https://m.facebook.com/' + uid + '/videos/' + fid
+		print post_url
 		driver.get(post_url)
 		#wait = WebDriverWait(driver, timeout=600)
 		time.sleep(5)
@@ -353,8 +357,9 @@ class Operation():
 		#driver,display = self.launcher.login()
 		#try:
 		print 'uid, fid, text...',uid, fid, text
-		post_url = 'https://m.facebook.com/' + uid + '/posts/' + fid
-		video_url = 'https://m.facebook.com/' + uid + '/videos/' + fid
+		#post_url = 'https://m.facebook.com/' + uid + '/posts/' + fid
+		post_url = 'https://m.facebook.com/story.php?story_fbid=' + fid + '&id=' + uid
+		#video_url = 'https://m.facebook.com/' + uid + '/videos/' + fid
 		driver.get(post_url)
 		time.sleep(30)
 		html = driver.page_source
@@ -377,7 +382,7 @@ class Operation():
 				#except:
 					#pass
 
-		driver.find_element_by_xpath('//td[@class="t ci ct ck"]/a[@class="cl cm cn co"]').click()
+		driver.find_element_by_xpath('//table[@role="presentation"]/tbody/tr/td[4]').click()
 				#driver.find_element_by_xpath('//a[@title="发送给好友或发布到你的时间线上。"]').click()
 		html = driver.page_source
 		with open("test.html", "wb") as f:

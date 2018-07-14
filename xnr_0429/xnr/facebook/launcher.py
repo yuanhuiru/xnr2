@@ -62,7 +62,15 @@ class Launcher():
 		headers = {
 			'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:56.0) Gecko/20100101 Firefox/56.0'
 		}
-
+		try:
+			driver.find_element_by_xpath('//div[@id="root"]/table[@role="presentation"]/tbody/tr/td/div/div/a').click()
+		except Exception, e:
+			print e
+			pass
+		time.sleep(5)
+		html = driver.page_source
+		with open('launcher.html', 'wb') as f:
+			f.write(html)
 		return driver
 
 
