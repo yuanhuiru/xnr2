@@ -21,7 +21,8 @@ from utils import push_keywords_task,get_submit_tweet,save_to_tweet_timing_list,
                 get_trace_follow_operate,get_un_trace_follow_operate,get_show_retweet_timing_list,\
                 get_show_trace_followers,get_image_path,get_reply_total,get_show_domain,\
                 get_show_retweet_timing_list_future,get_related_recommendation_from_es,get_bussiness_recomment_tweets_from_es,\
-                get_daily_recomment_tweets_from_es, get_network_buzzwords,get_root_weibo
+                get_daily_recomment_tweets_from_es, get_network_buzzwords,get_root_weibo,\
+                get_V_recommend_tweets
 from utils import save_oprate_like
 from xnr.utils import add_operate2redis
 
@@ -172,6 +173,16 @@ def ajax_hot_recommend_tweets():
     tweets = get_hot_recommend_tweets(xnr_user_no,topic_field,sort_item)
     return json.dumps(tweets)
 
+# 热点跟随微博推荐
+@mod.route('/V_recommend_tweets/')
+def ajax_V_recommend_tweets():
+
+    xnr_user_no = request.args.get('xnr_user_no','') # 当前虚拟人 
+    topic_field = request.args.get('topic_field','') # 默认...
+    sort_item = request.args.get('sort_item','timestamp')  # timestamp-按时间, finish_status-按事件完成度，event_weight-按事件权重
+    tweets = get_V_recommend_tweets(xnr_user_no,topic_field,sort_item)
+    return json.dumps(tweets)
+
 ## 热点跟随：内容推荐和子观点分析的提交关键词任务
 @mod.route('/submit_hot_keyword_task/')
 def ajax_submit_hot_keyword_task():
@@ -258,12 +269,12 @@ def ajax_daily_recomment_tweets():
 # 查看原文
 @mod.route('/get_root_weibo/')
 def ajax_get_root_weibo():
-	root_mid = request.args.get('root_mid','')
-	timestamp = request.args.get('timestamp','')
-	
-	result = get_root_weibo(root_mid,timestamp)
-	
-	return json.dumps(result)
+    root_mid = request.args.get('root_mid','')
+    timestamp = request.args.get('timestamp','')
+    
+    result = get_root_weibo(root_mid,timestamp)
+    
+    return json.dumps(result)
 
 ## 转发、评论、at回复
 @mod.route('/reply_total/')
@@ -596,6 +607,7 @@ def ajax_un_trace_follow_operate():
     results = get_un_trace_follow_operate(xnr_user_no,uid_string,nick_name_string)
 
     return json.dumps(results)  # [mark,fail_uids,fail_nick_name_list]  fail_uids - 取消失败的uid  fail_nick_name_list -- 原因同上
+
 
 
 

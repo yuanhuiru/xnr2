@@ -328,6 +328,14 @@ social_sensing_index_name = 'social_sensing_text'
 social_sensing_index_name_pre = 'social_sensing_text_'
 social_sensing_index_type = 'text'
 
+# V sensing
+index_V_sensing = "manage_V_sensing_task"
+type_V_sensing = "task_V"
+id_V_sensing = "social_V_sensing_task"
+social_V_sensing_index_name = 'social_V_sensing_text'
+social_V_sensing_index_name_pre = 'social_V_sensing_text_'
+social_V_sensing_index_type = 'text_V'
+
 weibo_private_white_uid_index_name = 'weibo_private_white_uid'
 weibo_private_white_uid_index_type = 'white_uid'
 
@@ -884,5 +892,6 @@ twitter_user_trans_task_name = 'twitter_user_trans_task'
 
 facebook_flow_text_trans_task_name = 'facebook_flow_text_trans_task'
 facebook_user_trans_task_name = 'facebook_user_trans_task'
+
 
 

@@ -21,7 +21,7 @@ from xnr.global_utils import weibo_hot_keyword_task_index_name,weibo_hot_keyword
                             weibo_hot_subopinion_results_index_name,weibo_hot_subopinion_results_index_type,\
                             weibo_bci_index_name_pre,weibo_bci_index_type,portrait_index_name,portrait_index_type,\
                             es_user_portrait,es_user_profile,active_social_index_name_pre,active_social_index_type,\
-							weibo_business_tweets_index_name_pre, weibo_business_tweets_index_type
+                            weibo_business_tweets_index_name_pre, weibo_business_tweets_index_type
 from xnr.global_utils import weibo_feedback_comment_index_name,weibo_feedback_comment_index_type,\
                             weibo_feedback_retweet_index_name,weibo_feedback_retweet_index_type,\
                             weibo_feedback_private_index_name,weibo_feedback_private_index_type,\
@@ -35,7 +35,7 @@ from xnr.global_utils import weibo_feedback_comment_index_name,weibo_feedback_co
                             weibo_domain_index_name,weibo_domain_index_type,weibo_xnr_retweet_timing_list_index_type,weibo_private_white_uid_index_name,\
                             weibo_private_white_uid_index_type,daily_interest_index_name_pre,\
                             daily_interest_index_type, be_retweet_index_name_pre, be_retweet_index_type, es_retweet,\
-							network_buzzwords_index_name, network_buzzwords_index_type,new_xnr_flow_text_index_name_pre,new_xnr_flow_text_index_type
+                            network_buzzwords_index_name, network_buzzwords_index_type,new_xnr_flow_text_index_name_pre,new_xnr_flow_text_index_type
 
 from xnr.global_utils import weibo_xnr_save_like_index_name,weibo_xnr_save_like_index_type
 
@@ -364,6 +364,41 @@ def get_hot_recommend_tweets(xnr_user_no,topic_field,sort_item):
         results_all.append(result)
     return results_all
 
+def get_V_recommend_tweets(xnr_user_no,topic_field,sort_item):
+    topic_field_en = topic_ch2en_dict[topic_field]
+    query_body = {
+        'query':{
+            'bool':{
+                'must':[
+                    {
+                        'filtered':{
+                            'filter':{
+                                'term':{'topic_field':topic_field_en}
+                            }
+                        }
+                    }
+                ]
+            }
+            
+        },
+        'sort':{sort_item:{'order':'desc'}},
+        'size':TOP_WEIBOS_LIMIT
+    }
+    es_results = es.search(index=social_sensing_index_name,doc_type=social_sensing_index_type,body=query_body)['hits']['hits']
+    if not es_results:    
+        es_results = es.search(index=social_sensing_index_name,doc_type=social_sensing_index_type,\
+                                body={'query':{'match_all':{}},'size':TOP_WEIBOS_LIMIT,\
+                                'sort':{sort_item:{'order':'desc'}}})['hits']['hits']
+    results_all = []
+    for result in es_results:
+        result = result['_source']
+        uid = result['uid']
+        #nick_name,photo_url = uid2nick_name_photo(uid)
+        result['nick_name'] = uid #nick_name
+        result['photo_url'] = ''#photo_url
+        results_all.append(result)
+    return results_all
+
 def get_hot_content_recommend(xnr_user_no,task_id):
     task_id_new = xnr_user_no+'_'+task_id
     es_task = es.get(index=weibo_hot_keyword_task_index_name,doc_type=weibo_hot_keyword_task_index_type,\
@@ -560,7 +595,7 @@ def get_tweets_from_user_portrait(monitor_keywords_list,sort_item_new):
 ## 业务发帖 -- 直接读取结果
 def get_bussiness_recomment_tweets_from_es(xnr_user_no,sort_item):
     
-	
+    
     current_date = ts2datetime(time.time())
     index_name = weibo_business_tweets_index_name_pre + current_date
     _id = xnr_user_no +'_'+ sort_item
@@ -617,16 +652,16 @@ def get_bussiness_recomment_tweets(xnr_user_no,sort_item):
 
 def get_root_weibo(root_mid,timestamp):
 
-	#current_date = ts2datetime(int(timestamp))
-	
-	index_name_list = get_new_xnr_flow_text_index_list(int(timestamp)+24*3600) # 最多往前查7天
-	for index_name in index_name_list:
-		try:
-			result = es.get(index=index_name,doc_type=new_xnr_flow_text_index_type,id=root_mid)['_source']
-			return [result]
-		except:
-			continue
-	return []
+    #current_date = ts2datetime(int(timestamp))
+    
+    index_name_list = get_new_xnr_flow_text_index_list(int(timestamp)+24*3600) # 最多往前查7天
+    for index_name in index_name_list:
+        try:
+            result = es.get(index=index_name,doc_type=new_xnr_flow_text_index_type,id=root_mid)['_source']
+            return [result]
+        except:
+            continue
+    return []
 
 def get_reply_total(task_detail):
 
@@ -828,18 +863,18 @@ def get_show_private(task_detail):
 
     with open(white_uid_path,'rb') as f:
         for line in f:
-    	    line = line.strip('\n')
-    	    white_uid_list.append(line.strip())
+            line = line.strip('\n')
+            white_uid_list.append(line.strip())
 
     white_uid_list = list(set(white_uid_list))
     #print 'white_uid_list:::',white_uid_list
     try:
-    	es_get = es.get(index=weibo_private_white_uid_index_name,doc_type=weibo_private_white_uid_index_type,\
-    				id=xnr_user_no)['_source']
-    	white_uid_list = es_get['white_uid_list']
-    	
+        es_get = es.get(index=weibo_private_white_uid_index_name,doc_type=weibo_private_white_uid_index_type,\
+                    id=xnr_user_no)['_source']
+        white_uid_list = es_get['white_uid_list']
+        
     except:
-    	white_uid_list = []
+        white_uid_list = []
 
     query_body = {
         'query':{
@@ -914,7 +949,7 @@ def get_show_at(task_detail):
         'sort':[{sort_item:{'order':'desc'}},{'timestamp':{'order':'desc'}}],
         'size':MAX_SEARCH_SIZE
     }
-    	
+        
     if start_ts < datetime2ts(SYSTEM_START_DATE):
         start_ts = datetime2ts(SYSTEM_START_DATE)
 
@@ -1361,7 +1396,7 @@ def get_related_recommendation_from_es(task_detail):
     
     xnr_user_no = task_detail['xnr_user_no']
     sort_item = task_detail['sort_item']
-	
+    
     current_date = ts2datetime(time.time())
     index_name = active_social_index_name_pre + current_date
     _id = xnr_user_no +'_'+ sort_item
@@ -1932,7 +1967,7 @@ def get_show_retweet_timing_list_future(xnr_user_no):
     return result_all
 
 def get_show_trace_followers(xnr_user_no):
-	#print '=='
+    #print '=='
     weibo_user_info = []
     #print '=='
     
@@ -1961,7 +1996,7 @@ def get_show_trace_followers(xnr_user_no):
     # results = es_user_profile.search(index=profile_index_name,doc_type=profile_index_type,\
     #                 body=query_body)['hits']['hits']
     '''
-	跨网段查询较慢，且基本上无信息，故删除
+    跨网段查询较慢，且基本上无信息，故删除
     if trace_follow_list:
         mget_results = es_user_profile.mget(index=profile_index_name,doc_type=profile_index_type,\
                             body={'ids':trace_follow_list})['docs']
@@ -1975,46 +2010,46 @@ def get_show_trace_followers(xnr_user_no):
                 weibo_user_info.append({'uid':uid,'statusnum':0,'fansnum':0,'friendsnum':0,'photo_url':'','sex':'','nick_name':'','user_location':''})
     else:
         weibo_user_info = []
-	'''
+    '''
     #print 'trace;;',trace_follow_list
     if trace_follow_list:
         for uid in trace_follow_list:
-			weibo_user_info.append({'uid':uid,'statusnum':0,'fansnum':0,'friendsnum':0,'photo_url':'','sex':'','nick_name':'','user_location':''})
+            weibo_user_info.append({'uid':uid,'statusnum':0,'fansnum':0,'friendsnum':0,'photo_url':'','sex':'','nick_name':'','user_location':''})
     else:
         weibo_user_info
-		
+        
     return weibo_user_info
 
 def get_add_private_white_uid(xnr_user_no,white_uid_string):
 
-	white_uid_list = white_uid_string.encode('utf-8').split('，')
-	mark = False
+    white_uid_list = white_uid_string.encode('utf-8').split('，')
+    mark = False
 
-	try:
-		get_result = es.get(index=weibo_private_white_uid_index_name,doc_type=weibo_private_white_uid_index_type,\
-			id=xnr_user_no)['_source']
+    try:
+        get_result = es.get(index=weibo_private_white_uid_index_name,doc_type=weibo_private_white_uid_index_type,\
+            id=xnr_user_no)['_source']
 
-		white_uid_list_old = get_result['white_uid_list']
-		white_uid_list_old.extend(white_uid_list)
+        white_uid_list_old = get_result['white_uid_list']
+        white_uid_list_old.extend(white_uid_list)
 
-		get_result['white_uid_list'] = white_uid_list_old
+        get_result['white_uid_list'] = white_uid_list_old
 
-		es.update(index=weibo_private_white_uid_index_name,doc_type=weibo_private_white_uid_index_type,\
-			body={'doc':get_result})
+        es.update(index=weibo_private_white_uid_index_name,doc_type=weibo_private_white_uid_index_type,\
+            body={'doc':get_result})
 
-		mark = True
-	
-	except:
-		item_dict = {}
-		item_dict['xnr_user_no'] = xnr_user_no
-		item_dict['white_uid_list'] = white_uid_list
+        mark = True
+    
+    except:
+        item_dict = {}
+        item_dict['xnr_user_no'] = xnr_user_no
+        item_dict['white_uid_list'] = white_uid_list
 
-		es.index(index=weibo_private_white_uid_index_name,doc_type=weibo_private_white_uid_index_type,\
-			id=xnr_user_no,body=item_dict)
-		
-		mark = True
+        es.index(index=weibo_private_white_uid_index_name,doc_type=weibo_private_white_uid_index_type,\
+            id=xnr_user_no,body=item_dict)
+        
+        mark = True
 
-	return mark
+    return mark
 
 
 def get_follower_opinion_wb(task_detail):
@@ -2118,6 +2153,7 @@ def save_oprate_like(task_detail):
 
 
         
+
 
 
 
