@@ -71,7 +71,9 @@ def fb_publish(account_name, password, text, tweet_type, xnr_user_no):
 def fb_comment(account_name, password, _id, uid, text, tweet_type, xnr_user_no):
 
     operation = Operation(account_name,password)
-    
+    print 'uid', uid
+    _id = _id.split('_')[1]
+    print 'fid', _id, type(_id)
     #try:
     print operation.comment(uid,_id,text)
     mark = True
@@ -94,7 +96,9 @@ def fb_retweet(account_name, password, _id, uid, text, tweet_type, xnr_user_no):
 
     print 'account_name,password....',account_name,password
     operation = Operation(account_name,password)
-    
+    print "uid", uid
+    _id = _id.split('_')[1]
+    print "fid", _id, type(_id)
     #try:
     print operation.share(uid,_id,text)
     mark = True
@@ -157,8 +161,10 @@ def fb_unfollow(account_name, password, uid, xnr_user_no):
 def fb_like(account_name,password, _id, uid):
     # uid: 原贴用户id
     operation = Operation(account_name,password)
-    
+    print 'uid', uid
     #try:
+    _id = _id.split('_')[1]
+    print 'fid', _id
     operation.like(uid,_id)
     mark = True
     # except:
