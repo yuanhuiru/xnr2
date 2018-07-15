@@ -42,7 +42,13 @@ class Launcher():
 
 
 	def login_mobile(self):
-
+		print 'facebook.launcher.login_mobile'
+		if '+86'not in self.username:
+			self.username = '+86' + self.username
+		else:
+			self.username = self.username
+		print 'username', self.username, len(self.username)
+		print 'password', self.password, len(self.password)
 		options = Options()
 		options.add_argument('-headless')
 		driver = webdriver.Firefox(firefox_options=options)

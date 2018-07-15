@@ -226,7 +226,7 @@ class Operation():
 		with open('like.html', 'wb') as f:
 			f.write(html)
 		#driver.find_element_by_xpath('//div[@class="cb cc"]/div[@class="cd ce cf cg"]/table[@role="presentation"]/tbody/tr/td[1]/a').click()
-		driver.find_element_by_xpath('//div[@id="m_story_permalink_view"]//table[@role="presentation"]/tbody/tr/td[1]').click()
+		driver.find_element_by_xpath('//div[@id="m_story_permalink_view"]/div[2]/div/div/table[@role="presentation"]/tbody/tr/td[1]/a').click()
 		driver.quit()
 		print "like Success!!!!!!"
 		return [True, '']
