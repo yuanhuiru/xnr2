@@ -746,6 +746,13 @@ weibo_speech_warning_task_queue_name = 'weibo_speech_warning_task'
 weibo_event_warning_task_queue_name = 'weibo_event_warning_task'
 weibo_time_warning_task_queue_name = 'weibo_time_warning_task'
 
+#预警 facebok
+R_FACEBOOK_WARNING = _default_redis_v2(host=REDIS_HOST_46, port=REDIS_PORT_46, db=1)
+fb_user_warning_task_queue_name = 'fb_user_warning_task'
+fb_speech_warning_task_queue_name = 'fb_speech_warning_task'
+fb_event_warning_task_queue_name = 'fb_event_warning_task'
+fb_time_warning_task_queue_name = 'fb_time_warning_task'
+
 
 R_WEIBO_SENSITIVE = _default_redis_v2(host=REDIS_HOST_46, port=REDIS_PORT_46, db=1)
 weibo_sensitive_post_task_queue_name = 'weibo_sensitive_post_task'

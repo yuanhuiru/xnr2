@@ -185,6 +185,7 @@ def publish_operate_timing():
     #print 'results::',results
     if results:
         for result in results:
+            print 'fb_retweet_in_time.publish_operate_timing'
             _id = result['_id']
             result = result['_source']
             timestamp_set = result['post_time']

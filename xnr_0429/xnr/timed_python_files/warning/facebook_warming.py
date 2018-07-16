@@ -653,7 +653,7 @@ def create_facebook_warning():
         operate_date=ts2datetime(start_time) 
     else:
         now_time=int(time.time())
-        today_datetime=datetime2ts(ts2datetime(now_time)) - 8*DAY 
+        today_datetime=datetime2ts(ts2datetime(now_time)) - 1*DAY 
         start_time=today_datetime    #前一天0点
         end_time=today_datetime          #定时文件启动的0点
         operate_date=ts2datetime(start_time)

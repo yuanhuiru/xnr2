@@ -21,6 +21,7 @@ from textrank4zh import TextRank4Keyword, TextRank4Sentence
 from parameter import DAY
 test_date = '2016-11-27'
 
+print 'testing .......'
 
 def extract_keywords(w_text):
 
@@ -212,5 +213,6 @@ def compute_full_keywords():
     
 
 if __name__ == '__main__':
-    compute_keywords_mark()
-    compute_full_keywords()
+    makr1=compute_keywords_mark()
+    mark2=compute_full_keywords()
+    print mark1,mark2

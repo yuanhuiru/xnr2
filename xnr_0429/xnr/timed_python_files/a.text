@@ -3912,3 +3912,70 @@ start count......
 xnr_user_detail...count.... {'date_time': '2018-07-10', 'daily_post_num': 0, 'user_fansnum': 37, 'business_post_num': 0, 'xnr_user_no': u'WXNR0063', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
 start influence.......
 start penetration......
+len.. 7
+date.. 2018-07-11
+xnr... WXNR0010
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.20185200917509133}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-11', 'daily_post_num': 0, 'user_fansnum': 43, 'business_post_num': 0, 'xnr_user_no': u'WXNR0010', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  65
+date.. 2018-07-11
+xnr... WXNR0065
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.2032451259397698}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-11', 'daily_post_num': 0, 'user_fansnum': 1, 'business_post_num': 0, 'xnr_user_no': u'WXNR0065', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+total time:  81
+date.. 2018-07-11
+xnr... WXNR0063
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.20185200917509133}}
+pene_mark... 0.0
+domain_list_followers_today_count:: {}
+domain_distribute_dict:: {'radar': {}}
+safe_mark.. 0.0
+start count......
+xnr_user_detail...count.... {'date_time': '2018-07-11', 'daily_post_num': 0, 'user_fansnum': 37, 'business_post_num': 0, 'xnr_user_no': u'WXNR0063', 'total_post_sum': 0, 'trace_follow_tweet_num': 0, 'hot_follower_num': 0}
+start influence.......
+start penetration......
+len.. 7
+date.. 2018-07-12
+xnr... WXNR0010
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': 0.17146990740740742}}
+pene_mark... 0.0
+len.. 7
+date.. 2018-07-13
+xnr... WXNR0010
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': None}}
+len.. 7
+date.. 2018-07-14
+xnr... WXNR0010
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': None}}
+len.. 7
+date.. 2018-07-15
+xnr... WXNR0010
+start assessment....
+influence_mark.. 0.0
+es_sensitive_result:: {u'avg_sensitive': {u'value': None}}
