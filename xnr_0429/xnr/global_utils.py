@@ -550,6 +550,9 @@ facebook_timing_warning_index_type = 'text'
 facebook_keyword_count_index_name = 'facebook_keyword_count'
 facebook_keyword_count_index_type = 'text'
 
+#use to save facebook full keywords value count info
+facebook_full_keyword_index_name='facebook_full_keyword'
+facebook_full_keyword_index_type='text'
 ## 上报管理
 facebook_report_management_index_name_pre = 'facebook_report_management_'
 facebook_report_management_index_name = 'facebook_report_management'
@@ -682,6 +685,10 @@ twitter_timing_warning_index_type = 'text'
 #监测
 twitter_keyword_count_index_name = 'twitter_keyword_count'
 twitter_keyword_count_index_type = 'text'
+
+#use to save twitter full keywords value count info
+twitter_full_keyword_index_name='twitter_full_keyword'
+twitter_full_keyword_index_type='text'
 
 ## 上报管理
 twitter_report_management_index_name_pre = 'twitter_report_management_'

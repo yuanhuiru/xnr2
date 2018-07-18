@@ -147,18 +147,24 @@ def query_mid_list(ts, social_sensors, time_segment, message_type=1):
     }
 
     mid_dict = dict()
-
-    datetime_1 = ts2datetime(ts)
-    datetime_2 = ts2datetime(ts-24*3600)
-    index_name_1 = flow_text_index_name_pre + datetime_1
-    index_name_2 = flow_text_index_name_pre + datetime_2
     index_list = []
-    exist_es_1 = es_text.indices.exists(index_name_1)
-    exist_es_2 = es_text.indices.exists(index_name_2)
-    if exist_es_1:
-        index_list.append(index_name_1)
-    if exist_es_2:
-        index_list.append(index_name_2)
+    for i in range(14):
+        datetime_ = ts2datetime(ts-i*24*3600) 
+        index_name_ = flow_text_index_name_pre + datetime_
+        exist_es_ = es_text.indices.exists(index_name_)
+        if exist_es_:
+            index_list.append(index_name_)
+#     datetime_1 = ts2datetime(ts)
+#     datetime_2 = ts2datetime(ts-24*3600)
+#     index_name_1 = flow_text_index_name_pre + datetime_1
+#     index_name_2 = flow_text_index_name_pre + datetime_2
+#     index_list = []
+#     exist_es_1 = es_text.indices.exists(index_name_1)
+#     exist_es_2 = es_text.indices.exists(index_name_2)
+#     if exist_es_1:
+#         index_list.append(index_name_1)
+#     if exist_es_2:
+#         index_list.append(index_name_2)
     print 'index_list'
     print index_list
     if index_list:
@@ -715,5 +721,6 @@ def social_sensing(task_detail):
 
 
     return "1"
+
 
 

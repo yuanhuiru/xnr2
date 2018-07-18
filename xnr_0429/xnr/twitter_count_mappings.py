@@ -5,7 +5,8 @@ import json
 from elasticsearch import Elasticsearch
 from global_utils import es_xnr_2 as es
 from global_utils import twitter_keyword_count_index_name,twitter_keyword_count_index_type,\
-                        twitter_xnr_count_info_index_name,twitter_xnr_count_info_index_type
+                        twitter_xnr_count_info_index_name,twitter_xnr_count_info_index_type,\
+                        twitter_full_keyword_index_name,twitter_full_keyword_index_type
 
 def twitter_xnr_count_info_mappings():
     index_info = {
@@ -170,6 +171,38 @@ def twitter_keyword_count_mappings():
         es.indices.create(index=twitter_keyword_count_index_name,body=index_info,ignore=400)
 
 
+
+
+def twitter_full_keyword_mappings():
+    index_info = {
+        'settings':{
+            'number_of_replicas':0,
+            'number_of_shards':5
+        },
+        'mappings':{
+            twitter_full_keyword_index_type:{
+                'properties':{                    
+                    'date_time':{                #日期，例如：2017-09-07
+                        'type':'string',
+                        'index':'not_analyzed'
+                    },
+                    'keyword_value_string':{                #关键词统计结果
+                        'type':'string',
+                        'index':'no'
+                    },
+                    'timestamp':{ # 时间戳
+                        'type':'long'
+                    }
+                }
+            }
+        }
+    }
+    exist_indice=es.indices.exists(index=twitter_full_keyword_index_name)
+    if not exist_indice:
+        es.indices.create(index=twitter_full_keyword_index_name,body=index_info,ignore=400)
+
+
 if __name__=='__main__':
     twitter_keyword_count_mappings()
     twitter_xnr_count_info_mappings()
+    twitter_full_keyword_mappings()

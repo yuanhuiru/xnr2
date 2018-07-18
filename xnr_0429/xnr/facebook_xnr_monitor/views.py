@@ -8,7 +8,8 @@ from flask import Blueprint, url_for, render_template, request,\
 from xnr.parameter import MAX_VALUE
 from xnr.time_utils import ts2datetime,datetime2ts,ts2date,date2ts
 
-from utils import lookup_weibo_keywordstring,lookup_hot_posts,lookup_active_user,addto_facebook_corpus
+from utils import lookup_weibo_keywordstring,lookup_hot_posts,lookup_active_user,\
+                  addto_facebook_corpus,lookup_full_keywordstring
  
 
 mod = Blueprint('facebook_xnr_monitor', __name__, url_prefix='/facebook_xnr_monitor')
@@ -22,6 +23,16 @@ def ajax_lookup_weibo_keywordstring():
     xnr_no=request.args.get('xnr_no','')
     result=lookup_weibo_keywordstring(int(from_ts),int(to_ts),xnr_no)
     return json.dumps(result)
+
+
+#全网词云
+@mod.route('/lookup_full_keywordstring/')
+def ajax_lookup_full_keywordstring():
+    from_ts=request.args.get('from_ts','')
+    to_ts=request.args.get('to_ts','')
+    result=lookup_full_keywordstring(int(from_ts),int(to_ts))
+    return json.dumps(result)
+
 
 
 #热门帖子
