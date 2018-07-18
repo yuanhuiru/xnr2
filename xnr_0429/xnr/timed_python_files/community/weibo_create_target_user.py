@@ -315,7 +315,7 @@ def get_expand_userid_list(xnr_keywords,xnr_relationer,datetime_list):
     origin_keywords_uidlist = detect_by_keywords(xnr_keywords,datetime_list)
     origin_relationer_uidlist = detect_by_seed_users(xnr_relationer)
     origin_relationer_uidlist.extend(origin_keywords_uidlist)
-    #print 'expand!!!',origin_keywords_uidlist,origin_relationer_uidlist
+    print 'expand!!!',origin_keywords_uidlist,origin_relationer_uidlist
     expand_userid_list_temp = list(set(origin_relationer_uidlist))
     #uid_num = len(expand_userid_list)
     expand_userid_list = detect_by_seed_users(expand_userid_list_temp)
@@ -377,6 +377,8 @@ def create_xnr_targetuser(xnr_user_no):
     if user_num <100:
         temp_uidlist = create_xnr_targetuser('WXNR0010')
         expand_userid_list.extend(temp_uidlist)
+        temp_uidlist_2 = create_xnr_targetuser('WXNR0009')
+        expand_userid_list.extend(temp_uidlist_2)
         list(set(expand_userid_list))
     return expand_userid_list 
 
