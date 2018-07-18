@@ -17,7 +17,8 @@ from utils import get_submit_tweet_fb, fb_save_to_tweet_timing_list, get_recomme
                 get_unfollow_operate_fb, get_private_operate_fb, get_add_friends, get_confirm_friends,\
                 get_delete_friend, get_hot_recommend_tweets, get_trace_follow_operate, \
                 get_un_trace_follow_operate, get_show_trace_followers,\
-                get_show_retweet_timing_list, get_show_retweet_timing_list_future, get_robot_reply
+                get_show_retweet_timing_list, get_show_retweet_timing_list_future, get_robot_reply,\
+                get_daily_recomment_tweets_from_es
 from xnr.utils import add_operate2redis
 from utils import save_oprate_like
 mod = Blueprint('facebook_xnr_operate', __name__, url_prefix='/facebook_xnr_operate')
@@ -166,6 +167,15 @@ def ajax_bussiness_recomment_tweets():
     xnr_user_no = request.args.get('xnr_user_no','')
     sort_item = request.args.get('sort_item','timestamp') 
     tweets = get_bussiness_recomment_tweets(xnr_user_no,sort_item)
+    return json.dumps(tweets)
+
+
+# 微博推荐
+@mod.route('/daily_recomment_tweets/')
+def ajax_daily_recomment_tweets():
+    xnr_user_no = request.args.get('xnr_user_no','')
+    sort_item = request.args.get('sort_item','user_index') 
+    tweets = get_daily_recomment_tweets_from_es(xnr_user_no,sort_item)
     return json.dumps(tweets)
 
 '''

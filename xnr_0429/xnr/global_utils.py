@@ -429,6 +429,15 @@ wx_xnr_history_count_index_type = 'count'  # - 活跃
 wx_xnr_history_be_at_index_type = 'be_at'   # - 影响力
 wx_xnr_history_sensitive_index_type = 'sensitive'   # - 渗透
 
+# 主动社交
+fb_active_social_index_name_pre = 'fb_active_social_recommendation_'
+fb_active_social_index_type = 'recommend'
+
+# 主动社交
+tw_active_social_index_name_pre = 'tw_active_social_recommendation_'
+tw_active_social_index_type = 'recommend'
+
+
 # facebook
 
 # social sensing
@@ -912,6 +921,7 @@ twitter_user_trans_task_name = 'twitter_user_trans_task'
 
 facebook_flow_text_trans_task_name = 'facebook_flow_text_trans_task'
 facebook_user_trans_task_name = 'facebook_user_trans_task'
+
 
 
 
