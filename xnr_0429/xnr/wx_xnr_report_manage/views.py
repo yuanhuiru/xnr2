@@ -29,6 +29,6 @@ def show_report_content():
 def ajax_output_excel_word():
     id_list=request.args.get('id_list','').split(',')
     out_type=request.args.get('out_type','')
-    # report_timelist=request.args.get('report_timelist','').split(',')
-    results=output_excel_word(id_list,out_type,report_timelist)
+    #report_timelist=request.args.get('report_timelist','').split(',')
+    results=output_excel_word(id_list,out_type)
     return json.dumps(results)

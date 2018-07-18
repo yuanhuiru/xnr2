@@ -125,8 +125,8 @@ def read_event_warning_task():
         print 'task_detail::',task_detail
 
         print '把任务从队列中pop出来......'
-
-        event_mark = create_event_warning(xnr_user_no,today_datetime)
+        write_mark = True
+        event_mark = create_event_warning(xnr_user_no,today_datetime,write_mark)
 
         print 'event_warning::',event_mark
 

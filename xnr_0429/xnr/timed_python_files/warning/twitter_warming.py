@@ -377,7 +377,7 @@ def lookup_twitter_date_warming(keywords,today_datetime):
     try:
         temp_result=es_xnr_2.search(index=twitter_flow_text_index_name,doc_type=twitter_flow_text_index_type,body=query_body)['hits']['hits']
         date_result=[]
-        print 'temp_result::',temp_result
+        #print 'temp_result::',temp_result
         for item in temp_result:
         	#查询三个指标字段
             tid_result=lookup_tid_attend_index(item['_source']['tid'],today_datetime)

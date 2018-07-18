@@ -753,6 +753,12 @@ fb_speech_warning_task_queue_name = 'fb_speech_warning_task'
 fb_event_warning_task_queue_name = 'fb_event_warning_task'
 fb_time_warning_task_queue_name = 'fb_time_warning_task'
 
+#预警tw
+R_TWITTER_WARNING = _default_redis_v2(host=REDIS_HOST_46, port=REDIS_PORT_46, db=1)
+tw_user_warning_task_queue_name = 'tw_user_warning_task'
+tw_speech_warning_task_queue_name = 'tw_speech_warning_task'
+tw_event_warning_task_queue_name = 'tw_event_warning_task'
+tw_time_warning_task_queue_name = 'tw_time_warning_task'
 
 R_WEIBO_SENSITIVE = _default_redis_v2(host=REDIS_HOST_46, port=REDIS_PORT_46, db=1)
 weibo_sensitive_post_task_queue_name = 'weibo_sensitive_post_task'

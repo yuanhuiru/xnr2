@@ -18,9 +18,9 @@ from global_utils import twitter_user_warning_index_name_pre,twitter_user_warnin
 						twitter_warning_corpus_index_name,twitter_warning_corpus_index_type
 						
 
-NOW_DATE=ts2datetime(int(time.time())-8*DAY)
+NOW_DATE=ts2datetime(int(time.time())-1*DAY)
 
-def twitter_user_warning_mappings():
+def twitter_user_warning_mappings(date_name):
 	index_info = {
 		'settings':{
 			'number_of_replicas':0,
@@ -61,12 +61,12 @@ def twitter_user_warning_mappings():
 	if S_TYPE == 'test':
 		twitter_user_warning_index_name=twitter_user_warning_index_name_pre + TWITTER_FLOW_START_DATE
 	else:
-		twitter_user_warning_index_name=twitter_user_warning_index_name_pre + NOW_DATE
+		twitter_user_warning_index_name=twitter_user_warning_index_name_pre + date_name
 	if not es.indices.exists(index=twitter_user_warning_index_name):
 		es.indices.create(index=twitter_user_warning_index_name,body=index_info,ignore=400)
 
 
-def twitter_event_warning_mappings():
+def twitter_event_warning_mappings(date_name):
 	index_info = {
 		'settings':{
 			'number_of_replicas':0,
@@ -111,12 +111,12 @@ def twitter_event_warning_mappings():
 	if S_TYPE == 'test':
 		twitter_event_warning_index_name = twitter_event_warning_index_name_pre + TWITTER_FLOW_START_DATE
 	else:
-		twitter_event_warning_index_name = twitter_event_warning_index_name_pre + NOW_DATE
+		twitter_event_warning_index_name = twitter_event_warning_index_name_pre + date_name
 	if not es.indices.exists(index=twitter_event_warning_index_name):
 		es.indices.create(index=twitter_event_warning_index_name,body=index_info,ignore=400)
 
 
-def twitter_speech_warning_mappings():
+def twitter_speech_warning_mappings(date_name):
 	index_info = {
 		'settings':{
 			'number_of_replicas':0,
@@ -193,7 +193,7 @@ def twitter_speech_warning_mappings():
 	if S_TYPE == 'test':
 		twitter_speech_warning_index_name = twitter_speech_warning_index_name_pre + TWITTER_FLOW_START_DATE
 	else:
-		twitter_speech_warning_index_name = twitter_speech_warning_index_name_pre + NOW_DATE
+		twitter_speech_warning_index_name = twitter_speech_warning_index_name_pre + date_name
 	print twitter_speech_warning_index_name
 	if not es.indices.exists(index=twitter_speech_warning_index_name):
 		es.indices.create(index=twitter_speech_warning_index_name,body=index_info,ignore=400)
