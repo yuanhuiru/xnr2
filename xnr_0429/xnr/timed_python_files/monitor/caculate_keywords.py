@@ -66,7 +66,7 @@ def xnr_keywords_compute(xnr_user_no):
                 'keywords':{
                     'terms':{
                         'field':'keywords_string',
-                        'size': 1000
+                        'size': 300
                     }
                 }
             }
@@ -143,7 +143,7 @@ def compute_keywords_mark():
             keywords_task_id=xnr_user_no+'_'+date_time
             keywords_task_detail['timestamp']=datetime2ts(date_time)
             keywords_task_detail['date_time']=date_time
-            # print 'keywords_task_detail:', date_time
+            print 'keywords_task_id:',keywords_task_id
         try:
             es_xnr.index(index=weibo_keyword_count_index_name,doc_type=weibo_keyword_count_index_type,body=keywords_task_detail,id=keywords_task_id)
             mark=True
@@ -213,6 +213,6 @@ def compute_full_keywords():
     
 
 if __name__ == '__main__':
-    makr1=compute_keywords_mark()
+    mark1=compute_keywords_mark()
     mark2=compute_full_keywords()
     print mark1,mark2
