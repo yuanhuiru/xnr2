@@ -14,6 +14,7 @@ $('.title .perTime .demo-label input').on('click',function () {
         $('#hot_post p').show();
         $('#userList p').show();
         public_ajax.call_request('get',word_url,wordCloud);
+        public_ajax.call_request('get',word_url2,wordCloud2);
         public_ajax.call_request('get',hotPost_url,hotPost);
         public_ajax.call_request('get',activePost_url,activeUser);
         $('.titTime').hide();

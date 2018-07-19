@@ -96,7 +96,7 @@ def like(date):
         'facebook_type': random_facebook_type(),
     }
     facebook_feedback_like_mappings(facebook_feedback_like_index_name)
-    print es.index(index=facebook_feedback_like_index_name, doc_type=facebook_feedback_like_index_type, body=data)
+#     print es.index(index=facebook_feedback_like_index_name, doc_type=facebook_feedback_like_index_type, body=data)
 
 # 分享
 def retweet(date):
@@ -119,7 +119,7 @@ def retweet(date):
         'like': random_like_num(),
     }
     facebook_feedback_retweet_mappings(facebook_feedback_retweet_index_name)
-    print es.index(index=facebook_feedback_retweet_index_name, doc_type=facebook_feedback_retweet_index_type, body=data)
+#     print es.index(index=facebook_feedback_retweet_index_name, doc_type=facebook_feedback_retweet_index_type, body=data)
 
 # 标记
 def at(date):
@@ -138,7 +138,7 @@ def at(date):
         'facebook_type': random_facebook_type(),
     }
     facebook_feedback_at_mappings(facebook_feedback_at_index_name)
-    print es.index(index=facebook_feedback_at_index_name, doc_type=facebook_feedback_at_index_type, body=data)
+#     print es.index(index=facebook_feedback_at_index_name, doc_type=facebook_feedback_at_index_type, body=data)
 
 # 评论
 def comment(date):
@@ -159,7 +159,7 @@ def comment(date):
         'comment_type': random_comment_type(),
     }
     facebook_feedback_comment_mappings(facebook_feedback_comment_index_name)
-    print es.index(index=facebook_feedback_comment_index_name, doc_type=facebook_feedback_comment_index_type, body=data)
+#     print es.index(index=facebook_feedback_comment_index_name, doc_type=facebook_feedback_comment_index_type, body=data)
 
 # 私信
 def private(date):
@@ -178,7 +178,7 @@ def private(date):
         'private_type': random_private_type(),
     }
     facebook_feedback_private_mappings(facebook_feedback_private_index_name)
-    print es.index(index=facebook_feedback_private_index_name, doc_type=facebook_feedback_private_index_type, body=data)
+#     print es.index(index=facebook_feedback_private_index_name, doc_type=facebook_feedback_private_index_type, body=data)
 
 # 好友列表
 def friends(date):
@@ -195,7 +195,7 @@ def friends(date):
         'facebook_type': '好友',
     }
     facebook_feedback_friends_mappings()
-    print es.index(index=facebook_feedback_friends_index_name, doc_type=facebook_feedback_friends_index_type, body=data)
+#     print es.index(index=facebook_feedback_friends_index_name, doc_type=facebook_feedback_friends_index_type, body=data)
 
 
 def sensitive_func(index_name, ts):
@@ -277,11 +277,10 @@ def xnr_flow_text(date):
 
 
 if __name__ == '__main__':
-    '''
     #create
     #2017-10-15     2017-10-30
     for i in range(15, 31, 1):
-        date = '2017-10-' + str(i)
+        date = '2018-07-' + str(i)
         print 'date', date
         for i in range(random.randint(2,5)):
             like(date)
@@ -290,7 +289,6 @@ if __name__ == '__main__':
             comment(date)
             private(date)
             friends(date)
-    '''
     
 
     '''
@@ -306,12 +304,13 @@ if __name__ == '__main__':
         sensitive_func('facebook_feedback_friends', ts)
 	'''
 
-
+    '''
     #xnr_flow_text_
     #2017-10-15     2017-10-30
     for i in range(15, 31, 1):
         date = '2017-10-' + str(i)
         xnr_flow_text(date)
-
+    '''
         
+
 

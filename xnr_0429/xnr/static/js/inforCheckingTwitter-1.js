@@ -15,7 +15,8 @@ $('.title .perTime .demo-label input').on('click',function () {
         $('#hot_post p').show();
         $('#userList p').show();
         public_ajax.call_request('get',word_url,wordCloud);
-        public_ajax.call_request('get',hotPost_url,hotPost);
+        public_ajax.call_request('get',word_url2,wordCloud2);
+		public_ajax.call_request('get',hotPost_url,hotPost);
         public_ajax.call_request('get',activePost_url,activeUser);
         $('.titTime').hide();
     }
@@ -34,13 +35,16 @@ $('.timeSure').on('click',function () {
         $('#pormpt').modal('show');
     }else {
         public_ajax.call_request('get',word_url,wordCloud);
+        public_ajax.call_request('get',word_url2,wordCloud2);
         public_ajax.call_request('get',hotPost_url,hotPost);
         public_ajax.call_request('get',activePost_url,activeUser);
     }
 });
 //----关键词云
-var word_url='/twitter_xnr_monitor/lookup_weibo_keywordstring/?from_ts='+from_ts+'&to_ts='+to_ts+'&xnr_no='+ID_Num;
+var word_url='/twitter_xnr_monitor/lookup_full_keywordstring/?xnr_no='+ID_Num+'&from_ts='+from_ts+'&to_ts='+to_ts;
 public_ajax.call_request('get',word_url,wordCloud);
+var word_url2='/twitter_xnr_monitor/lookup_weibo_keywordstring/?from_ts='+from_ts+'&to_ts='+to_ts+'&xnr_no='+ID_Num;
+public_ajax.call_request('get',word_url2,wordCloud2);
 require.config({
     paths: {
         echarts: '/static/js/echarts-2/build/dist',
@@ -94,6 +98,55 @@ function wordCloud(data) {
         );
     }
     $('#content-1-word p').slideUp(700);
+}
+function wordCloud2(data) {
+    if (data.length==0||isEmptyObject(data)){
+       $('#content-2-word').css({textAlign:"center",lineHeight:"300px",fontSize:'24px'}).text('暂无数据');
+    }else {
+        var wordSeries=[];
+        for (var k in data){
+            wordSeries.push(
+                {
+                    name: k,
+                    value: data[k]*200,
+                    itemStyle: createRandomItemStyle()
+                }
+            )
+        }
+        require(
+            [
+                'echarts',
+                'echarts/chart/wordCloud'
+            ],
+            //关键词
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart = ec.init(document.getElementById('content-2-word'));
+                option = {
+                    title: {
+                        text: '虚拟人关注',
+						 textStyle:{color:'#fff'}
+                    },
+                    // tooltip: {
+                    //     show: true,
+                    // },
+                    series: [{
+                        type: 'wordCloud',
+                        size: ['90%', '90%'],
+                        textRotation : [0, 0, 0, 0],
+                        textPadding: 0,
+                        autoSize: {
+                            enable: true,
+                            minSize: 18
+                        },
+                        data: wordSeries
+                    }]
+                };
+                myChart.setOption(option);
+            }
+        );
+    }
+    $('#content-2-word p').slideUp(700);
 }
 //热门帖子
 $('#theme-2 .demo-radio').on('click',function () {

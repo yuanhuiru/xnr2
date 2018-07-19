@@ -106,16 +106,16 @@
         <img src="/static/images/icon.png" alt="">
         <span style="display:inline-block;font-size: 18px;font-weight: 900;color: #fff">相关推荐</span>
         <div class="suggestion" style="margin: 20px 0 30px;">
-            <ul id="myTabs" class="nav nav-tabs" role="tablist">
-                <!-- <li role="presentation" class="active" tp="influence">
-                    <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-info-sign"></b>&nbsp;按粉丝数</a>
-                </li> -->
-                <li role="presentation" tp="sensitive" class="active">
-                    <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-dashboard"></b>&nbsp;按敏感度</a>
+			<ul id="myTabs" class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active" tp="influence" num='1'>
+                    <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-share-alt"></b>&nbsp;业务推荐</a>
                 </li>
-                <!-- <li role="presentation" tp="friend">
+                <li role="presentation" tp="sensitive" num='2'>
+                    <a href="#influe2" role="tab" data-toggle="tab"><b class="icon icon-external-link"></b>&nbsp;常规推荐</a>
+                </li>
+               <!-- <li role="presentation" tp="friend">
                     <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-user"></b>&nbsp;按朋友圈</a>
-                </li> -->
+                </li>-->
             </ul>
             <div class="tab-content" id="content">
                 <div role="tabpanel" class="tab-pane active" id="influe">
@@ -125,18 +125,32 @@
                         </div>
                     </div>
                 </div>
-
-                <!--<div role="tabpanel" class="tab-pane" id="sensitive">-->
-                <!--<div class="Sensitivity">-->
-                <!--<div id="Sensitivity"></div>-->
-                <!--</div>-->
-                <!--</div>-->
-
-                <!--<div role="tabpanel" class="tab-pane" id="friends">-->
-                <!--<div class="friendsCircle">-->
-                <!--<div id="friendsCircle"></div>-->
-                <!--</div>-->
-                <!--</div>-->
+				<div role="tabpanel" class="tab-pane" id="influe2">
+                    <p style="width: 100%;text-align: center;margin-top: 40px;color: white;">正在拼命加载中...</p>
+                    <div class="influence2" style="display: none;">
+                        <div id="influence2">
+                        </div>
+                    </div>
+                </div>
+            <!--<ul id="myTabs" class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active" tp="influence">
+                    <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-info-sign"></b>&nbsp;按粉丝数</a>
+                </li>
+                <li role="presentation" tp="sensitive" class="active">
+                    <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-dashboard"></b>&nbsp;按敏感度</a>
+                </li>
+                <li role="presentation" tp="friend">
+                    <a href="#influe" role="tab" data-toggle="tab"><b class="icon icon-user"></b>&nbsp;按朋友圈</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="content">
+                <div role="tabpanel" class="tab-pane active" id="influe">
+                    <p style="width: 100%;text-align: center;margin-top: 40px;color: white;">正在拼命加载中...</p>
+                    <div class="influence" style="display: none;">
+                        <div id="influence">
+                        </div>
+                    </div>
+                </div>-->
             </div>
 
         </div>

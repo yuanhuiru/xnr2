@@ -7,7 +7,7 @@ from elasticsearch.helpers import scan
 import sys
 reload(sys)
 sys.path.append('../')
-from global_utils import es_xnr as es
+from global_utils import es_xnr_2 as es
 from global_utils import R_FACEBOOK_XNR_FANS_FOLLOWERS as r_fans_followers
 from global_utils import facebook_feedback_comment_index_name,facebook_feedback_comment_index_type,\
                         facebook_feedback_retweet_index_name,facebook_feedback_retweet_index_type,\
@@ -254,8 +254,13 @@ def get_tweets_distribute(xnr_user_no, current_time):
             fans_list = es_results['fans_list']
 
     # friends topic分布 虽然用的名称是fans，但实际上是friends
-    results = es.mget(index=portrait_index_name,doc_type=portrait_index_type,\
-        body={'ids':fans_list})['docs']
+    try:
+        results = es.mget(index=portrait_index_name,doc_type=portrait_index_type,\
+            body={'ids':fans_list})['docs']
+    except Exception,e:
+        print e
+        results = []
+        
     topic_list_fans = []
     for result in results:
         if result['found'] == True:
@@ -435,8 +440,12 @@ def get_fans_group_distribute(xnr_user_no):
             fans_list_today = FANS_TODAY
 
     # 所有关注者领域分布
-    results = es.mget(index=portrait_index_name,doc_type=portrait_index_type,\
-        body={'ids':fans_list})['docs']
+    try:
+        results = es.mget(index=portrait_index_name,doc_type=portrait_index_type,\
+            body={'ids':fans_list})['docs']
+    except Exception,e:
+        print e
+        results = []
     domain_list_fans = []
     for result in results:
         if result['found'] == True:
@@ -1499,17 +1508,16 @@ def cron_compute_mark(current_time):
 
     
 if __name__ == '__main__':
-    '''
     if S_TYPE == 'test':
         current_time = datetime2ts(S_DATE)
     else:
         current_time = int(time.time()-DAY)
     cron_compute_mark(current_time)
 
-    '''
-    #2017-10-15  2017-10-30
-    for i in range(15, 26, 1):
-        date = '2017-10-' + str(i)
-        print 'date', date
-        current_time = datetime2ts(date)
-        cron_compute_mark(current_time) 
+#     #2017-10-15  2017-10-30
+#     for i in range(15, 26, 1):
+#         date = '2017-10-' + str(i)
+#         print 'date', date
+#         current_time = datetime2ts(date)
+#         cron_compute_mark(current_time) 
+

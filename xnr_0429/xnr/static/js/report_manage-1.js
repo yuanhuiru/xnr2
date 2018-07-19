@@ -534,6 +534,10 @@ function outputFun(_type) {
         _ids.push(currentData[k]['_id']);
         times.push(k);
     }
+	if(_ids.length==0){
+		$('#pormpt p').text('请选择要下载的内容。');
+		$('#pormpt').modal('show');
+	}else {
 	var url1='weibo_xnr_report_manage';
 	if(flagType == 2||flagType == 3){
     	url1='wx_xnr_report_manage';
@@ -546,6 +550,7 @@ function outputFun(_type) {
 		output_url+='&report_timelist='+times.join(',');
     }
     public_ajax.call_request('get',output_url,outputRead);
+}
 }
 function outputRead(data) {
     $('#loadingDown .downInfo').hide();
