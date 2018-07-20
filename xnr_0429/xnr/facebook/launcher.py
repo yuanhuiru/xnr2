@@ -8,7 +8,14 @@ import json
 #from pyvirtualdisplay import Display
 from selenium.webdriver.firefox.options import Options
 #from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 class Launcher():
 	def __init__(self, username, password):
@@ -41,18 +48,19 @@ class Launcher():
 		return driver
 
 
+
 	def login_mobile(self):
 		print 'facebook.launcher.login_mobile'
-		if '+86'not in self.username:
-			self.username = '+86' + self.username
-		else:
-			self.username = self.username
 		print 'username', self.username, len(self.username)
 		print 'password', self.password, len(self.password)
 		options = Options()
 		options.add_argument('-headless')
 		driver = webdriver.Firefox(firefox_options=options)
 		driver.get('https://m.facebook.com/')
+		html = driver.page_source
+		time.sleep(3)
+		with open('login_mobile0000.html', 'w') as f:
+			f.write(html)
 		print 1111111111
 		driver.find_element_by_xpath('//input[@id="m_login_email"]').send_keys(self.username)
 		print 2222222222
@@ -61,7 +69,7 @@ class Launcher():
 		driver.find_element_by_xpath('//input[@name="login"]').click()
 		print 4444444444
 		req = requests.Session()
-		time.sleep(20)
+		time.sleep(3)
 		cookies = driver.get_cookies()
 		for cookie in cookies:
 			req.cookies.set(cookie['name'], cookie['value'])
@@ -75,7 +83,7 @@ class Launcher():
 			pass
 		time.sleep(5)
 		html = driver.page_source
-		with open('launcher.html', 'wb') as f:
+		with open('launcher.html', 'w') as f:
 			f.write(html)
 		return driver
 
@@ -174,7 +182,9 @@ class Launcher():
 	def get_comment_list(self):
 		driver = self.login()
 		#driver,display = self.login()
+		wait = WebDriverWait(driver, 300)
 		driver.get('https://www.facebook.com/notifications')
+		#driver.get('https://m.facebook.com/notifications')
 		time.sleep(3)
 		# 退出通知弹窗进入页面
 		try:
@@ -187,10 +197,21 @@ class Launcher():
 		for i in range(0,20):
 			js="var q=document.documentElement.scrollTop="+str(length) 
 			driver.execute_script(js) 
-			time.sleep(1)
+			time.sleep(10)
 			length+=length
-
+		html = driver.page_source
+		with open('get_comment_list000.html', 'wb') as f:
+			f.write(html)
+		driver.save_screenshot('get_comment_list000.png')
+		lis = wait.until(
+			EC.presence_of_element_located((By.XPATH, '//ul[@data-testid="see_all_list"]/li'))
+		)
+		html = driver.page_source
+		with open('launcher_get_comment_list_position111.html', 'w') as f:
+			f.write(html)
+		driver.save_screenshot('get_comment_list111.png')
 		lis = driver.find_elements_by_xpath('//ul[@data-testid="see_all_list"]/li')
+		print 'lis', lis
 		comment_list = []
 		for li in lis:
 			data_gt = json.loads(li.get_attribute('data-gt'))
