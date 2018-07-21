@@ -55,7 +55,11 @@ class Comment():
 					author_name = each.find_element_by_xpath('./div/div/div/div[2]/div/div/div/div/div/span/span[1]/a').text
 				except BaseException, e:
 					print "get_comment Position66666666", e
-					author_name = each.find_element_by_xpath('./div/div/div/div[2]/div/div/div/span/span[1]/a').text					
+					try:
+						author_name = each.find_element_by_xpath('./div/div/div/div[2]/div/div/div/span/span[1]/a').text
+					except:
+						author_name = each.find_element_by_xpath('./div/div/div/div[2]/div/div/div/span[1]/span/a').text
+				print author_name
 
 
 
@@ -75,7 +79,12 @@ class Comment():
 					print 888888888
 					content = each.find_element_by_xpath('./div/div/div/div[2]/div/div/div/div/div/span/span[2]/span/span/span/span').text
 				except:
-					content = each.find_element_by_xpath('./div/div/div/div[2]/div/div/div/span/span[2]/span/span/span/span').text					
+					try:
+						content = each.find_element_by_xpath('./div/div/div/div[2]/div/div/div/span/span[2]/span/span/span/span').text
+					except:
+						content = 'Emoji'
+				print content
+
 				try:
 					print 99999999
 					ti = int(each.find_element_by_xpath('./div/div/div/div[2]/div/div/div[2]/span[4]/a/abbr').get_attribute('data-utime'))
@@ -84,7 +93,7 @@ class Comment():
 				self.list.append({'uid':author_id, 'photo_url':pic_url, 'nick_name':author_name, 'mid':root_mid, 'timestamp':ti, 'text':content,\
 										 'update_time':self.update_time, 'root_text':root_text, 'root_mid':root_mid})
 
-			self.driver.quit()
+		self.driver.quit()
 		return self.list
 
 	def save(self,indexName,typeName,list):
