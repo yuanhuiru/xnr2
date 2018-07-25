@@ -82,9 +82,9 @@ class Launcher():
 			print e
 			pass
 		time.sleep(5)
-		html = driver.page_source
-		with open('launcher.html', 'w') as f:
-			f.write(html)
+		#html = driver.page_source
+		#with open('launcher.html', 'w') as f:
+			#f.write(html)
 		return driver
 
 
@@ -107,6 +107,9 @@ class Launcher():
 			time.sleep(1)
 			length+=length
 
+		html = driver.page_source
+		with open('get_like_list000.html', 'wb') as f:
+			f.write(html)
 		lis = driver.find_elements_by_xpath('//ul[@data-testid="see_all_list"]/li')
 		like_list = []
 		for li in lis:
@@ -120,7 +123,7 @@ class Launcher():
 
 	def get_share_list(self):
 		#driver,display = self.login()
-		driver = self.login()
+		driver = self.login_mobile()
 		driver.get('https://www.facebook.com/notifications')
 		# 退出通知弹窗进入页面
 		try:
@@ -137,6 +140,9 @@ class Launcher():
 			time.sleep(1)
 			length+=length
 
+		html = driver.page_source
+		with open('get_share_list.html', 'wb') as f:
+			f.write(html)
 		lis = driver.find_elements_by_xpath('//ul[@data-testid="see_all_list"]/li')
 		share_list = []
 		for li in lis:
@@ -199,17 +205,17 @@ class Launcher():
 			driver.execute_script(js) 
 			time.sleep(10)
 			length+=length
-		html = driver.page_source
-		with open('get_comment_list000.html', 'wb') as f:
-			f.write(html)
-		driver.save_screenshot('get_comment_list000.png')
+		#html = driver.page_source
+		#with open('get_comment_list000.html', 'wb') as f:
+			#f.write(html)
+		#driver.save_screenshot('get_comment_list000.png')
 		lis = wait.until(
 			EC.presence_of_element_located((By.XPATH, '//ul[@data-testid="see_all_list"]/li'))
 		)
 		html = driver.page_source
-		with open('launcher_get_comment_list_position111.html', 'w') as f:
-			f.write(html)
-		driver.save_screenshot('get_comment_list111.png')
+		#with open('launcher_get_comment_list_position111.html', 'w') as f:
+			#f.write(html)
+		#driver.save_screenshot('get_comment_list111.png')
 		lis = driver.find_elements_by_xpath('//ul[@data-testid="see_all_list"]/li')
 		print 'lis', lis
 		comment_list = []

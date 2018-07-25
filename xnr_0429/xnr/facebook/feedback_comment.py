@@ -29,9 +29,9 @@ class Comment():
 				print "get_comment Position111111", e
 				pass
 
-			html = self.driver.page_source
-			with open('get_comment1111.html', 'wb') as f:
-				f.write(html)
+			#html = self.driver.page_source
+			#with open('get_comment1111.html', 'wb') as f:
+				#f.write(html)
 			try:
 				print 333333333333
 				root_text = self.driver.find_element_by_xpath('//div[@role="feed"]/div[1]/div[1]/div[2]/div[1]/div[2]/div[2]').text
