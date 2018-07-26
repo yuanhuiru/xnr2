@@ -158,6 +158,8 @@ def get_add_other_info(task_detail):
     # print 'nick_name:', nick_name, type(nick_name)
     #print 'account_name:',account_name
     #print 'password::',password
+#     print 'nick_name'
+#     print nick_name
     try:
     # # xnr = SinaLauncher(account_name,password)
     # # xnr.login()
@@ -167,7 +169,8 @@ def get_add_other_info(task_detail):
     #     uid = user['uid']
     # #nick_name = xnr.screen_name
         user = SinaOperateAPI().getUserShow(screen_name=nick_name)
-    except:
+    except Exception,e:
+        print e
     #     #return '账户名或密码输入错误，请检查后输入！！'
     #     #return '昵称输入错误，请检查后输入！！'
         return 'nick_name error'
@@ -175,7 +178,8 @@ def get_add_other_info(task_detail):
     #user = get_userinfo(account_name, password)
     # print 'user:::',user
     item_dict = {}
-    
+#     print 'user'
+#     print user
     if user:
         item_dict['nick_name'] = user['screen_name']
         item_dict['location'] = user['location']
@@ -714,6 +718,7 @@ if __name__ == '__main__':
     submitter = 'admin@qq.com'
     remark = '这是备注'
     domain_create_task(domain_name,create_type,create_time,submitter,remark,compute_status=0)
+
 
 
 
