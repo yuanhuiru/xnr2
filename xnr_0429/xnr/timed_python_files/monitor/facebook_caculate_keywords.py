@@ -13,7 +13,8 @@ from time_utils import ts2datetime,datetime2ts
 from global_utils import es_xnr_2,facebook_keyword_count_index_name,facebook_keyword_count_index_type,\
                              fb_xnr_fans_followers_index_name,fb_xnr_fans_followers_index_type,\
                              facebook_flow_text_index_name_pre,facebook_flow_text_index_type,\
-                             fb_xnr_index_name,fb_xnr_index_type
+                             fb_xnr_index_name,fb_xnr_index_type,\
+                             facebook_full_keyword_index_name,facebook_full_keyword_index_type
                              
 from textrank4zh import TextRank4Keyword, TextRank4Sentence
 from parameter import DAY
@@ -150,5 +151,66 @@ def compute_keywords_mark():
     return mark_list
 
 
+def compute_full_keywords():
+    now_time=int(time.time()) 
+    date_time=ts2datetime(now_time)
+
+    flow_text_index_name = facebook_flow_text_index_name_pre + date_time
+
+    query_body={
+            'aggs':{
+                'keywords':{
+                    'terms':{
+                        'field':'keywords_string',
+                        'size': 1000
+                    }
+                }
+            }
+        }
+        
+    flow_text_exist=es_xnr_2.search(index=flow_text_index_name,doc_type=facebook_flow_text_index_type,\
+           body=query_body)['aggregations']['keywords']['buckets']
+    word_dict = dict()
+
+    word_dict_new = dict()
+
+    keywords_string = ''
+    for item in flow_text_exist:
+        word = item['key']
+        count = item['doc_count']
+        word_dict[word] = count
+
+        keywords_string += '&'
+        keywords_string += item['key']
+
+    k_dict = extract_keywords(keywords_string)
+
+    for item_item in k_dict:
+        keyword = item_item.word
+        # print 'keyword::',keyword,type(keyword)
+        if word_dict.has_key(keyword):
+            word_dict_new[keyword] = word_dict[keyword]
+        else:
+            word_dict_new[keyword] = 1
+        # print 'count:',word_dict_new[keyword]   
+
+    keywords_task_detail = dict()
+    keywords_task_detail['date_time'] = date_time
+    keywords_task_detail['timestamp'] = datetime2ts(date_time)
+    keywords_task_detail['keyword_value_string'] = json.dumps(word_dict_new)
+    keywords_task_id = date_time
+
+    try:
+        es_xnr_2.index(index=facebook_full_keyword_index_name,doc_type=facebook_full_keyword_index_type,body=keywords_task_detail,id=keywords_task_id)
+        mark=True
+    except:
+        mark=False
+    #print word_dict_new
+    return mark
+
+
+
 if __name__ == '__main__':
-    compute_keywords_mark()
+    mark1=compute_keywords_mark()
+    mark2=compute_full_keywords()
+    print mark1,mark2

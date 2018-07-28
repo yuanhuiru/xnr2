@@ -40,14 +40,16 @@ class Report:
 			speaker_id = result['speaker_id']
 
 			report_content = json.loads(result['report_content'])
+			#print 'rrr::',report_content
 
-			for item in report_content:
-				text = item['text']
+			#for item in report_content:
+				#print 'item::',item
+			text = report_content['text']
 
 
-				dict = {'xnr_puid':xnr_puid,'speaker_id':speaker_id,'report_time':report_time, 'report_type':report_type,\
-					'xnr_user_no':xnr_user_no, 'text':text}
-				self.results.append(dict)
+			dict = {'xnr_puid':xnr_puid,'speaker_id':speaker_id,'report_time':report_time, 'report_type':report_type,\
+				'xnr_user_no':xnr_user_no, 'text':text}
+			self.results.append(dict)
 		return self.results
 
 

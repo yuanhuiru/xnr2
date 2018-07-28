@@ -560,9 +560,19 @@ def social_sensing(task_detail):
     if all_origin_list:
         #origin_weibo_detail = query_hot_weibo(ts, all_origin_list, time_interval) # 原创微博详情
         origin_weibo_detail = dict()
-        retweet_count = 0
-        comment_count = 0
+#         retweet_count = 0
+#         comment_count = 0
         for mid in all_origin_list:
+            try:
+                retweet_count = es_text.count(index=index_list, doc_type="text", body={"query":{"bool":{"must":[{"term":{"root_mid": mid}}, {"term":{"message_type":3}}]}}})["count"]
+            except:
+                retweet_count = 0
+            try:
+                comment_count = es_text.count(index=index_list, doc_type="text", body={"query":{"bool":{"must":[{"term":{"root_mid": mid}}, {"term":{"message_type":2}}]}}})["count"]
+            except:
+                comment_count = 0
+                
+            ''' 
             for index in index_list:
                 print index
                 try:
@@ -573,6 +583,7 @@ def social_sensing(task_detail):
                     comment_count += es_text.count(index=index, doc_type="text", body={"query":{"bool":{"must":[{"term":{"root_mid": mid}}, {"term":{"message_type":2}}]}}})["count"]
                 except:
                     pass
+            '''
             tmp = dict()
             tmp["retweeted"] = retweet_count
             tmp["comment"] = comment_count
@@ -761,6 +772,7 @@ def social_sensing(task_detail):
 
 
     return "1"
+
 
 
 
