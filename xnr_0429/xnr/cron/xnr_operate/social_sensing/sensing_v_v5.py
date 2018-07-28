@@ -20,6 +20,10 @@ from global_utils import es_user_portrait as es_profile
 from global_utils import R_SOCIAL_SENSING as r
 from global_utils import es_xnr
 from time_utils import ts2datetime, datetime2ts, ts2date
+from global_config import ES_FLOW_TEXT_HOST
+
+es_text = Elasticsearch(ES_FLOW_TEXT_HOST, timeout=30)
+
 
 from parameter import topic_value_dict, signal_sensitive_variation
 AVERAGE_COUNT = 4000
@@ -129,12 +133,12 @@ def query_mid_list(ts, social_sensors, time_segment, message_type=1):
                 "filter": {
                     "bool": {
                         "must":[
-                            {"range": {
-                                "timestamp": {
-                                    "gte": ts - time_segment,
-                                    "lt": ts
-                                }
-                            }},
+#                             {"range": {
+#                                 "timestamp": {
+#                                     "gte": ts - time_segment,
+#                                     "lt": ts
+#                                 }
+#                             }},
                             {"terms":{"uid": social_sensors}},
                             {"term":{"message_type": message_type}}
                         ]
@@ -165,15 +169,21 @@ def query_mid_list(ts, social_sensors, time_segment, message_type=1):
 #         index_list.append(index_name_1)
 #     if exist_es_2:
 #         index_list.append(index_name_2)
-    print 'index_list'
-    print index_list
+    search_results = []
     if index_list:
-        search_results = es_text.search(index=index_list, doc_type=flow_text_index_type, body=query_body)["hits"]["hits"]
+        for l in index_list:
+            print l
+            try:
+                es = Elasticsearch(ES_FLOW_TEXT_HOST, timeout=30)
+                res = es.search(index=l, doc_type=flow_text_index_type, body=query_body, timeout=60)["hits"]["hits"]
+                search_results.extend(res)
+            except Exception,e:
+                print e
     else:
         search_results = []
     origin_mid_list = set()
-    print 'search_results'
-    print search_results
+    print 'len(search_results)'
+    print len(search_results)
     if search_results:
         for item in search_results:
             if message_type == 1:
@@ -186,12 +196,18 @@ def query_mid_list(ts, social_sensors, time_segment, message_type=1):
     # 保证获取的源头微博能在最近两天内找到
         filter_list = []
         filter_mid_dict = dict()
-        for iter_index in index_list:
-            exist_es = es_text.mget(index=iter_index, doc_type="text", body={"ids":list(origin_mid_list)})["docs"]
-            for item in exist_es:
-                if item["found"]:
-                    filter_list.append(item["_id"])
-                    filter_mid_dict[item["_id"]] = mid_dict[item["_id"]]
+        if origin_mid_list:
+            for iter_index in index_list:
+                exist_es = es_text.mget(index=iter_index, doc_type="text", body={"ids":list(origin_mid_list)})["docs"]
+    #             print 'exist_es'
+    #             print exist_es
+                for item in exist_es:
+                    try:
+                        if item["found"]:
+                            filter_list.append(item["_id"])
+                            filter_mid_dict[item["_id"]] = mid_dict[item["_id"]]
+                    except:
+                        pass
         origin_mid_list = filter_list
         mid_dict = filter_mid_dict
     return list(origin_mid_list), mid_dict
@@ -460,7 +476,7 @@ def filter_mid(mid_list):
 
 
 def social_sensing(task_detail):
-
+    
     '''
     with open("prediction_uid.pkl", "r") as f:
         uid_model = pickle.load(f)
@@ -475,32 +491,45 @@ def social_sensing(task_detail):
     ts = float(task_detail[2])
 
     #xnr_user_no = task_detail[3]
+    
 
-    print ts2date(ts)
+        
+        
     index_list = []
     important_words = []
-    datetime_1 = ts2datetime(ts)
-    index_name_1 = flow_text_index_name_pre + datetime_1
-    exist_es = es_text.indices.exists(index=index_name_1)
-    if exist_es:
-        index_list.append(index_name_1)
-    datetime_2 = ts2datetime(ts-DAY)
-    index_name_2 = flow_text_index_name_pre + datetime_2
-    exist_es = es_text.indices.exists(index=index_name_2)
-    if exist_es:
-        index_list.append(index_name_2)
-    if es_text.indices.exists(index=flow_text_index_name_pre+ts2datetime(ts-2*DAY)):
-        index_list.append(flow_text_index_name_pre+ts2datetime(ts-2*DAY))
+    for i in range(14):
+        datetime_ = ts2datetime(ts-i*24*3600) 
+        index_name_ = flow_text_index_name_pre + datetime_
+        exist_es_ = es_text.indices.exists(index_name_)
+        if exist_es_:
+            index_list.append(index_name_)
+            
+#     datetime_1 = ts2datetime(ts)
+#     index_name_1 = flow_text_index_name_pre + datetime_1
+#     exist_es = es_text.indices.exists(index=index_name_1)
+#     if exist_es:
+#         index_list.append(index_name_1)
+#     datetime_2 = ts2datetime(ts-DAY)
+#     index_name_2 = flow_text_index_name_pre + datetime_2
+#     exist_es = es_text.indices.exists(index=index_name_2)
+#     if exist_es:
+#         index_list.append(index_name_2)
+#     if es_text.indices.exists(index=flow_text_index_name_pre+ts2datetime(ts-2*DAY)):
+#         index_list.append(flow_text_index_name_pre+ts2datetime(ts-2*DAY))
 
     # PART 1
     
     #forward_result = get_forward_numerical_info(task_name, ts, create_by)
     # 之前时间阶段内的原创微博list/retweeted
     forward_origin_weibo_list, forward_1 = query_mid_list(ts-time_interval, social_sensors, forward_time_range)
+    print 111
     forward_retweeted_weibo_list, forward_3 = query_mid_list(ts-time_interval, social_sensors, forward_time_range, 3)
+    print 222
     # 当前阶段内原创微博list
     current_mid_list, current_1 = query_mid_list(ts, social_sensors, time_interval)
+    print 333
     current_retweeted_mid_list, current_3 = query_mid_list(ts, social_sensors, time_interval, 3)
+    print 444
     all_mid_list = []
     all_mid_list.extend(current_mid_list)
     all_mid_list.extend(current_retweeted_mid_list)
@@ -527,12 +556,23 @@ def social_sensing(task_detail):
 
     # 查询微博在当前时间内的转发和评论数, 聚合按照message_type
     #statistics_count = query_related_weibo(ts, all_mid_list, time_interval)
+    
     if all_origin_list:
         #origin_weibo_detail = query_hot_weibo(ts, all_origin_list, time_interval) # 原创微博详情
         origin_weibo_detail = dict()
+        retweet_count = 0
+        comment_count = 0
         for mid in all_origin_list:
-            retweet_count = es_text.count(index=index_list, doc_type="text", body={"query":{"bool":{"must":[{"term":{"root_mid": mid}}, {"term":{"message_type":3}}]}}})["count"]
-            comment_count = es_text.count(index=index_list, doc_type="text", body={"query":{"bool":{"must":[{"term":{"root_mid": mid}}, {"term":{"message_type":2}}]}}})["count"]
+            for index in index_list:
+                print index
+                try:
+                    retweet_count += es_text.count(index=index, doc_type="text", body={"query":{"bool":{"must":[{"term":{"root_mid": mid}}, {"term":{"message_type":3}}]}}})["count"]
+                except:
+                    pass
+                try:
+                    comment_count += es_text.count(index=index, doc_type="text", body={"query":{"bool":{"must":[{"term":{"root_mid": mid}}, {"term":{"message_type":2}}]}}})["count"]
+                except:
+                    pass
             tmp = dict()
             tmp["retweeted"] = retweet_count
             tmp["comment"] = comment_count
@@ -721,6 +761,7 @@ def social_sensing(task_detail):
 
 
     return "1"
+
 
 
 

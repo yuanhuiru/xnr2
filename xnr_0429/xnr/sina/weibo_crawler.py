@@ -110,12 +110,12 @@ def all_weibo_xnr_crawler():
 if __name__ == '__main__':
 
     year, month, day, hour, minute, second = get_present_time()
-    #if hour >= 0 and hour <= 7:
-    execute('weiboxnr01@126.com','xnr123456')
+    if hour >= 0 and hour <= 7:
+        #execute('weiboxnr01@126.com','xnr123456')
         #execute('weiboxnr02@126.com','xnr123456')
         #execute('weiboxnr03@126.com','xnr123456')
-    execute('weiboxnr04@126.com','xnr1234567')
-    start_ts = int(time.time())
-    all_weibo_xnr_crawler()
-    end_ts = int(time.time())
-    print 'cost..',end_ts-start_ts
+        #execute('weiboxnr04@126.com','xnr1234567')
+        start_ts = int(time.time())
+        all_weibo_xnr_crawler()
+        end_ts = int(time.time())
+        print 'cost..',end_ts-start_ts

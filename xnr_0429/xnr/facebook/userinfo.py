@@ -62,7 +62,7 @@ class Userinfo:
 		time.sleep(1)
 		#description = driver.find_element_by_xpath('//div[@id="pagelet_bio"]/div/ul/li').text
 
-		dict = {'id':id,'career':career,'location':location,'age':age, 'discription':discription}
+		dict = {'id':id,'career':career,'location':location,'age':age, 'description':discription}
 		driver.quit()
 		return dict
 

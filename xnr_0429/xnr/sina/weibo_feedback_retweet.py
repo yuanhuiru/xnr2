@@ -5,7 +5,8 @@ import urllib2
 
 import time
 
-from sina.weibo_feedback_follow import FeedbackFollow
+#from sina.weibo_feedback_follow import FeedbackFollow
+from weibo_feedback_follow import FeedbackFollow
 from tools.ElasticsearchJson import executeES
 
 from tools.Launcher import SinaLauncher

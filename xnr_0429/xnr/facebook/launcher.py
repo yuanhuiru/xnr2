@@ -5,6 +5,7 @@ from selenium import webdriver
 import time
 import requests
 import json
+import re
 #from pyvirtualdisplay import Display
 from selenium.webdriver.firefox.options import Options
 #from selenium.webdriver.chrome.options import Options
@@ -124,7 +125,7 @@ class Launcher():
 	def get_share_list(self):
 		#driver,display = self.login()
 		driver = self.login_mobile()
-		driver.get('https://www.facebook.com/notifications')
+		driver.get('https://m.facebook.com/notifications')
 		# 退出通知弹窗进入页面
 		try:
 			driver.find_element_by_xpath('//div[@class="_n8 _3qx uiLayer _3qw"]').click()
@@ -133,23 +134,34 @@ class Launcher():
 
 		time.sleep(3)
 		#加载更多
-		length=100
-		for i in range(0,20):
-			js="var q=document.documentElement.scrollTop="+str(length) 
-			driver.execute_script(js) 
-			time.sleep(1)
-			length+=length
+		#length=100
+		#for i in range(0,20):
+		#	js="var q=document.documentElement.scrollTop="+str(length) 
+		#	driver.execute_script(js) 
+		#	time.sleep(1)
+		#	length+=length
+
+		while 1:
+			try:
+				time.sleep(5)
+				dirver.find_element_by_xpath('/html/body/div/div/div[2]/div/div[1]/div/div/div[10]/a/span').click()
+				continue
+			except:
+				break
 
 		html = driver.page_source
 		with open('get_share_list.html', 'wb') as f:
 			f.write(html)
-		lis = driver.find_elements_by_xpath('//ul[@data-testid="see_all_list"]/li')
+		driver.save_screenshot('get_share_list.png')
+
+		divs = driver.find_elements_by_xpath('//div[@id="notifications_list"]/div[@id="notifications_list"]/div/div')
 		share_list = []
-		for li in lis:
-			data_gt = json.loads(li.get_attribute('data-gt'))
-			type = data_gt['notif_type']
-			if type == "story_reshare":
-				url = li.find_element_by_xpath('./div/div/a').get_attribute('href')
+		for div in divs:
+			#data_gt = json.loads(li.get_attribute('data-gt'))
+			#type = data_gt['notif_type']
+			#if type == "story_reshare":
+			if '分享了你的' in div.text:
+				url = div.find_element_by_xpath('./table/tbody/tr/td[2]/a').get_attribute('href')
 				share_list.append(url)
 		#return share_list,driver,display
 		return share_list,driver
@@ -188,7 +200,7 @@ class Launcher():
 	def get_comment_list(self):
 		driver = self.login()
 		#driver,display = self.login()
-		wait = WebDriverWait(driver, 300)
+		wait = WebDriverWait(driver, 600)
 		driver.get('https://www.facebook.com/notifications')
 		#driver.get('https://m.facebook.com/notifications')
 		time.sleep(3)

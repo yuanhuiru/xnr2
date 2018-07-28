@@ -5,6 +5,9 @@ from launcher import Launcher
 import time
 from Elasticsearch_fb import Es_fb
 import re
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class Share():
 	def __init__(self, username, password):
@@ -16,55 +19,72 @@ class Share():
 
 	def get_share(self):
 
-		print self.share_list
 		for url in self.share_list:
 			self.driver.get(url)
-			time.sleep(1)
+			time.sleep(120)
 			# 退出通知弹窗进入页面
-			html = driver.page_source
-			with open('get_share000.html', 'wb') as f:
-				f.write(html)
+
 			try:
 				self.driver.find_element_by_xpath('//div[@class="_n8 _3qx uiLayer _3qw"]').click()
 			except:
 				pass
 
-			for ea in self.driver.find_elements_by_xpath('//div[@role="feed"]/div'):
-				for each in ea.find_elements_by_xpath('./div'):
-					try:
-						author_name = each.find_element_by_xpath('./div[2]/div[1]/div[2]/div[1]/div/div/div[2]/div/div/div[2]/h5/span/span/span/a').text
-					except:
-						author_name = 'None'
-					try:
-						author_id = ''.join(re.findall(re.compile('id=(\d+)'),each.find_element_by_xpath('./div[2]/div[1]/div[2]/div[1]/div/div/div[2]/div/div/div[2]/h5/span/span/span/a').get_attribute('data-hovercard')))
-					except:
-						author_id = 'None'
-					try:
-						pic_url = each.find_element_by_xpath('./div[2]/div/div[2]/div/div/a/div/img').get_attribute('src')
-					except:
-						pic_url = 'None'
-					try:
-						content = each.find_element_by_xpath('./div[2]/div/div[2]/div[2]').text
-					except:
-						content = 'None'
-					try:
-						try:
-							timestamp = int(each.find_element_by_xpath('./div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/span[3]/span/a/abbr').get_attribute('data-utime'))
-						except:
-							timestamp = int(each.find_element_by_xpath('./div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/span[2]/span/a/abbr').get_attribute('data-utime'))
-					except:
-						timestamp = 'None'
-					try:
-						mid = ''.join(re.findall(re.compile('/(\d+)'),each.find_element_by_xpath('./div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/span[3]/span/a').get_attribute('href')))
-					except:
-						mid = 'None'
-					try:
-						root_mid = ''.join(re.findall(re.compile('story_fbid=(\d+)'),each.find_element_by_xpath('./div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/h5/span/span/a').get_attribute('href')))
-					except:
-						root_mid = 'None'
-					item = {'uid':author_id, 'photo_url':pic_url, 'nick_name':author_name, 'mid':mid, 'timestamp':timestamp,\
-							 'text':content, 'update_time':self.update_time, 'root_text':content, 'root_mid':root_mid}
-					self.list.append(item)
+			page = self.driver.page_source
+			self.driver.save_screenshot('get_share000.png')
+
+			#for ea in self.driver.find_elements_by_xpath('//div[@role="feed"]/div'):
+			#for ea in divs:
+			#	for each in ea.find_elements_by_xpath('./div'):
+			try:
+				author_name = self.driver.find_element_by_xpath('//table[@role="presentation"]/tbody/tr/td[2]/div/h3/strong/a').text
+			except:
+				author_name = 'None'
+			print author_name
+
+			try:
+				author_id = ''.join(re.search(re.compile('id%3D(\d+)&'), url).group(1))
+			except:
+				author_id = 'None'
+			print author_id
+			#		try:
+			#			pic_url = each.find_element_by_xpath('./div[2]/div/div[2]/div/div/a/div/img').get_attribute('src')
+			#		except:
+			#			pic_url = 'None'
+
+
+			try:
+				content = self.driver.find_element_by_xpath('/html/body/div/div/div[2]/div/div[1]/div[1]/div/div[1]/div[2]').text
+			except:
+				content = 'None'
+
+
+			try:
+				timestamp = int(re.search(re.compile('&quot;publish_time&quot;:(\d+),'), page.replace(' ', '').replace('\n', '').replace('\t', '')).group(1))
+			except:
+				timestamp = 'None'
+			print timestamp
+
+			try:
+				mid = ''.join(re.search(re.compile('fbid%3D(\d+)%'), url).group(1))
+			except:
+				mid = 'None'
+			print mid
+
+			try:
+				root_mid = ''.join(re.search(re.compile('&quot;original_content_id&quot;:&quot;(\d+)&quot;'),page).group(1))
+			except:
+				root_mid = 'None'
+			print root_mid
+
+			try:
+				root_text = self.driver.find_element_by_xpath('/html/body/div/div/div[2]/div/div[1]/div[1]/div/div[1]/div[3]/div[2]/div/div/div[2]').text.replace(' ','').replace('\n', '').replace('\t', '')
+			except:
+				root_text = 'None'
+			print root_text
+
+			item = {'uid':author_id, 'nick_name':author_name, 'mid':mid, 'timestamp':timestamp,\
+					 'text':content, 'update_time':self.update_time, 'root_text':root_text, 'root_mid':root_mid}
+			self.list.append(item)
 
 		self.driver.quit()
 		return self.list

@@ -18,6 +18,7 @@ class SinaLauncher():
     def __init__(self, username, password):
         self.password = password
         self.username = username
+        self.uid = ''
         print 'username..',username
         print 'password..',password
     def get_prelogin_args(self):
@@ -120,7 +121,7 @@ class SinaLauncher():
             request = urllib2.Request(login_url)
             response = urllib2.urlopen(request)
             page = response.read().decode('utf-8')
-            # print page
+            print page
             self.uid = re.findall('uniqueid":"(\d+)"', page)[0]
 
             #print self.uid
@@ -139,6 +140,7 @@ class SinaLauncher():
 
 
 if __name__ == '__main__':
-    test = SinaLauncher('weiboxnr04@126.com','xnr1234567')
+    #test = SinaLauncher('weiboxnr04@126.com','xnr1234567')
+    test = SinaLauncher('18737028295','xuanhui99999')
     test.login()
     print test.uid

@@ -22,7 +22,9 @@ def social_sensing_task():
 #    print print_log #打印开始信息
 
     while 1:
+        print r
         temp = r.rpop("task_v_name")
+        print 'temp', temp
         if not temp:
             print count
             now_ts = str(int(time.time()))
@@ -34,4 +36,5 @@ def social_sensing_task():
 
 if __name__ == "__main__":
     social_sensing_task()
+
 
