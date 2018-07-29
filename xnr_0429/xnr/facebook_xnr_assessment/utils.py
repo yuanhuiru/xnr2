@@ -1316,10 +1316,11 @@ def get_tweets_distribute(xnr_user_no,start_time,end_time):
                                 id=xnr_user_no)["_source"]
         # followers_list = es_results['followers_list']
         followers_list = es_results['fans_list']
-
-    results = es_user_portrait.mget(index=portrait_index_name,doc_type=portrait_index_type,\
-        body={'ids':followers_list})['docs']
-
+    try:
+        results = es_user_portrait.mget(index=portrait_index_name,doc_type=portrait_index_type,\
+            body={'ids':followers_list})['docs']
+    except:
+        results = []
     topic_list_followers = []
     for result in results:
         if result['found'] == True:
@@ -1464,9 +1465,12 @@ def get_follow_group_distribute(xnr_user_no):
             followers_list_today = ['121625551334730']
 
     # 所有关注者领域分布
-    results = es.mget(index=portrait_index_name,doc_type=portrait_index_type,\
-        body={'ids':followers_list})['docs']
-    
+    try:
+        results = es.mget(index=portrait_index_name,doc_type=portrait_index_type,\
+                          body={'ids':followers_list})['docs']
+    except:
+        results = []
+        
     domain_list_followers = []
     for result in results:
         if result['found'] == True:
@@ -1844,3 +1848,4 @@ def get_compare_assessment_today(xnr_user_no_list, dim):
                 table_result['xnr'] = xnr_user_no
         results_all['table'].append(table_result)
     return results_all
+
