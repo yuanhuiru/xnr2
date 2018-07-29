@@ -21,7 +21,8 @@ from xnr.global_utils import weibo_hot_keyword_task_index_name,weibo_hot_keyword
                             weibo_hot_subopinion_results_index_name,weibo_hot_subopinion_results_index_type,\
                             weibo_bci_index_name_pre,weibo_bci_index_type,portrait_index_name,portrait_index_type,\
                             es_user_portrait,es_user_profile,active_social_index_name_pre,active_social_index_type,\
-                            weibo_business_tweets_index_name_pre, weibo_business_tweets_index_type
+                            weibo_business_tweets_index_name_pre, weibo_business_tweets_index_type,\
+                            social_V_sensing_index_name, social_V_sensing_index_type
 from xnr.global_utils import weibo_feedback_comment_index_name,weibo_feedback_comment_index_type,\
                             weibo_feedback_retweet_index_name,weibo_feedback_retweet_index_type,\
                             weibo_feedback_private_index_name,weibo_feedback_private_index_type,\
@@ -381,14 +382,17 @@ def get_V_recommend_tweets(xnr_user_no,topic_field,sort_item):
             }
             
         },
-        'sort':{sort_item:{'order':'desc'}},
+#         'sort':{sort_item:{'order':'desc',"ignore_unmapped": True}},
         'size':TOP_WEIBOS_LIMIT
     }
-    es_results = es.search(index=social_sensing_index_name,doc_type=social_sensing_index_type,body=query_body)['hits']['hits']
+#     print 'query_body'
+#     print query_body
+    es_results = es.search(index=social_V_sensing_index_name,doc_type='text',body=query_body)['hits']['hits']
     if not es_results:    
-        es_results = es.search(index=social_sensing_index_name,doc_type=social_sensing_index_type,\
+        es_results = es.search(index=social_V_sensing_index_name,doc_type='text',\
                                 body={'query':{'match_all':{}},'size':TOP_WEIBOS_LIMIT,\
-                                'sort':{sort_item:{'order':'desc'}}})['hits']['hits']
+                                })['hits']['hits']
+#                                 'sort':{sort_item:{'order':'desc',"ignore_unmapped": True}}})['hits']['hits']
     results_all = []
     for result in es_results:
         result = result['_source']
@@ -2153,6 +2157,7 @@ def save_oprate_like(task_detail):
 
 
         
+
 
 
 
