@@ -4,7 +4,7 @@ import json
 import time
 from collections import Counter
 import random
-from xnr.global_utils import es_xnr as es
+from xnr.global_utils import es_xnr_2 as es
 es_flow_text = es
 es_user_portrait = es
 from xnr.global_utils import R_WEIBO_XNR_FANS_FOLLOWERS as r_fans_followers ,\

@@ -49,7 +49,7 @@ from parameter import WEEK,DAY,MAX_SEARCH_SIZE,TOP_ASSESSMENT_NUM,TOP_WEIBOS_LIM
 from time_utils import get_timeset_indexset_list
 from facebook_count_mappings import facebook_xnr_count_info_mappings
 
-
+S_DATE = '2018-07-01'
 
 from parameter import WEEK,DAY,MAX_SEARCH_SIZE,TOP_ASSESSMENT_NUM,ACTIVE_UID
 
@@ -258,7 +258,7 @@ def get_tweets_distribute(xnr_user_no, current_time):
         results = es.mget(index=portrait_index_name,doc_type=portrait_index_type,\
             body={'ids':fans_list})['docs']
     except Exception,e:
-        print e
+#         print e
         results = []
         
     topic_list_fans = []
@@ -607,7 +607,7 @@ def create_xnr_history_info_count(xnr_user_no,current_date):
 
 ## 影响力评估各指标
 def get_influence_total_trend(xnr_user_no,current_time):
-
+    
     fans_dict = get_influ_fans_num(xnr_user_no,current_time)
     retweet_dict = get_influ_retweeted_num(xnr_user_no,current_time)
     comment_dict = get_influ_commented_num(xnr_user_no,current_time)
@@ -808,7 +808,6 @@ def get_influ_commented_num(xnr_user_no,current_time):
         es_day_count = es_day_count_result['count']
     else:
         return 'es_day_count_found_error'
-
 
     es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_comment_index_type,\
                     body=query_body_total,request_timeout=999999)
@@ -1233,7 +1232,7 @@ def get_pene_feedback_sensitive(xnr_user_no,sort_item,current_time_old):
             'bool':{
                 'must':[
                     {'term':{'root_uid':uid}},
-                    # {'range':{'timestamp':{'gte':current_time_new,'lt':(current_time_new+DAY)}}}
+                    {'range':{'timestamp':{'gte':current_time_new,'lt':(current_time_new+DAY)}}}
                 ]
             }
         },
@@ -1520,4 +1519,5 @@ if __name__ == '__main__':
 #         print 'date', date
 #         current_time = datetime2ts(date)
 #         cron_compute_mark(current_time) 
+
 

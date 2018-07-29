@@ -9,7 +9,7 @@ from utils import get_influence_total_trend, compute_influence_num, penetration_
                     get_influence_total_trend_today, penetration_total_today, get_safe_active_today,\
                     get_tweets_distribute, get_safe_tweets,get_follow_group_distribute,get_follow_group_tweets,\
                     get_compare_assessment, get_compare_assessment_today
-from xnr.global_utils import es_xnr as es
+from xnr.global_utils import es_xnr_2 as es
 from xnr.global_config import S_TYPE, S_DATE_FB as S_DATE
 from xnr.time_utils import datetime2ts, ts2datetime
 from xnr.parameter import WEEK, DAY
