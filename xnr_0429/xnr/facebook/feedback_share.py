@@ -38,13 +38,13 @@ class Share():
 			try:
 				author_name = self.driver.find_element_by_xpath('//table[@role="presentation"]/tbody/tr/td[2]/div/h3/strong/a').text
 			except:
-				author_name = 'None'
+				author_name = ''
 			print author_name
 
 			try:
 				author_id = ''.join(re.search(re.compile('id%3D(\d+)&'), url).group(1))
 			except:
-				author_id = 'None'
+				author_id = ''
 			print author_id
 			#		try:
 			#			pic_url = each.find_element_by_xpath('./div[2]/div/div[2]/div/div/a/div/img').get_attribute('src')
@@ -55,31 +55,31 @@ class Share():
 			try:
 				content = self.driver.find_element_by_xpath('/html/body/div/div/div[2]/div/div[1]/div[1]/div/div[1]/div[2]').text
 			except:
-				content = 'None'
+				content = ''
 
 
 			try:
 				timestamp = int(re.search(re.compile('&quot;publish_time&quot;:(\d+),'), page.replace(' ', '').replace('\n', '').replace('\t', '')).group(1))
 			except:
-				timestamp = 'None'
+				timestamp = ''
 			print timestamp
 
 			try:
 				mid = ''.join(re.search(re.compile('fbid%3D(\d+)%'), url).group(1))
 			except:
-				mid = 'None'
+				mid = ''
 			print mid
 
 			try:
 				root_mid = ''.join(re.search(re.compile('&quot;original_content_id&quot;:&quot;(\d+)&quot;'),page).group(1))
 			except:
-				root_mid = 'None'
+				root_mid = ''
 			print root_mid
 
 			try:
 				root_text = self.driver.find_element_by_xpath('/html/body/div/div/div[2]/div/div[1]/div[1]/div/div[1]/div[3]/div[2]/div/div/div[2]').text.replace(' ','').replace('\n', '').replace('\t', '')
 			except:
-				root_text = 'None'
+				root_text = ''
 			print root_text
 
 			item = {'uid':author_id, 'nick_name':author_name, 'mid':mid, 'timestamp':timestamp,\
