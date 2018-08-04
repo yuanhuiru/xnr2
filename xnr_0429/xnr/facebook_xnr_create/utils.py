@@ -61,9 +61,9 @@ def get_nick_name_unique(nick_name):
         mark = True
     return mark
 
-def get_show_domain():
+def get_show_domain(submitter):
     domain_name_dict = {}
-    query_body = {'query':{'match_all':{}},'size':MAX_SEARCH_SIZE}
+    query_body = {'query':{'term':{'submitter':submitter}},'size':MAX_SEARCH_SIZE}
     es_results = es.search(index=fb_domain_index_name,doc_type=fb_domain_index_type,body=query_body)['hits']['hits']
     if es_results:
         for result in es_results:
@@ -558,4 +558,5 @@ if __name__ == '__main__':
     domain_create_task(domain_name,create_type,create_time,submitter,remark,compute_status=0)
     '''
     print get_fb_xnr_no()
+
 

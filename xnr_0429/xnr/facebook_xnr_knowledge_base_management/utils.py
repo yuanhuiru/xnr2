@@ -27,6 +27,8 @@ from textrank4zh import TextRank4Keyword, TextRank4Sentence
 from xnr.parameter import MAX_VALUE,MAX_SEARCH_SIZE,fb_domain_ch2en_dict,fb_tw_topic_en2ch_dict,fb_domain_en2ch_dict,\
                         EXAMPLE_MODEL_PATH,TOP_ACTIVE_TIME,TOP_PSY_FEATURE
 from xnr.time_utils import ts2datetime,datetime2ts,get_facebook_flow_text_index_list as get_flow_text_index_list
+from send_mail import send_mail
+
 
 es_flow_text = es
 es_fb_user_profile = es
@@ -61,13 +63,31 @@ def get_user_location(location_dict):
         location = ''
     return location
 
-def get_generate_example_model(domain_name,role_name):
+def sendfile2mail(mail, filepath):
+    content = {
+        'subject': '群体画像导出',
+        'text': '群体画像导出文件，请查收。',
+        'files_path': filepath,    #支持多个，以逗号隔开
+        }
+    from_user = {
+        'name': '虚拟人项目',
+        'addr': '929673096@qq.com',
+        'password': 'czlasoaiehchbega',
+        'smtp_server': 'smtp.qq.com'   
+    }
+    to_user = {
+        'name': '管理员',
+        'addr': '929673096@qq.com'  #支持多个，以逗号隔开
+    }
+    send_mail(from_user=from_user, to_user=to_user, content=content)
+
+def get_generate_example_model(domain_name,role_name, mail):
     domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
     role_en = fb_domain_ch2en_dict[role_name]
     task_id = domain_pinyin + '_' + role_en
     es_result = es.get(index=fb_role_index_name,doc_type=fb_role_index_type,id=task_id)['_source']
     item = es_result
-    print 'es_result:::',es_result
+#     print 'es_result:::',es_result
     # 政治倾向
     political_side = json.loads(item['political_side'])[0][0]
 
@@ -162,6 +182,11 @@ def get_generate_example_model(domain_name,role_name):
         es.index(index=fb_example_model_index_name,doc_type=fb_example_model_index_type,\
             body=item_dict,id=task_id_new)
         mark = True
+        
+        try:
+            sendfile2mail(mail, example_model_file_name)
+        except Exception,e:
+            pass
     except:
         mark = False
     return mark
@@ -230,7 +255,7 @@ def domain_create_task(domain_name,create_type,create_time,submitter,description
             item_exist['remark'] = domain_task_dict['remark']
             item_exist['group_size'] = ''
             item_exist['compute_status'] = 0  # 存入创建信息
-            print es.index(index=fb_domain_index_name,doc_type=fb_domain_index_type,id=item_exist['domain_pinyin'],body=item_exist)
+            es.index(index=fb_domain_index_name,doc_type=fb_domain_index_type,id=item_exist['domain_pinyin'],body=item_exist)
             mark = True
         except Exception,e:
             print e
@@ -352,7 +377,74 @@ def get_delete_domain(domain_name):
         mark = False
     return mark
 
+def get_create_type_content(create_type,keywords_string,seed_users,all_users):
 
+    create_type_new = {}
+    create_type_new['by_keywords'] = []
+    create_type_new['by_seed_users'] = []
+    create_type_new['by_all_users'] = []
+
+    if create_type == 'by_keywords':
+
+        if '，' in keywords_string:
+            create_type_new['by_keywords'] = keywords_string.encode('utf-8').split('，')
+        else:
+            create_type_new['by_keywords'] = keywords_string.encode('utf-8').split(',')
+
+    elif create_type == 'by_seed_users':
+        if '，' in seed_users:
+            create_type_new['by_seed_users'] = seed_users.encode('utf-8').split('，')
+        else:
+            create_type_new['by_seed_users'] = seed_users.encode('utf-8').split(',')
+
+    else:
+        if '，' in all_users:
+            create_type_new['all_users'] = all_users.encode('utf-8').split('，')
+        else:
+            create_type_new['all_users'] = all_users.encode('utf-8').split(',')
+
+    return create_type_new
+
+def domain_update_task(domain_name,create_type,create_time,submitter,description,remark,compute_status=0):
+    
+    task_id = pinyin.get(domain_name,format='strip',delimiter='_')
+
+    try:
+        domain_task_dict = dict()
+
+        #domain_task_dict['xnr_user_no'] = xnr_user_no
+        domain_task_dict['domain_pinyin'] = pinyin.get(domain_name,format='strip',delimiter='_')
+        domain_task_dict['domain_name'] = domain_name
+        domain_task_dict['create_type'] = json.dumps(create_type)
+        domain_task_dict['create_time'] = create_time
+        domain_task_dict['submitter'] = submitter
+        domain_task_dict['description'] = description
+        domain_task_dict['remark'] = remark
+        domain_task_dict['compute_status'] = compute_status
+
+        r.lpush(fb_target_domain_detect_queue_name,json.dumps(domain_task_dict))
+
+        item_exist = dict()
+        
+        #item_exist['xnr_user_no'] = domain_task_dict['xnr_user_no']
+        item_exist['domain_pinyin'] = domain_task_dict['domain_pinyin']
+        item_exist['domain_name'] = domain_task_dict['domain_name']
+        item_exist['create_type'] = domain_task_dict['create_type']
+        item_exist['create_time'] = domain_task_dict['create_time']
+        item_exist['submitter'] = domain_task_dict['submitter']
+        item_exist['description'] = domain_task_dict['description']
+        item_exist['remark'] = domain_task_dict['remark']
+        item_exist['group_size'] = ''
+        
+        item_exist['compute_status'] = 0  # 存入创建信息
+        es.index(index=fb_domain_index_name,doc_type=fb_domain_index_type,id=item_exist['domain_pinyin'],body=item_exist)
+
+        mark = True
+    except Exception,e:
+        print e
+        mark =False
+
+    return mark
 
 #####################################################
 #言论知识库
@@ -527,5 +619,6 @@ if __name__ == '__main__':
 	print result
 
  
+
 
 

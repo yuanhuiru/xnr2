@@ -28,7 +28,8 @@ def ajax_nick_name_unique():
 # 返回渗透领域
 @mod.route('/show_domain/')
 def ajax_show_domain():
-    domain_name_dict = get_show_domain()
+    submitter = request.args.get('submitter','admin@qq.com')
+    domain_name_dict = get_show_domain(submitter)
     return json.dumps(domain_name_dict)
 
 # 返回虚拟人
@@ -162,4 +163,5 @@ def ajax_modify_base_info():
         task_detail['monitor_keywords'] = monitor_keywords
     mark = get_modify_base_info(task_detail)    
     return json.dumps(mark)
+
 
