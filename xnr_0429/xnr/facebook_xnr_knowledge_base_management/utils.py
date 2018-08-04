@@ -26,7 +26,7 @@ from xnr.utils import fb_uid2nick_name_photo as uid2nick_name_photo,\
 from textrank4zh import TextRank4Keyword, TextRank4Sentence
 from xnr.parameter import MAX_VALUE,MAX_SEARCH_SIZE,fb_domain_ch2en_dict,fb_tw_topic_en2ch_dict,fb_domain_en2ch_dict,\
                         EXAMPLE_MODEL_PATH,TOP_ACTIVE_TIME,TOP_PSY_FEATURE
-from xnr.time_utils import ts2datetime,datetime2ts,get_facebook_flow_text_index_list as get_flow_text_index_list
+from xnr.time_utils import ts2datetime,ts2datetime_full,datetime2ts,get_facebook_flow_text_index_list as get_flow_text_index_list
 from send_mail import send_mail
 
 
@@ -81,7 +81,130 @@ def sendfile2mail(mail, filepath):
     }
     send_mail(from_user=from_user, to_user=to_user, content=content)
 
+def export_group_info(domain_name, mail):
+    mark = True
+    res = {
+      'domain_name': domain_name,
+      'members_num': 0,
+      'create_info': {
+        'submitter': '',
+        'remark': '',
+        'create_type': '',
+        'create_time': '',
+      },
+      'members_uid': [],
+      'members_info': {
+#         'uid1': {
+#           'nickname': '',
+#           'gender': '',
+#           'location': '',
+#           'link': '',
+#         }
+      },
+      'count_info': {
+        'location_count': {
+#           'zh_TW': 10,
+#           'us': 5
+        },
+        'gender_count': {
+#           'f': 0,
+#           'm': 40
+        },
+        'role_count': {
+#           'role1': 12,
+#           'role2': 7
+        },
+        'words_preference': {
+#           'w1': 20,
+#           'w2': 10
+        },
+        'topic_preference': {
+#           't1': 20,
+#           't2': 10
+        },
+        'political_side': {
+        },
+      }
+    }
+    domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
+    
+    domain_details = get_show_domain_description(domain_name)
+    res['count_info']['political_side'] = domain_details['political_side']
+    res['count_info']['role_count'] = domain_details['role_distribute']
+    res['count_info']['topic_preference'] = domain_details['topic_preference']
+    res['count_info']['words_preference'] = domain_details['word_preference']
+    res['members_num'] = domain_details['group_size']
+    
+    
+    domain_info = es.get(index=fb_domain_index_name,doc_type=fb_domain_index_type,id=domain_pinyin)['_source']
+    res['create_info']['remark'] = domain_info['remark']
+    res['create_info']['submitter'] = domain_info['submitter']
+    res['create_info']['create_type'] = domain_info['create_type']
+    res['create_info']['create_time'] = ts2datetime_full(domain_info['create_time'])
+    res['members_uid'] = domain_info['member_uids']
+    
+    query_body = {
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "terms": {
+                            "uid": res['members_uid'],
+                        }                  
+                    },
+                ]
+            }
+        },
+        "size": 9999,
+        "fields": ["locale", "link", "uid", "gender", "username"]
+    }
+    user_info = es.search(profile_index_name, profile_index_type, query_body)['hits']['hits']
+    members_info = {}
+    gender_count = {}
+    location_count = {}
+    for user in user_info:
+        item = user['fields']
+        uid = item.get('uid', [''])[0]
+        gender = item.get('gender', [''])[0]
+        location = item.get('locale', [''])[0]
+        members_info[uid] = {    
+            'nickname': item.get('username', [''])[0],
+            'gender': gender,
+            'location': location,
+            'link': item.get('link', [''])[0]
+        }
+        if gender:
+            if gender in gender_count:
+                gender_count[gender] += 1
+            else:
+                gender_count[gender] = 1
+                
+        if location:
+            if location in location_count:
+                location_count[location] += 1
+            else:
+                location_count[location] = 1
+    
+    res['members_info'] = members_info
+    res['count_info']['location_count'] = location_count
+    res['count_info']['gender_count'] = gender_count
+    
+    export_filename = EXAMPLE_MODEL_PATH + domain_pinyin + '_' + ts2datetime_full(time.time()) + '.json'
+    try:
+        with open(export_filename,"w") as f:
+            json.dump(res, f)
+        try:
+            sendfile2mail(mail, export_filename)
+        except Exception,e:
+            pass
+    except:
+        mark = False
+    return mark
+    
 def get_generate_example_model(domain_name,role_name, mail):
+    
+    export_group_info(domain_name, mail)
+
     domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
     role_en = fb_domain_ch2en_dict[role_name]
     task_id = domain_pinyin + '_' + role_en
@@ -182,11 +305,6 @@ def get_generate_example_model(domain_name,role_name, mail):
         es.index(index=fb_example_model_index_name,doc_type=fb_example_model_index_type,\
             body=item_dict,id=task_id_new)
         mark = True
-        
-        try:
-            sendfile2mail(mail, example_model_file_name)
-        except Exception,e:
-            pass
     except:
         mark = False
     return mark
@@ -619,6 +737,7 @@ if __name__ == '__main__':
 	print result
 
  
+
 
 
 

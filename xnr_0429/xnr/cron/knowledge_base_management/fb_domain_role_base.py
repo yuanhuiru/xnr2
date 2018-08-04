@@ -415,11 +415,11 @@ def union_dict(*objs):
 # 为了获得流数据库的后缀日期
 ## input: 任务创建时间
 ## output: 创建日期之前的一周 ['2016-11-22','',...]
-#增加到10天
+#增加到30天
 def get_flow_text_datetime_list(date_range_end_ts):
     datetime_list = []
     # days_num = MAX_FLOW_TEXT_DAYS
-    days_num = 10
+    days_num = 30
     for i in range(1,(days_num+1)):
         date_range_start_ts = date_range_end_ts - i*DAY
         date_range_start_datetime = ts2datetime(date_range_start_ts)
@@ -436,12 +436,13 @@ def detect_by_keywords(keywords,datetime_list):
     keywords_list = []
     model = gensim.models.KeyedVectors.load_word2vec_format(WORD2VEC_PATH,binary=True)
     for word in keywords:
+        keywords_list.append(word)
         try:
             simi_list = model.most_similar(word,topn=20)
             for simi_word in simi_list:
                 keywords_list.append(simi_word[0])
         except Exception,e:
-            print u'扩展词', str(e)
+            print u'扩展词 Exception:', str(e)
 
     group_uid_list = set()
     if datetime_list == []:
@@ -477,7 +478,7 @@ def detect_by_keywords(keywords,datetime_list):
         'query':{
             'bool':{
                 'should':nest_query_list,
-                'minimum_should_match': SHOULD_PERCENT,
+#                 'minimum_should_match': SHOULD_PERCENT,
                 # 'must_not':{'terms':{'uid':white_uid_list}}
             }
         },
@@ -881,7 +882,6 @@ def active_time_compute(uids_list,datetime):
                 }
             }
         }
-
         active_hour_counts = es_flow_text.count(index=flow_text_index_name,doc_type=flow_text_index_type,body=query_body)#\
         if active_hour_counts['_shards']['successful'] != 0:
            hour_counts = active_hour_counts['count']
@@ -980,9 +980,9 @@ def role_feature_analysis(role_label, uids_list,datetime_list,create_time):
         geo_cityTopic_results_datetime = cityTopic(uids_list,flow_text_index_name)
         geo_cityTopic_results[datetime] = geo_cityTopic_results_datetime
         #province_set = province_set | geo_cityTopic_results_datetime.keys()  ## 求集合并集
-
+ 
     geo_cityTopic_results_merge = dict()
-
+ 
     for datetime,province_city_dict in geo_cityTopic_results.iteritems():
         ## 利用for循环
         for province, city_dict in province_city_dict.iteritems():
@@ -992,7 +992,7 @@ def role_feature_analysis(role_label, uids_list,datetime_list,create_time):
                         geo_cityTopic_results_merge[province][city] += count
                     else:
                         geo_cityTopic_results_merge[province][city] = count
-
+ 
             else:
                 geo_cityTopic_results_merge[province] = city_dict
 
@@ -1008,7 +1008,7 @@ def role_feature_analysis(role_label, uids_list,datetime_list,create_time):
     for datetime in datetime_list:
         day_hour_counts = active_time_compute(uids_list,datetime)
         day_hour_counts_all.append(day_hour_counts)
-
+    
     day_hour_counts_all_np = np.array(day_hour_counts_all)
     day_hour_counts_aver = np.mean(day_hour_counts_all_np,axis=0).astype(np.int)  ## 对二维数组按列求和
 
@@ -1075,26 +1075,28 @@ def compute_domain_base():
                 mark = save_detect_results(detect_results,decect_task_information)
                 if mark == False:
                     status = add_task_2_queue(decect_task_information)
-            #print 'detect_results:::::::',detect_results
-            print 'step 1: 开始群体描述计算'
-            print 'detect_results:::',detect_results
-            group_results,role_uids_dict = group_description_analysis(detect_results,datetime_list)
-            print 'role_uids_dict:::::',role_uids_dict
-            if group_results:
-                print 'step 1: 保存群体描述分析结果'
-                mark = save_group_description_results(group_results,decect_task_information)
-                if mark == False:
-                    status = add_task_2_queue(decect_task_information)
-
-            print 'step 2: 开始角色分析计算'
-            for role_label, uids_list in role_uids_dict.iteritems():
-                role_id = task_id + '_' + role_label
-                role_results = role_feature_analysis(role_label, uids_list,datetime_list,create_time)
-                print 'step 2: 保存角色分析结果'
-                #print role_results
-                mark = save_role_feature_analysis(role_results,role_label,domain,role_id,task_id)
-
-            print '领域知识库和角色知识库计算完毕！'
+                #print 'detect_results:::::::',detect_results
+                print 'step 1: 开始群体描述计算'
+                print 'detect_results:::',detect_results
+                group_results,role_uids_dict = group_description_analysis(detect_results,datetime_list)
+                print 'role_uids_dict:::::',role_uids_dict
+                if group_results:
+                    print 'step 1: 保存群体描述分析结果'
+                    mark = save_group_description_results(group_results,decect_task_information)
+                    if mark == False:
+                        status = add_task_2_queue(decect_task_information)
+    
+                print 'step 2: 开始角色分析计算'
+                for role_label, uids_list in role_uids_dict.iteritems():
+                    role_id = task_id + '_' + role_label
+                    role_results = role_feature_analysis(role_label, uids_list,datetime_list,create_time)
+                    print 'step 2: 保存角色分析结果'
+                    #print role_results
+                    mark = save_role_feature_analysis(role_results,role_label,domain,role_id,task_id)
+    
+                print '领域知识库和角色知识库计算完毕！'
+            else:
+                pass
 
 
         else:
@@ -1114,5 +1116,6 @@ if __name__ == '__main__':
     # # my_domain_classfiy(uid_list, datetime_list)
 
     # print detect_by_keywords([u'中国', u'党'], datetime_list)
+
 
 
