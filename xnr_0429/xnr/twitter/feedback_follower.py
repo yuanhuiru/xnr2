@@ -21,10 +21,15 @@ class Follower():
         try:
             for each in self.api.followers(self.uid):
                 name = each.name
+                print 'user_name:', name
                 screen_name = each.screen_name
+                print 'nick_name:', screen_name
                 id = each.id
+                print 'uid:', id
                 photo_url = each.profile_image_url_https
+                print 'photo_url:', photo_url
                 profile_url = 'https://twitter.com/' + screen_name
+                print 'profile_url:', profile_url
                 item = {
                     'user_name':name,
                     'nick_name':screen_name,
@@ -60,7 +65,7 @@ if __name__ == '__main__':
     current_ts = int(time.time())
     follower = Follower('18538728360@163.com','zyxing,0513',current_ts, 'N1Z4pYYHqwcy9JI0N8quoxIc1', 'VKzMcdUEq74K7nugSSuZBHMWt8dzQqSLNcmDmpGXGdkH6rt7j2', '943290911039029250-yWtATgV0BLE6E42PknyCH5lQLB7i4lr', 'KqNwtbK79hK95l4X37z9tIswNZSr6HKMSchEsPZ8eMxA9', "902921493155217409") #传uid
     
-    list = follower.get_follower()
-    follower.save('twitter_feedback_fans', 'text', list)
-
+    follower_list = follower.get_follower()
+    print follower_list
+    follower.save('twitter_feedback_fans', 'text', follower_list)
 

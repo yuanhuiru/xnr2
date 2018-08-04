@@ -3,6 +3,7 @@
 import json
 import pinyin
 import numpy as np
+import time
 from xnr.global_config import S_TYPE,S_DATE_FB as S_DATE
 from xnr.global_utils import es_xnr_2 as es
 from xnr.global_utils import fb_role_index_name, fb_role_index_type
@@ -519,6 +520,12 @@ def show_different_corpus(task_detail):
         result['opinion_corpus'] = ''
 
     return result
+
+if __name__ == '__main__':
+	domain_name = '习近平1'   
+	result = get_show_domain_description(domain_name)
+	print result
+
  
 
 

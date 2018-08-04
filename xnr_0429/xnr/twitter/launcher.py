@@ -6,7 +6,7 @@ import tweepy
 from tweepy import OAuthHandler
 import requests
 import time
-from pyvirtualdisplay import Display
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 class Launcher():
@@ -18,17 +18,11 @@ class Launcher():
 		self.access_token = access_token
 		self.access_secret = access_secret
 	def login(self):
-		display = Display(visible=0,size=(1024,768))
-		display.start()
+
 		# 登录
-		try:
-			# 安管中心环境使用####
-			driver = webdriver.Firefox()
-		except:
-			# 213环境使用########
-			cap = DesiredCapabilities().FIREFOX
-			cap["marionette"] = False
-			driver = webdriver.Firefox(capabilities=cap)
+		options = Options()
+		options.add_argument('-headless')
+		driver = webdriver.Firefox(firefox_options=options)
 		driver.get('https://twitter.com/login')
 		time.sleep(3)
 		driver.find_element_by_xpath('//input[@class="js-username-field email-input js-initial-focus"]').send_keys(self.username)
@@ -43,7 +37,7 @@ class Launcher():
 		headers = {
 			'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:56.0) Gecko/20100101 Firefox/56.0'
 		}
-		return driver,display
+		return driver
 
 	def api(self):
 		auth = OAuthHandler(self.consumer_key,self.consumer_secret)
@@ -57,9 +51,7 @@ class Launcher():
 		return screen_name
 
 if __name__ == '__main__':
-	launcher = Launcher('8617078448226', 'xnr123456', 'N1Z4pYYHqwcy9JI0N8quoxIc1', 'VKzMcdUEq74K7nugSSuZBHMWt8dzQqSLNcmDmpGXGdkH6rt7j2', '943290911039029250-yWtATgV0BLE6E42PknyCH5lQLB7i4lr', 'KqNwtbK79hK95l4X37z9tIswNZSr6HKMSchEsPZ8eMxA9')
+	launcher = Launcher('8613520874771@163.com', 'Z1290605918', 'N1Z4pYYHqwcy9JI0N8quoxIc1', 'VKzMcdUEq74K7nugSSuZBHMWt8dzQqSLNcmDmpGXGdkH6rt7j2', '943290911039029250-yWtATgV0BLE6E42PknyCH5lQLB7i4lr', 'KqNwtbK79hK95l4X37z9tIswNZSr6HKMSchEsPZ8eMxA9')
 	driver,display = launcher.login()
 	api = launcher.api()
-
-
 

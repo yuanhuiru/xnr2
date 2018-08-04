@@ -6,7 +6,7 @@ import random
 from elasticsearch import Elasticsearch
 import sys
 sys.path.append('../')
-from global_utils import es_xnr as es
+from global_utils import es_xnr_2 as es
 from global_utils import facebook_feedback_comment_index_name_pre,facebook_feedback_comment_index_type,\
                         facebook_feedback_retweet_index_name_pre,facebook_feedback_retweet_index_type,\
                         facebook_feedback_private_index_name_pre,facebook_feedback_private_index_type,\
@@ -15,6 +15,9 @@ from global_utils import facebook_feedback_comment_index_name_pre,facebook_feedb
                         facebook_feedback_friends_index_name_pre,facebook_feedback_friends_index_type,\
                         facebook_feedback_friends_index_name,fb_xnr_flow_text_index_name_pre,\
                         fb_xnr_flow_text_index_type
+from global_utils import fb_xnr_index_name, fb_xnr_index_type, \
+                        fb_xnr_fans_followers_index_name, fb_xnr_fans_followers_index_type
+                        
 from time_utils import ts2datetime, datetime2ts
 from facebook_feedback_mappings_timer import facebook_feedback_like_mappings, facebook_feedback_retweet_mappings,\
                                             facebook_feedback_at_mappings, facebook_feedback_comment_mappings,\
@@ -23,61 +26,79 @@ sys.path.append('../facebook/sensitive')
 from get_sensitive import get_sensitive_info, get_sensitive_user
 from fb_xnr_flow_text_mappings import fb_xnr_flow_text_mappings
 
+sys.path.append('../facebook')
+from feedback_comment import Comment
 
 
-# root_uid = '100018797745111'
-# root_nick_name = u'韩梦成'
-# xnr_user_no = 'FXNR0005'
+def load_xnr_info():
+    res = []
+    search_res = es.search(fb_xnr_index_name, fb_xnr_index_type, {})['hits']['hits']
+    for item in search_res:
+        source = item['_source']
+        if source.get('fb_mail_account', ''):
+            account = source.get('fb_mail_account')
+        else:
+            account = source.get('fb_phone_account')
+        xnr_user_no = source.get('xnr_user_no', '')
+        
+        try:
+            friends_list = es.get(index=fb_xnr_fans_followers_index_name, doc_type=fb_xnr_fans_followers_index_type, id=xnr_user_no)['_source']['fans_list']
+        except:
+            friends_list = []
+            
+        info = {
+            'root_uid': source.get('uid', ''),
+            'root_nick_name': source.get('nick_name', ''),
+            'xnr_user_no': xnr_user_no,
+            'account': account,
+            'password': source.get('password', ''),
+            'friends_list': friends_list
+        }
+        res.append(info)
+    return res
 
-root_uid = '100023849442394'
-root_nick_name = u'吕磊'
-xnr_user_no = 'FXNR0003'
+# 评论
+def comment(xnr_info, date):
+    facebook_feedback_comment_index_name = facebook_feedback_comment_index_name_pre + date
+    facebook_feedback_comment_mappings(facebook_feedback_comment_index_name)
+    comment = Comment(xnr_info['account'], xnr_info['password'])
+    lis = comment.get_comment()
+    # {'uid', 'nick_name', 'mid', 'timestamp', 'text', 'update_time', 'root_text', 'root_mid'}
+    for item in lis:
+        uid = item['uid']
+        if uid in xnr_info['friends_list']:
+            facebook_type = u"好友"
+        else:
+            facebook_type = u"陌生人"
+        data = {
+            'uid': uid,
+            'nick_name': item['nick_name'],
+            'mid': item['mid'],
+            'timestamp': item['timestamp'],
+            'text': item['text'],
+            'update_time': item['update_time'],
+            'root_text': item['root_text'],
+            'root_mid': item['mid'],
+            'comment_type': 'receive',
+            'photo_url': '',
+            'root_uid': xnr_info['root_uid'],
+            'root_nick_name': xnr_info['root_nick_name'],
+            'facebook_type': facebook_type,
+        }
+        print es.index(index=facebook_feedback_comment_index_name, doc_type=facebook_feedback_comment_index_type, body=data)
 
-def random_uid():
-    return random.choice(["100023849442394", "100023545574584"])  
+        
+def main():
+    xnr_info_list = load_xnr_info()
+    date = ts2datetime(time.time())
+    for xnr_info in xnr_info_list:
+        comment(xnr_info, date)
 
-def load_timestamp(date):
-    return datetime2ts(date) + random.randint(1,500)
+main()
 
-def random_text():
-    #普通版
-    return random.choice(["转发", "aaaaaaaaa", "好无聊啊", "别看了，我瞎填的","Love you,baby.", "祝福~", "止水桑生死成谜","达赖","达赖太阳花"])
-    #敏感版  
-    # return random.choice(["止水桑生死成谜","达赖","达赖太阳花"])
 
-def random_mid():
-    return random.choice(["4161285573158974", "4161391865302116", "4161391957367337"])  
 
-def random_comment_type():
-    return random.choice(["make", "receive"])  
-
-def random_private_type():
-    return random.choice(["make", "receive"])  
-
-def random_photo_url():
-    return random.choice(["https://scontent-nrt1-1.xx.fbcdn.net/v/t1.0-1/p80x80/10649505_1460124810970956_1628262998961013775_n.png?_nc_cat=0&oh=fc8f06349cc4b8738b3a7fec924c35d9&oe=5B2D4748","https://scontent-nrt1-1.xx.fbcdn.net/v/t1.0-1/p80x80/18446550_164946100704038_7371507250489390884_n.jpg?_nc_cat=0&oh=667d58961b1c2cb35678f0d8386fa6af&oe=5B6FAF58"])
-
-def random_nick_name():
-    return random.choice(['國破山河在',"良知媒體","紅冰袁"])
-
-def random_update_time(date):
-    return datetime2ts(date) + random.randint(1,500)
-
-def random_facebook_type():
-    return random.choice(["好友", "陌生人"])  
-
-def random_retweet_num():
-    return random.choice([0,1,3,4,5,7,12])  
-
-def random_like_num():
-    return random.choice([0,1,3,4,5,7,12])  
-
-def random_comment_num():
-    return random.choice([0,1,3,4,5,7,12])  
-
-def random_friends_num():
-    return random.choice([0,15,32,47,52,70,125])
-
+'''
 # 点赞
 def like(date):
     facebook_feedback_like_index_name = facebook_feedback_like_index_name_pre + date
@@ -140,26 +161,6 @@ def at(date):
     facebook_feedback_at_mappings(facebook_feedback_at_index_name)
 #     print es.index(index=facebook_feedback_at_index_name, doc_type=facebook_feedback_at_index_type, body=data)
 
-# 评论
-def comment(date):
-    facebook_feedback_comment_index_name = facebook_feedback_comment_index_name_pre + date
-    data = {
-        'uid': random_uid(),
-        'photo_url': random_photo_url(),
-        'nick_name': random_nick_name(),
-        'mid': random_mid(),
-        'timestamp': load_timestamp(date),
-        'text': random_text(),
-        'update_time': random_update_time(date),
-        'root_text': random_text(),
-        'root_mid': random_mid(),
-        'root_uid': root_uid,
-        'root_nick_name': root_nick_name,
-        'facebook_type': random_facebook_type(),
-        'comment_type': random_comment_type(),
-    }
-    facebook_feedback_comment_mappings(facebook_feedback_comment_index_name)
-#     print es.index(index=facebook_feedback_comment_index_name, doc_type=facebook_feedback_comment_index_type, body=data)
 
 # 私信
 def private(date):
@@ -291,26 +292,27 @@ if __name__ == '__main__':
             friends(date)
     
 
-    '''
-    #update
-    #2017-10-15     2017-10-30
-    bulk_action = []
-    for i in range(15, 31, 1):
-        date = '2017-10-' + str(i)
-        ts = datetime2ts(date)
-        for index_name_pre in ['facebook_feedback_at_', 'facebook_feedback_comment_', 'facebook_feedback_retweet_', 'facebook_feedback_private_', 'facebook_feedback_like_']:
-            index_name = index_name_pre + date
-            sensitive_func(index_name, ts)
-        sensitive_func('facebook_feedback_friends', ts)
-	'''
 
-    '''
-    #xnr_flow_text_
-    #2017-10-15     2017-10-30
-    for i in range(15, 31, 1):
-        date = '2017-10-' + str(i)
-        xnr_flow_text(date)
-    '''
-        
+#update
+#2017-10-15     2017-10-30
+bulk_action = []
+for i in range(15, 31, 1):
+    date = '2017-10-' + str(i)
+    ts = datetime2ts(date)
+    for index_name_pre in ['facebook_feedback_at_', 'facebook_feedback_comment_', 'facebook_feedback_retweet_', 'facebook_feedback_private_', 'facebook_feedback_like_']:
+        index_name = index_name_pre + date
+        sensitive_func(index_name, ts)
+    sensitive_func('facebook_feedback_friends', ts)
+'''
+
+'''
+#xnr_flow_text_
+#2017-10-15     2017-10-30
+for i in range(15, 31, 1):
+    date = '2017-10-' + str(i)
+    xnr_flow_text(date)
+'''
+    
+
 
 

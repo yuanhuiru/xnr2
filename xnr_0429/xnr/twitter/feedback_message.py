@@ -17,30 +17,39 @@ class Message():
 
 	def get_message(self):
 		for each in self.api.direct_messages():
-			print each.sender._json
 			content = each.text
-			sender_screen_name = each.sender._json['name']
-			sender_user_name = each.sender._json['user_name']
+			sender_screen_name = each.sender._json['screen_name']
+			sender_user_name = each.sender._json['name']
 			sender_id = each.sender._json['id']
 			timestamp = int(time.mktime(each.created_at.timetuple()))
 			photo_url = each.sender._json['profile_image_url_https']
-
+			if sender_id == each.recipient_id_str:
+				private_type = 'make'
+				root_text = content
+				text = ''
+			else:
+				private_type = 'receive'
+				root_text = ''
+				text = content
 			item = {
 				'uid':sender_id,
 				'photo_url':photo_url,
 				'user_name':sender_screen_name,
 				'nick_name':sender_user_name,
 				'timestamp':timestamp,
-				'text':content,
+				'text':text,
+				'root_text':root_text,
+				'private_type':private_type,
 				'update_time':self.update_time
 			}
 			self.list.append(item)
 		return self.list
 
-	def save(self,indexName,typeName,list):
-		self.es.executeES(indexName,typeName,list)
+	def save(self,indexName,typeName,message_list):
+		self.es.executeES(indexName,typeName,message_list)
 
 if __name__ == '__main__':
 	message = Message('8617078448226', 'xnr123456', 'N1Z4pYYHqwcy9JI0N8quoxIc1', 'VKzMcdUEq74K7nugSSuZBHMWt8dzQqSLNcmDmpGXGdkH6rt7j2', '943290911039029250-yWtATgV0BLE6E42PknyCH5lQLB7i4lr', 'KqNwtbK79hK95l4X37z9tIswNZSr6HKMSchEsPZ8eMxA9')
-	list = message.get_message()
-	message.save('twitter_feedback_private','text',list)
+	message_list = message.get_message()
+	print message_list
+	#message.save('twitter_feedback_private','text',message_list)
