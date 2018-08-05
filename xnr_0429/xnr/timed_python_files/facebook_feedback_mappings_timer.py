@@ -147,7 +147,6 @@ def facebook_feedback_retweet_mappings(facebook_feedback_retweet_index_name):
                     },
                     'update_time':{
                         'type':'long'
-                        }
                     },
                     'root_text':{
                         'type':'string',
@@ -186,7 +185,7 @@ def facebook_feedback_retweet_mappings(facebook_feedback_retweet_index_name):
                     },
             }
         }
-    }
+    }}
 
     #current_time = time.time()
     #facebook_feedback_retweet_index_name = facebook_feedback_retweet_index_name_pre + ts2datetime(current_time)
@@ -483,3 +482,4 @@ if __name__ == '__main__':
     facebook_feedback_comment_mappings(facebook_feedback_comment_index_name_pre + date)
     facebook_feedback_private_mappings(facebook_feedback_private_index_name_pre + date)
     facebook_feedback_friends_mappings()
+
