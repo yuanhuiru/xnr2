@@ -51,7 +51,7 @@ class Friend():
 				try:
 					friends = int(re.search(r'(\d+)', self.driver.find_element_by_xpath('//div[@id="root"]/div[1]/h3').text.replace(',', '').replace(' ', '')).group(1))
 				except:
-					friends = 'None'
+					friends = 0
 				i['friends'] = friends
 				i['update_time'] = self.update_time
 		else:

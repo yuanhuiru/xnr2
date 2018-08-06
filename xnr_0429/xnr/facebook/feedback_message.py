@@ -114,15 +114,15 @@ class Message():
 					if re.findall(r'id=(\d+)&', message.find_element_by_xpath('./div[1]/a').get_attribute('href')):
 						private_type = 'receive'
 						text = message.text
-						root_text = 'None'
+						root_text = ''
 					else:
 						private_type = 'make'
-						text = 'None'
+						text = ''
 						root_text = message.text
 				except:
 					private_type = 'unknown'
-					text = 'None'
-					root_text = 'None'
+					text = message.text
+					root_text = ''
 			self.list.append({'uid':sx['author_id'], 'photo_url':sx['photo_url'], 'nick_name':sx['author_name'], 'timestamp':messageTime, 'update_time':self.update_time, 'text':text, 'root_text':root_text, 'private_type':private_type})
 
 		self.driver.quit()

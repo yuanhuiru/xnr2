@@ -159,30 +159,24 @@ class Launcher():
 
 	def get_mention_list(self):
 		#driver,display = self.login()
-		driver = self.login()
-		driver.get('https://www.facebook.com/notifications')
-		# 退出通知弹窗进入页面
-		try:
-			driver.find_element_by_xpath('//div[@class="_n8 _3qx uiLayer _3qw"]').click()
-		except:
-			pass
+		driver = self.login_mobile()
+		driver.get('https://m.facebook.com/notifications')
 
 		time.sleep(3)
 		#加载更多
-		length=100
-		for i in range(0,20):
-			js="var q=document.documentElement.scrollTop="+str(length)
-			driver.execute_script(js)
-			time.sleep(1)
-			length+=length
+		while 1:
+			try:
+				time.sleep(5)
+				driver.find_element_by_xpath('/html/body/div/div/div[2]/div/div[1]/div/div/div[10]/a/span').click()
+				continue
+			except:
+				break
 
-		lis = driver.find_elements_by_xpath('//ul[@data-testid="see_all_list"]/li')
+		divs = driver.find_elements_by_xpath('//div[@id="notifications_list"]/div[@id="notifications_list"]/div/div')
 		mention_list = []
-		for li in lis:
-			data_gt = json.loads(li.get_attribute('data-gt'))
-			type = data_gt['notif_type']
-			if type == "mention" or type == "tagged_with_story":
-				url = li.find_element_by_xpath('./div/div/a').get_attribute('href')
+		for div in divs:
+			if u'标记了你' in div.text:
+				url = div.find_element_by_xpath('./table/tbody/tr/td[2]/a').get_attribute('href')
 				mention_list.append(url)
 		#return mention_list,driver,display
 		return mention_list,driver

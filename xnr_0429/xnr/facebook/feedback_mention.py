@@ -9,73 +9,98 @@ import re
 class Mention():
 	def __init__(self, username, password):
 		self.launcher = Launcher(username, password)
-		self.mention_list,self.driver,self.display = self.launcher.get_mention_list()
+		self.mention_list,self.driver = self.launcher.get_mention_list()
 		self.es = Es_fb()
 		self.list = []
 		self.update_time = int(time.time())
 
-	def get_mention(self):
-		try:
-			for url in self.mention_list:
-				self.driver.get(url)
-				time.sleep(1)
-				# 退出通知弹窗进入页面
-				try:
-					self.driver.find_element_by_xpath('//div[@class="_n8 _3qx uiLayer _3qw"]').click()
-				except:
-					pass
+	def date2timestamp(self, date):
+		date = date.replace(u'月', '-').replace(u'日', '').replace(' ', '')
+		if date == '刚刚':
+			timestamp = int(time.time())
+			return timestamp
+		if u'上午' in date:
+			date = date.replace(u'上午', ' ')
+		if u'下午' in date:
+			if date.split(u'下午')[1].split(':')[0] == '12':
+				date = date.replace(u'下午', ' ')
+			elif eval(date.split(u'下午')[1].split(':')[0]) < 12:
+				date = date.split(u'下午')[0] + ' ' + str(eval(date.split(u'下午')[1].split(':')[0])+12) + ':' + date.split(u'下午')[1].split(':')[1]
+		if u'年' not in date and u'分钟' not in date and u'小时' not in date: 
+			date = str(time.strftime('%Y-%m-%d', time.localtime(time.time())).split('-')[0]) + '-' + date 
+		if u'年' in date and u'分钟' not in date and u'小时' not in date: 
+			date = date.replace(u'年', '-') 
+		if u'分钟' in date: 
+			timestamp = int(time.time()) - int(re.search(r'(\d+)', date).group(1)) * 60 
+			return timestamp 
+		if u'小时' in date: 
+			timestamp = int(time.time()) - int(re.search(r'(\d+)', date).group(1)) * 60 * 60 
+			return timestamp
+		try: 
+			timestamp = int(time.mktime(time.strptime(date, '%Y-%m-%d'))) 
+		except: 
+			timestamp = int(time.mktime(time.strptime(date, '%Y-%m-%d %H:%M'))) 
+		return timestamp	
 
-				for each in self.driver.find_elements_by_xpath('//div[@id="contentArea"]'):
-					try:
-						try:
-							author_name = each.find_element_by_xpath('./div/div/div[3]/div/div/div/div[2]/div[1]/div[2]/div[1]/div/div/div[2]/div/div/div[2]/h5/span/span/span/a').text
-						except:
-							author_name = each.find_element_by_xpath('./div/div/div/div/div/div/div[2]/div[1]/div[2]/div[1]/div/div/div[2]/div/div/div[2]/h5/span/span/span/a').text					
-					except:
-						author_name = 'None'
-					try:
-						try:
-							author_id = ''.join(re.findall(re.compile('id=(\d+)'),each.find_element_by_xpath('./div/div/div[3]/div/div/div/div[2]/div[1]/div[2]/div[1]/div/div/div[2]/div/div/div[2]/h5/span/span/span/a').get_attribute('data-hovercard')))
-						except:
-							author_id = ''.join(re.findall(re.compile('id=(\d+)'),each.find_element_by_xpath('./div/div/div/div/div/div/div[2]/div[1]/div[2]/div[1]/div/div/div[2]/div/div/div[2]/h5/span/span/span/a').get_attribute('data-hovercard')))					
-					except:
-						author_id = 'None'
-					try:
-						try:
-							pic_url = each.find_element_by_xpath('./div/div/div[3]/div/div/div/div[2]/div/div[2]/div/div/a/div/img').get_attribute('src')
-						except:
-							pic_url = each.find_element_by_xpath('./div/div/div/div/div/div/div[2]/div/div[2]/div/div/a/div/img').get_attribute('src')					
-					except:
-						pic_url = 'None'
-					try:
-						try:
-							ti = int(each.find_element_by_xpath('./div/div/div[3]/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/span[3]/span/span/a/abbr').get_attribute('data-utime'))
-						except:
-							ti = int(each.find_element_by_xpath('./div/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/span[3]/span/a/abbr').get_attribute('data-utime'))					
-					except:
-						ti = 'None'
-					try:
-						content = each.find_element_by_xpath('./div/div/div/div/div/div/div[2]/div/div[2]/div[2]/p').text
-					except:
-						content = 'None'
-					try:
-						try:
-							mid = ''.join(re.findall(re.compile('/(\d+)'),each.find_element_by_xpath('./div/div/div[3]/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/span[3]/span/span/a').get_attribute('href')))
-						except:
-							mid = ''.join(re.findall(re.compile('/(\d+)'),each.find_element_by_xpath('./div/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/span[3]/span/a').get_attribute('href')))		
-					except:
-						mid = 'None'
-					item = {'uid':author_id, 'photo_url':pic_url, 'nick_name':author_name, 'mid':mid, 'timestamp':ti, 'text':content, 'update_time':self.update_time}
-					self.list.append(item)
-		finally:
-			self.driver.quit()
-			self.display.popen.kill()
+
+	def get_mention(self):
+
+		for url in self.mention_list:
+			self.driver.get(url)
+			time.sleep(1)
+
+			try:
+				nick_name = self.driver.find_element_by_xpath('//div[@id="root"]/div[1]/div[1]/div/div[1]/div[1]/table/tbody/tr/td[2]/div/h3/strong/a').text
+			except:
+				nick_name = ''
+			print nick_name
+
+			try:
+				uid = re.findall(r'id=(\d+)', self.driver.find_element_by_xpath('//div[@id="root"]/div[1]/div[1]/div/div[1]/div[1]/table/tbody/tr/td[2]/div/h3/strong/a').get_attribute('href'))[0]
+			except:
+				uid = ''
+			print uid
+
+			try:
+				timestamp = self.date2timestamp(self.driver.find_element_by_xpath('//div[@id="root"]/div[1]/div[1]/div/div[2]/div/abbr').text)
+			except:
+				timestamp = 0
+			print timestamp
+
+			try:
+				text = self.driver.find_element_by_xpath('//div[@id="root"]/div[1]/div[1]/div/div[1]/div[2]').text
+			except:
+				text = ''
+			print text
+
+			try:
+				mid = ''.join(re.findall(re.compile('fbid%3D(\d+)'),url))
+			except:
+				mid = ''
+			print mid
+
+			item = {'uid':uid, 'nick_name':nick_name, 'mid':mid, 'timestamp':timestamp, 'text':text, 'update_time':self.update_time}
+			self.list.append(item)
+
+		for i in self.list:
+			self.driver.get('https://m.facebook.com/profile.php?id=' + str(i['uid']))
+			try:
+				photo_url = self.driver.find_element_by_xpath('//div[@id="m-timeline-cover-section"]/div[1]/div[2]/div[1]/div/a/img').get_attribute('src')
+			except:
+				try:
+					photo_url = self.driver.find_element_by_xpath('//div[@id="m-timeline-cover-section"]/div[2]/div/div[1]/div[1]/a/img').get_attribute('src')
+				except:
+					photo_url = self.driver.find_element_by_xpath('//div[@id="m-timeline-cover-section"]/div[2]/div/div[1]/a/img').get_attribute('src')
+			i['photo_url'] = photo_url
+
+		self.driver.quit()
 		return self.list
 
-	def save(self, indexName, typeName, list):
-		self.es.executeES(indexName, typeName, list)
+	def save(self, indexName, typeName, mention_list):
+		self.es.executeES(indexName, typeName, mention_list)
 
 if __name__ == '__main__':
-	mention = Mention('8618348831412','Z1290605918')
-	list = mention.get_mention()
-	print(list)
+	mention = Mention('8613520874771','13018119931126731x')
+	mention_list = mention.get_mention()
+	print(mention_list)
+
