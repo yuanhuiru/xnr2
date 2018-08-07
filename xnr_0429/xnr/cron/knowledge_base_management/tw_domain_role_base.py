@@ -440,9 +440,13 @@ def detect_by_keywords(keywords,datetime_list):
     keywords_list = []
     model = gensim.models.KeyedVectors.load_word2vec_format(WORD2VEC_PATH,binary=True)
     for word in keywords:
-        simi_list = model.most_similar(word,topn=20)
-        for simi_word in simi_list:
-            keywords_list.append(simi_word[0])
+        keywords_list.append(word)
+        try:
+            simi_list = model.most_similar(word,topn=20)
+            for simi_word in simi_list:
+                keywords_list.append(simi_word[0])
+        except Exception,e:
+            print u'扩展词 Exception:', str(e)
 
     group_uid_list = set()
     if datetime_list == []:
@@ -478,7 +482,7 @@ def detect_by_keywords(keywords,datetime_list):
         'query':{
             'bool':{
                 'should':nest_query_list,
-                'minimum_should_match': SHOULD_PERCENT,
+#                 'minimum_should_match': SHOULD_PERCENT,
                 # 'must_not':{'terms':{'uid':white_uid_list}}
             }
         },
@@ -1119,3 +1123,4 @@ if __name__ == '__main__':
 
     # print detect_by_keywords([u'中国', u'党'], datetime_list)
     # print active_time_compute(uid_list,datetime_list[0])
+

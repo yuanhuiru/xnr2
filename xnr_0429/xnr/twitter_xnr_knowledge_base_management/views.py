@@ -8,7 +8,8 @@ from flask import Blueprint, url_for, render_template, request,\
 from utils import get_generate_example_model, get_show_example_model, get_export_example_model, \
                     get_create_type_content, domain_create_task, get_show_domain_group_summary, \
                     get_show_domain_group_detail_portrait, get_show_domain_description, \
-                    get_show_domain_role_info, get_delete_domain,show_different_corpus,delete_corpus
+                    get_show_domain_role_info, get_delete_domain,show_different_corpus,delete_corpus,\
+                    domain_update_task
 
 mod = Blueprint('tw_xnr_knowledge_base_management', __name__, url_prefix='/tw_xnr_knowledge_base_management')
 
@@ -17,8 +18,29 @@ mod = Blueprint('tw_xnr_knowledge_base_management', __name__, url_prefix='/tw_xn
 def ajax_generate_example_model():
     domain_name = request.args.get('domain_name','')
     role_name = request.args.get('role_name','')
-    results = get_generate_example_model(domain_name,role_name)
+    mail = request.args.get('mail','')
+    results = get_generate_example_model(domain_name,role_name,mail)
     return json.dumps(results)
+
+# 更新计算
+@mod.route('/update_domain/')
+def ajax_update_domain():
+    #xnr_user_no = request.args.get('xnr_user_no','')
+    domain_name = request.args.get('domain_name','')
+    create_type = request.args.get('create_type','')  # 按关键词--by_keywords  按种子用户--by_seed_users  按所有用户--by_all_users 
+    keywords_string = request.args.get('keywords_string','')  # 按关键词方式，以中文逗号“，”分割。若是不是按关键词，则不传递此参数
+    seed_users = request.args.get('seed_users','')  # 按种子用户方式，不同uid之间以中文逗号“，”分隔
+    all_users = request.args.get('all_users','')  #按所有用户方式，传递所有uid
+    create_type_new = get_create_type_content(create_type,keywords_string,seed_users,all_users)
+    create_time = int(time.time())
+    submitter = request.args.get('submitter','admin@qq.com')
+    description = request.args.get('description','')
+    remark = request.args.get('remark','')
+
+    mark = domain_update_task(domain_name,create_type_new,create_time,submitter,description,remark)
+
+    return json.dumps(mark)  # True False
+
 
 ## 导出实例模板
 @mod.route('/show_example_model/')

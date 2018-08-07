@@ -2,6 +2,7 @@
 #-*- coding:utf-8 -*-
 import json
 import pinyin
+import time
 import numpy as np
 from xnr.global_config import S_TYPE,S_DATE_TW as S_DATE
 from xnr.global_utils import es_xnr_2 as es
@@ -25,7 +26,7 @@ from textrank4zh import TextRank4Keyword, TextRank4Sentence
 from xnr.parameter import MAX_VALUE,MAX_SEARCH_SIZE,tw_domain_ch2en_dict,fb_tw_topic_en2ch_dict,tw_domain_en2ch_dict,\
                         EXAMPLE_MODEL_PATH,TOP_ACTIVE_TIME,TOP_PSY_FEATURE
 from xnr.time_utils import ts2datetime,datetime2ts,get_twitter_flow_text_index_list as get_flow_text_index_list
-
+from send_mail import send_mail
 es_flow_text = es
 es_user_portrait = es
 es_user_profile = es
@@ -44,19 +45,208 @@ def union_dict(*objs):
         _total[_key] = sum([int(obj.get(_key, 0)) for obj in objs])
     return _total
 
+def ts2datetime_full(ts):
+    return time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(ts))
+
 def extract_keywords(w_text):
     tr4w = TextRank4Keyword()
     tr4w.analyze(text=w_text, lower=True, window=4)
     k_dict = tr4w.get_keywords(5, word_min_len=2)
     return k_dict
 
-def get_generate_example_model(domain_name,role_name):
+def domain_update_task(domain_name,create_type,create_time,submitter,description,remark,compute_status=0):
+    
+    task_id = pinyin.get(domain_name,format='strip',delimiter='_')
+
+    try:
+        domain_task_dict = dict()
+
+        #domain_task_dict['xnr_user_no'] = xnr_user_no
+        domain_task_dict['domain_pinyin'] = pinyin.get(domain_name,format='strip',delimiter='_')
+        domain_task_dict['domain_name'] = domain_name
+        domain_task_dict['create_type'] = json.dumps(create_type)
+        domain_task_dict['create_time'] = create_time
+        domain_task_dict['submitter'] = submitter
+        domain_task_dict['description'] = description
+        domain_task_dict['remark'] = remark
+        domain_task_dict['compute_status'] = compute_status
+        
+        print 'create_type'
+        print create_type
+        
+        r.lpush(tw_target_domain_detect_queue_name,json.dumps(domain_task_dict))
+
+        item_exist = dict()
+        
+        #item_exist['xnr_user_no'] = domain_task_dict['xnr_user_no']
+        item_exist['domain_pinyin'] = domain_task_dict['domain_pinyin']
+        item_exist['domain_name'] = domain_task_dict['domain_name']
+        item_exist['create_type'] = domain_task_dict['create_type']
+        item_exist['create_time'] = domain_task_dict['create_time']
+        item_exist['submitter'] = domain_task_dict['submitter']
+        item_exist['description'] = domain_task_dict['description']
+        item_exist['remark'] = domain_task_dict['remark']
+        item_exist['group_size'] = ''
+        
+        item_exist['compute_status'] = 0  # 存入创建信息
+        es.index(index=tw_domain_index_name,doc_type=tw_domain_index_type,id=item_exist['domain_pinyin'],body=item_exist)
+
+        mark = True
+    except Exception,e:
+        print e
+        mark =False
+
+    return mark
+
+def sendfile2mail(mail, filepath):
+    content = {
+        'subject': '群体画像导出',
+        'text': '群体画像导出文件，请查收。',
+        'files_path': filepath,    #支持多个，以逗号隔开
+        }
+    from_user = {
+        'name': '虚拟人项目',
+        'addr': '929673096@qq.com',
+        'password': 'czlasoaiehchbega',
+        'smtp_server': 'smtp.qq.com'   
+    }
+    to_user = {
+        'name': '管理员',
+        'addr': '929673096@qq.com'  #支持多个，以逗号隔开
+    }
+    send_mail(from_user=from_user, to_user=to_user, content=content)
+    
+def export_group_info(domain_name, mail):
+    mark = True
+    res = {
+      'domain_name': domain_name,
+      'members_num': 0,
+      'create_info': {
+        'submitter': '',
+        'remark': '',
+        'create_type': '',
+        'create_time': '',
+      },
+      'members_uid': [],
+      'members_info': {
+#         'uid1': {
+#           'nickname': '',
+#           'gender': '',
+#           'location': '',
+#           'link': '',
+#         }
+      },
+      'count_info': {
+        'location_count': {
+#           'zh_TW': 10,
+#           'us': 5
+        },
+#         'gender_count': {
+# #           'f': 0,
+# #           'm': 40
+#         },
+        'role_count': {
+#           'role1': 12,
+#           'role2': 7
+        },
+        'words_preference': {
+#           'w1': 20,
+#           'w2': 10
+        },
+        'topic_preference': {
+#           't1': 20,
+#           't2': 10
+        },
+        'political_side': {
+        },
+      }
+    }
+    domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
+    
+    domain_details = get_show_domain_description(domain_name)
+    res['count_info']['political_side'] = domain_details['political_side']
+    res['count_info']['role_count'] = domain_details['role_distribute']
+    res['count_info']['topic_preference'] = domain_details['topic_preference']
+    res['count_info']['words_preference'] = domain_details['word_preference']
+    res['members_num'] = domain_details['group_size']
+    
+    
+    domain_info = es.get(index=tw_domain_index_name,doc_type=tw_domain_index_type,id=domain_pinyin)['_source']
+    res['create_info']['remark'] = domain_info['remark']
+    res['create_info']['submitter'] = domain_info['submitter']
+    res['create_info']['create_type'] = domain_info['create_type']
+    res['create_info']['create_time'] = ts2datetime_full(domain_info['create_time'])
+    res['members_uid'] = domain_info['member_uids']
+    
+    query_body = {
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "terms": {
+                            "uid": res['members_uid'],
+                        }                  
+                    },
+                ]
+            }
+        },
+        "size": 9999,
+        "fields": ["locale", "link", "uid", "gender", "username"]
+    }
+    user_info = es.search(profile_index_name, profile_index_type, query_body)['hits']['hits']
+    members_info = {}
+    gender_count = {}
+    location_count = {}
+    for user in user_info:
+        item = user['fields']
+        uid = item.get('uid', [''])[0]
+#         gender = item.get('gender', [''])[0]
+        location = item.get('location', [''])[0]
+        members_info[uid] = {    
+            'nickname': item.get('username', [''])[0],
+#             'gender': gender,
+            'location': location,
+            'link': 'https://twitter.com/' + item.get('userscreenname', [''])[0]
+        }
+#         if gender:
+#             if gender in gender_count:
+#                 gender_count[gender] += 1
+#             else:
+#                 gender_count[gender] = 1
+                
+        if location:
+            if location in location_count:
+                location_count[location] += 1
+            else:
+                location_count[location] = 1
+    
+    res['members_info'] = members_info
+    res['count_info']['location_count'] = location_count
+    res['count_info']['gender_count'] = gender_count
+    
+    export_filename = EXAMPLE_MODEL_PATH + domain_pinyin + '_' + ts2datetime_full(time.time()) + '.json'
+    try:
+        with open(export_filename,"w") as f:
+            json.dump(res, f)
+        try:
+            sendfile2mail(mail, export_filename)
+        except Exception,e:
+            print e
+    except:
+        mark = False
+    return mark
+
+def get_generate_example_model(domain_name,role_name, mail):
+    
+    export_group_info(domain_name, mail)
+    
+    
     domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
     role_en = tw_domain_ch2en_dict[role_name]
     task_id = domain_pinyin + '_' + role_en
     es_result = es.get(index=tw_role_index_name,doc_type=tw_role_index_type,id=task_id)['_source']
     item = es_result
-    print 'es_result:::',es_result
+#     print 'es_result:::',es_result
     # 政治倾向
     political_side = json.loads(item['political_side'])[0][0]
 
@@ -470,4 +660,5 @@ def delete_corpus(corpus_id):
     except:
         result=False
     return result
+
 
