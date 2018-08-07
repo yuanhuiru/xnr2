@@ -32,6 +32,7 @@ from feedback_like import Like
 from feedback_share import Share
 from feedback_message import Message
 from feedback_friends import Friend
+from feedback_mention import Mention
 
 def load_xnr_info():
     res = []
@@ -78,6 +79,7 @@ def savedata2es(date, index_pre, index_type, data):
         'facebook_feedback_retweet_':   ['uid', 'root_uid', 'mid', 'timestamp', 'text', 'root_text', 'root_mid'],
         'facebook_feedback_private_':   ['uid', 'root_uid', 'timestamp', 'text', 'root_text', 'private_type'],
         'facebook_feedback_friends':    ['uid', 'root_uid'],
+        'facebook_feedback_at_':        ['uid', 'root_uid', 'mid', 'timestamp', 'text'],
     }
     if index_pre in ['facebook_feedback_at_', 'facebook_feedback_comment_', 'facebook_feedback_retweet_', 'facebook_feedback_private_', 'facebook_feedback_like_']:
         index_name = index_pre + date
@@ -291,7 +293,43 @@ def friends(xnr_info, date):
         except:
             pass
     savedata2es(date, facebook_feedback_friends_index_name, facebook_feedback_friends_index_type, data)
-      
+
+# 点赞
+def at(xnr_info, date):
+    ts = datetime2ts(date)
+    facebook_feedback_at_mappings(facebook_feedback_at_index_name_pre + date)
+    mention = Mention(xnr_info['account'], xnr_info['password'])
+    lis = mention.get_mention()
+    # {'uid', 'nick_name', 'mid', 'timestamp', 'text', 'update_time', 'photo_url'}
+    data = []
+    for item in lis:
+        try:
+            uid = item['uid']
+            text = item['text']
+            if uid in xnr_info['friends_list']:
+                facebook_type = u"好友"
+            else:
+                facebook_type = u"陌生人"
+            sensitive_info, sensitive_user = sensitive_func(ts, text, uid)
+            d = {
+                'uid': uid,
+                'text': text,
+                'nick_name': item['nick_name'],
+                'mid': item['mid'],
+                'timestamp': item['timestamp'],
+                'update_time': item['update_time'],
+                'photo_url': item['photo_url'],
+                'root_uid': xnr_info['root_uid'],
+                'root_nick_name': xnr_info['root_nick_name'],
+                'facebook_type': facebook_type,
+                'sensitive_info': sensitive_info,
+                'sensitive_user': sensitive_user
+            }
+            data.append(d)
+        except:
+            pass
+    savedata2es(date, facebook_feedback_at_index_name_pre, facebook_feedback_at_index_type, data)  
+       
 def main():
     xnr_info_list = load_xnr_info()
     date = ts2datetime(time.time())
@@ -326,6 +364,7 @@ if __name__ == '__main__':
     main()
 
     
+
 
 
 
