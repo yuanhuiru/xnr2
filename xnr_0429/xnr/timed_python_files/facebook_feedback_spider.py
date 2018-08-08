@@ -22,6 +22,9 @@ from time_utils import ts2datetime, datetime2ts
 from facebook_feedback_mappings_timer import facebook_feedback_like_mappings, facebook_feedback_retweet_mappings,\
                                             facebook_feedback_at_mappings, facebook_feedback_comment_mappings,\
                                             facebook_feedback_private_mappings, facebook_feedback_friends_mappings
+from fb_xnr_manage_mappings import fb_xnr_fans_followers_mappings
+from send_mail import send_mail
+
 sys.path.append('../facebook/sensitive')
 from get_sensitive import get_sensitive_info, get_sensitive_user
 from fb_xnr_flow_text_mappings import fb_xnr_flow_text_mappings
@@ -33,7 +36,28 @@ from feedback_share import Share
 from feedback_message import Message
 from feedback_friends import Friend
 from feedback_mention import Mention
+from feedback_friends_exist import FriendExist
 
+EXCEPTION = ''
+
+def sendfile2mail(filepath='', text=''):
+    content = {
+        'subject': 'Facebook_feedback_exception',
+        'text': text,
+        'files_path': filepath,    #支持多个，以逗号隔开
+        }
+    from_user = {
+        'name': '虚拟人项目',
+        'addr': '929673096@qq.com',
+        'password': 'czlasoaiehchbega',
+        'smtp_server': 'smtp.qq.com'   
+    }
+    to_user = {
+        'name': '管理员',
+        'addr': '929673096@qq.com'  #支持多个，以逗号隔开
+    }
+    send_mail(from_user=from_user, to_user=to_user, content=content)
+    
 def load_xnr_info():
     res = []
     search_res = es.search(fb_xnr_index_name, fb_xnr_index_type, {'size':999})['hits']['hits']
@@ -100,13 +124,16 @@ def savedata2es(date, index_pre, index_type, data):
             }
           }
         }
-        for field in config[index_pre]:
-            query_body['query']['filtered']['filter']['bool']['must'].append({'term': {field: d.get(field, '')}})
-        query_result = es.search(search_index_name, index_type, query_body)['hits']['hits']
-        if query_result:
-            print es.update(index=index_name, doc_type=index_type, body={'doc': d}, id=query_result[0]['_id'])
-        else:
-            print es.index(index_name, index_type, d)
+        try:
+            for field in config[index_pre]:
+                query_body['query']['filtered']['filter']['bool']['must'].append({'term': {field: d.get(field, '')}})
+            query_result = es.search(search_index_name, index_type, query_body)['hits']['hits']
+            if query_result:
+                print es.update(index=index_name, doc_type=index_type, body={'doc': d}, id=query_result[0]['_id'])
+            else:
+                print es.index(index_name, index_type, d)
+        except Exception,e:
+            EXCEPTION += '\n savedata2es Exception: ' + str(e)
 
 # 评论
 def comment(xnr_info, date):
@@ -143,8 +170,8 @@ def comment(xnr_info, date):
                 'sensitive_user': sensitive_user
             }
             data.append(d)
-        except:
-            pass
+        except Exception,e:
+            EXCEPTION += '\n comment Exception: ' + str(e)
     savedata2es(date, facebook_feedback_comment_index_name_pre, facebook_feedback_comment_index_type, data)
     
 # 点赞
@@ -181,8 +208,8 @@ def like(xnr_info, date):
                 'sensitive_user': sensitive_user
             }
             data.append(d)
-        except:
-            pass
+        except Exception,e:
+            EXCEPTION += '\n like Exception: ' + str(e)
     savedata2es(date, facebook_feedback_like_index_name_pre, facebook_feedback_like_index_type, data)
 
 # 分享
@@ -222,8 +249,8 @@ def retweet(xnr_info, date):
                 'like': 0
             }
             data.append(d)
-        except:
-            pass
+        except Exception,e:
+            EXCEPTION += '\n retweet Exception: ' + str(e)
     savedata2es(date, facebook_feedback_retweet_index_name_pre, facebook_feedback_retweet_index_type, data)
 
 # 私信
@@ -259,11 +286,11 @@ def private(xnr_info, date):
                 'sensitive_user': sensitive_user
             }
             data.append(d)
-        except:
-            pass
+        except Exception,e:
+            EXCEPTION += '\n private Exception: ' + str(e)
     savedata2es(date, facebook_feedback_private_index_name_pre, facebook_feedback_private_index_type, data)
     
-# 好友
+# 好友请求
 def friends(xnr_info, date):
     ts = datetime2ts(date)
     facebook_feedback_friends_mappings()
@@ -290,8 +317,8 @@ def friends(xnr_info, date):
                 'facebook_type': facebook_type,
             }
             data.append(d)
-        except:
-            pass
+        except Exception,e:
+            EXCEPTION += '\n friends Exception: ' + str(e)
     savedata2es(date, facebook_feedback_friends_index_name, facebook_feedback_friends_index_type, data)
 
 # 点赞
@@ -326,9 +353,25 @@ def at(xnr_info, date):
                 'sensitive_user': sensitive_user
             }
             data.append(d)
-        except:
-            pass
+        except Exception,e:
+            EXCEPTION += '\n at Exception: ' + str(e)
     savedata2es(date, facebook_feedback_at_index_name_pre, facebook_feedback_at_index_type, data)  
+
+# 好友列表
+def friends_exist(xnr_info, date):
+    ts = datetime2ts(date)
+    fb_xnr_fans_followers_mappings()
+    friend = FriendExist(xnr_info['account'], xnr_info['password'])
+    lis = friend.get_friend_exist()
+    # {'uid', 'nick_name', 'photo_url'}
+    try:
+        new_friends_list = [item['uid'] for item in lis]
+    except Exception,e:
+        EXCEPTION += '\n friends_exist Exception: ' + str(e)
+        
+    friends_list = es.get(index=fb_xnr_fans_followers_index_name, doc_type=fb_xnr_fans_followers_index_type, id=xnr_user_no)['_source']['fans_list']
+    if not new_friends_list == friends_list:
+        print es.update(index=fb_xnr_fans_followers_index_name, doc_type=fb_xnr_fans_followers_index_type, body={'doc': {'fans_list': new_friends_list}}, id=xnr_user_no)
        
 def main():
     xnr_info_list = load_xnr_info()
@@ -337,33 +380,44 @@ def main():
         try:
             comment(xnr_info, date)
         except Exception,e:
-            print 'comment Exception:', str(e)
+            pass
             
         try:
             like(xnr_info, date)
         except Exception,e:
-            print 'like Exception:', str(e)
+            pass
         
         try:    
             retweet(xnr_info, date)
         except Exception,e:
-            print 'retweet Exception:', str(e)
+            pass
         
         try:
             private(xnr_info, date)
         except Exception,e:
-            print 'private Exception:', str(e)
+            pass
         
         try:
             friends(xnr_info, date)
         except Exception,e:
-            print 'friends Exception:', str(e)
+            pass
 
-
+        try:
+            friends_exist(xnr_info, date)
+        except Exception,e:
+            pass
+        
+    if EXCEPTION:
+        try:
+            sendfile2mail(text=EXCEPTION)
+        except:
+            pass
+        
 if __name__ == '__main__':
     main()
 
     
+
 
 
 
