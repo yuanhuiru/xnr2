@@ -20,10 +20,10 @@ class Follower():
     def get_follower(self):
         try:
             for each in self.api.followers(self.uid):
-                name = each.name
-                print 'user_name:', name
-                screen_name = each.screen_name
-                print 'nick_name:', screen_name
+                nick_name = each.name
+                print 'nick_name:', nick_name
+                user_name = each.screen_name
+                print 'user_name:', user_name
                 id = each.id
                 print 'uid:', id
                 photo_url = each.profile_image_url_https
@@ -31,8 +31,8 @@ class Follower():
                 profile_url = 'https://twitter.com/' + screen_name
                 print 'profile_url:', profile_url
                 item = {
-                    'user_name':name,
-                    'nick_name':screen_name,
+                    'user_name':user_name,
+                    'nick_name':nick_name,
                     'uid':id,
                     'photo_url':photo_url,
                     'profile_url':profile_url
@@ -57,8 +57,8 @@ class Follower():
         return self.list
 
 
-    def save(self, indexName, typeName, list):
-        self.es.executeES(indexName, typeName, list)
+    def save(self, indexName, typeName, follower_list):
+        self.es.executeES(indexName, typeName, follower_list)
 
 
 if __name__ == '__main__':
