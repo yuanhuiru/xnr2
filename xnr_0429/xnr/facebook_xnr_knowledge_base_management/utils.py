@@ -5,26 +5,26 @@ import pinyin
 import numpy as np
 from xnr.global_config import S_TYPE,S_DATE_TW as S_DATE
 from xnr.global_utils import es_xnr_2 as es
-from xnr.global_utils import tw_role_index_name, tw_role_index_type
+from xnr.global_utils import fb_role_index_name, fb_role_index_type
 #facebook_user
 from xnr.global_utils import r,\
-                            twitter_user_index_type as profile_index_type, \
-                            twitter_user_index_name as profile_index_name
-from xnr.global_utils import tw_portrait_index_name as portrait_index_name, \
-                            tw_portrait_index_type as portrait_index_type,\
-                            twitter_flow_text_index_name_pre as flow_text_index_name_pre, \
-                            twitter_flow_text_index_type as flow_text_index_type,\
-                            tw_example_model_index_name, tw_example_model_index_type,\
-                            tw_target_domain_detect_queue_name,\
-                            tw_domain_index_name, tw_domain_index_type,\
-                            twitter_xnr_corpus_index_name,twitter_xnr_corpus_index_type
+                            facebook_user_index_type as profile_index_type, \
+                            facebook_user_index_name as profile_index_name
+from xnr.global_utils import fb_portrait_index_name as portrait_index_name, \
+                            fb_portrait_index_type as portrait_index_type,\
+                            facebook_flow_text_index_name_pre as flow_text_index_name_pre, \
+                            facebook_flow_text_index_type as flow_text_index_type,\
+                            fb_example_model_index_name, fb_example_model_index_type,\
+                            fb_target_domain_detect_queue_name,\
+                            fb_domain_index_name, fb_domain_index_type,\
+                            facebook_xnr_corpus_index_name,facebook_xnr_corpus_index_type
                             
-from xnr.utils import tw_uid2nick_name_photo as uid2nick_name_photo,\
-                        get_tw_influence_relative as get_influence_relative
+from xnr.utils import fb_uid2nick_name_photo as uid2nick_name_photo,\
+                        get_fb_influence_relative as get_influence_relative
 from textrank4zh import TextRank4Keyword, TextRank4Sentence
-from xnr.parameter import MAX_VALUE,MAX_SEARCH_SIZE,tw_domain_ch2en_dict,fb_tw_topic_en2ch_dict,tw_domain_en2ch_dict,\
+from xnr.parameter import MAX_VALUE,MAX_SEARCH_SIZE,fb_domain_ch2en_dict,fb_tw_topic_en2ch_dict,fb_domain_en2ch_dict,\
                         EXAMPLE_MODEL_PATH,TOP_ACTIVE_TIME,TOP_PSY_FEATURE
-from xnr.time_utils import ts2datetime,datetime2ts,get_twitter_flow_text_index_list as get_flow_text_index_list
+from xnr.time_utils import ts2datetime,datetime2ts,get_facebook_flow_text_index_list as get_flow_text_index_list
 
 es_flow_text = es
 es_user_portrait = es
@@ -82,7 +82,7 @@ def domain_update_task(domain_name,create_type,create_time,submitter,description
         item_exist['group_size'] = ''
         
         item_exist['compute_status'] = 0  # 存入创建信息
-        es.index(index=tw_domain_index_name,doc_type=tw_domain_index_type,id=item_exist['domain_pinyin'],body=item_exist)
+        es.index(index=fb_domain_index_name,doc_type=fb_domain_index_type,id=item_exist['domain_pinyin'],body=item_exist)
 
         mark = True
     except Exception,e:
@@ -193,19 +193,19 @@ def export_group_info(domain_name, mail):
     for user in user_info:
         item = user['fields']
         uid = item.get('uid', [''])[0]
-#         gender = item.get('gender', [''])[0]
+        gender = item.get('gender', [''])[0]
         location = item.get('location', [''])[0]
         members_info[uid] = {    
             'nickname': item.get('username', [''])[0],
-#             'gender': gender,
+            'gender': gender,
             'location': location,
-            'link': 'https://twitter.com/' + item.get('userscreenname', [''])[0]
+            'link': item.get('link', [''])[0]
         }
-#         if gender:
-#             if gender in gender_count:
-#                 gender_count[gender] += 1
-#             else:
-#                 gender_count[gender] = 1
+        if gender:
+            if gender in gender_count:
+                gender_count[gender] += 1
+            else:
+                gender_count[gender] = 1
                 
         if location:
             if location in location_count:
@@ -237,9 +237,9 @@ def get_generate_example_model(domain_name,role_name, mail):
     domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
     role_en = tw_domain_ch2en_dict[role_name]
     task_id = domain_pinyin + '_' + role_en
-    es_result = es.get(index=tw_role_index_name,doc_type=tw_role_index_type,id=task_id)['_source']
+    es_result = es.get(index=fb_role_index_name,doc_type=fb_role_index_type,id=task_id)['_source']
     item = es_result
-    print 'es_result:::',es_result
+#     print 'es_result:::',es_result
     # 政治倾向
     political_side = json.loads(item['political_side'])[0][0]
 
@@ -324,7 +324,7 @@ def get_generate_example_model(domain_name,role_name, mail):
         item_dict = dict()
         item_dict['domain_name'] = domain_name
         item_dict['role_name'] = role_name
-        es.index(index=tw_example_model_index_name,doc_type=tw_example_model_index_type,\
+        es.index(index=fb_example_model_index_name,doc_type=fb_example_model_index_type,\
             body=item_dict,id=task_id_new)
         mark = True
     except:
@@ -332,7 +332,7 @@ def get_generate_example_model(domain_name,role_name, mail):
     return mark
 
 def get_show_example_model():
-    es_results = es.search(index=tw_example_model_index_name,doc_type=tw_example_model_index_type,\
+    es_results = es.search(index=fb_example_model_index_name,doc_type=fb_example_model_index_type,\
         body={'query':{'match_all':{}}})['hits']['hits']
     result_all = []
     for result in es_results:
@@ -342,7 +342,7 @@ def get_show_example_model():
 
 def get_export_example_model(domain_name,role_name):
     domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
-    role_en = tw_domain_ch2en_dict[role_name]
+    role_en = fb_domain_ch2en_dict[role_name]
     task_id = 'tw_' + domain_pinyin + '_' + role_en
     example_model_file_name = EXAMPLE_MODEL_PATH + task_id + '.json'
     with open(example_model_file_name,"r") as dump_f:
@@ -365,7 +365,7 @@ def get_create_type_content(create_type,keywords_string,seed_users,all_users):
 def domain_create_task(domain_name,create_type,create_time,submitter,description,remark,compute_status=0):
     task_id = pinyin.get(domain_name,format='strip',delimiter='_')
     try:
-        es.get(index=tw_domain_index_name,doc_type=tw_domain_index_type,id=task_id)['_source']
+        es.get(index=fb_domain_index_name,doc_type=fb_domain_index_type,id=task_id)['_source']
         return 'domain name exists!'
     except:
         try:
@@ -379,7 +379,7 @@ def domain_create_task(domain_name,create_type,create_time,submitter,description
             domain_task_dict['remark'] = remark
             domain_task_dict['compute_status'] = compute_status
 
-            r.lpush(tw_target_domain_detect_queue_name,json.dumps(domain_task_dict))
+            r.lpush(fb_target_domain_detect_queue_name,json.dumps(domain_task_dict))
 
             item_exist = dict()
             item_exist['domain_pinyin'] = domain_task_dict['domain_pinyin']
@@ -391,7 +391,7 @@ def domain_create_task(domain_name,create_type,create_time,submitter,description
             item_exist['remark'] = domain_task_dict['remark']
             item_exist['group_size'] = ''
             item_exist['compute_status'] = 0  # 存入创建信息
-            print es.index(index=tw_domain_index_name,doc_type=tw_domain_index_type,id=item_exist['domain_pinyin'],body=item_exist)
+            print es.index(index=fb_domain_index_name,doc_type=fb_domain_index_type,id=item_exist['domain_pinyin'],body=item_exist)
             mark = True
         except Exception,e:
             print e
@@ -399,7 +399,7 @@ def domain_create_task(domain_name,create_type,create_time,submitter,description
         return mark
 
 def get_show_domain_group_summary(submitter):
-    es_result = es.search(index=tw_domain_index_name,doc_type=tw_domain_index_type,\
+    es_result = es.search(index=fb_domain_index_name,doc_type=fb_domain_index_type,\
                 body={'query':{'term':{'submitter':submitter}}})['hits']['hits']
     if es_result:
         result_all = []
@@ -422,7 +422,7 @@ def get_show_domain_group_summary(submitter):
 ## 查看群体画像信息
 def get_show_domain_group_detail_portrait(domain_name):
     domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
-    es_result = es.get(index=tw_domain_index_name,doc_type=tw_domain_index_type,\
+    es_result = es.get(index=fb_domain_index_name,doc_type=fb_domain_index_type,\
                 id=domain_pinyin)['_source']
     member_uids = es_result['member_uids']
     es_mget_result = es_user_portrait.mget(index=portrait_index_name,doc_type=portrait_index_type,\
@@ -458,8 +458,8 @@ def get_show_domain_group_detail_portrait(domain_name):
                 item['location'] = result['location']
             if result.has_key('influence'):
                 item['influence'] = get_influence_relative(item['uid'],result['influence'])
-            if result.has_key('screenname'):
-                item['home_page'] = "https://twitter.com/" + result['screenname']
+            #if result.has_key('screenname'):
+            #    item['home_page'] = "https://twitter.com/" + result['screenname']
             if result.has_key('photo_url'):
                 item['photo_url'] = result['photo_url']
             if result.has_key('fansnum'):
@@ -475,7 +475,7 @@ def get_show_domain_group_detail_portrait(domain_name):
 
 def get_show_domain_description(domain_name):
     domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
-    es_result = es.get(index=tw_domain_index_name,doc_type=tw_domain_index_type,\
+    es_result = es.get(index=fb_domain_index_name,doc_type=fb_domain_index_type,\
                 id=domain_pinyin)['_source']
     item = {}
     item['group_size'] = es_result['group_size']
@@ -491,7 +491,7 @@ def get_show_domain_description(domain_name):
     role_distribute_list = json.loads(es_result['role_distribute'])
     role_distribute_list_chinese = []
     for role_distribute_item in role_distribute_list:
-        role_distribute_item_chinese = tw_domain_en2ch_dict[role_distribute_item[0]]
+        role_distribute_item_chinese = fb_domain_en2ch_dict[role_distribute_item[0]]
         role_distribute_list_chinese.append([role_distribute_item_chinese,role_distribute_item[1]])
 
     item['role_distribute'] = role_distribute_list_chinese
@@ -509,15 +509,15 @@ def get_show_domain_description(domain_name):
 
 def get_show_domain_role_info(domain_name,role_name):
     domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
-    role_en = tw_domain_ch2en_dict[role_name]
+    role_en = fb_domain_ch2en_dict[role_name]
     task_id = domain_pinyin + '_' + role_en
-    es_result = es.get(index=tw_role_index_name,doc_type=tw_role_index_type,id=task_id)['_source']
+    es_result = es.get(index=fb_role_index_name,doc_type=fb_role_index_type,id=task_id)['_source']
     return es_result
 
 def get_delete_domain(domain_name):
     domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
     try:
-        es.delete(index=tw_domain_index_name,doc_type=tw_domain_index_type,id=domain_pinyin)
+        es.delete(index=fb_domain_index_name,doc_type=fb_domain_index_type,id=domain_pinyin)
         mark = True
     except:
         mark = False
@@ -528,7 +528,7 @@ def get_delete_domain(domain_name):
 
 
 #step 2: show corpus
-def show_corpus_tw(corpus_type):
+def show_corpus_fb(corpus_type):
     query_body={
         'query':{
             'filtered':{
@@ -540,7 +540,7 @@ def show_corpus_tw(corpus_type):
         },
         'size':MAX_VALUE
     }
-    result=es.search(index=twitter_xnr_corpus_index_name,doc_type=twitter_xnr_corpus_index_type,body=query_body)['hits']['hits']
+    result=es.search(index=facebook_xnr_corpus_index_name,doc_type=facebook_xnr_corpus_index_type,body=query_body)['hits']['hits']
     results=[]
     for item in result:
         item['_source']['id']=item['_id']
@@ -561,7 +561,7 @@ def show_corpus_class_tw(create_type,corpus_type):
         },
         'size':MAX_VALUE
     }
-    result=es.search(index=twitter_xnr_corpus_index_name,doc_type=twitter_xnr_corpus_index_type,body=query_body)['hits']['hits']
+    result=es.search(index=facebook_xnr_corpus_index_name,doc_type=facebook_xnr_corpus_index_type,body=query_body)['hits']['hits']
     results=[]
     for item in result:
         item['_source']['id']=item['_id']
@@ -582,7 +582,7 @@ def show_condition_corpus_tw(corpus_condition):
         },
         'size':MAX_VALUE
     }    
-    result=es.search(index=twitter_xnr_corpus_index_name,doc_type=twitter_xnr_corpus_index_type,body=query_body)['hits']['hits']
+    result=es.search(index=facebook_xnr_corpus_index_name,doc_type=facebook_xnr_corpus_index_type,body=query_body)['hits']['hits']
     results=[]
     for item in result:
         item['_source']['id']=item['_id']
@@ -596,9 +596,9 @@ def show_different_corpus(task_detail):
     daily_corpus = '日常语料' 
     opinion_corpus = '观点语料'
     if task_detail['corpus_status'] == 0:        
-        result['theme_corpus'] = show_corpus_tw(theme_corpus)
+        result['theme_corpus'] = show_corpus_fb(theme_corpus)
         
-        result['daily_corpus'] = show_corpus_tw(daily_corpus)
+        result['daily_corpus'] = show_corpus_fb(daily_corpus)
         
         result['opinion_corpus'] = ''
     else:
@@ -626,7 +626,7 @@ def show_different_corpus(task_detail):
                 if task_detail['create_type']:
                     result['theme_corpus'] = show_corpus_class_tw(task_detail['create_type'],theme_corpus)
                 else:
-                    result['theme_corpus'] = show_corpus_tw(theme_corpus)
+                    result['theme_corpus'] = show_corpus_fb(theme_corpus)
 
             daily_corpus_condition = corpus_condition
             if task_detail['theme_type_2']:
@@ -638,7 +638,7 @@ def show_different_corpus(task_detail):
                 if task_detail['create_type']:
                     result['daily_corpus'] = show_corpus_class_tw(task_detail['create_type'],daily_corpus)
                 else:
-                    result['daily_corpus'] = show_corpus_tw(daily_corpus)
+                    result['daily_corpus'] = show_corpus_fb(daily_corpus)
 
         result['opinion_corpus'] = ''
 
@@ -648,10 +648,11 @@ def show_different_corpus(task_detail):
 
 def delete_corpus(corpus_id):
     try:
-        es.delete(index=twitter_xnr_corpus_index_name,doc_type=twitter_xnr_corpus_index_type,id=corpus_id)
+        es.delete(index=facebook_xnr_corpus_index_name,doc_type=facebook_xnr_corpus_index_type,id=corpus_id)
         result=True
     except:
         result=False
     return result
+
 
 

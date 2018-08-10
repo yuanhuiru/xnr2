@@ -25,9 +25,10 @@ from parameter import MAX_DETECT_COUNT,MAX_FLOW_TEXT_DAYS,MAX_SEARCH_SIZE, FB_TW
                     fb_tw_topic_ch2en_dict as topic_ch2en_dict, WORD2VEC_PATH
 from time_utils import get_twitter_flow_text_index_list as get_flow_text_index_list,ts2datetime,datetime2ts
 from utils import split_city    #tw 没有geo信息 不可用
-
+from googletrans import Translator
 sys.path.append('../../cron/trans/')
-from trans_v2 import trans, simplified2traditional, traditional2simplified
+# from trans_v2 import trans, simplified2traditional, traditional2simplified
+from trans_v2 import simplified2traditional, traditional2simplified
 
 sys.path.append(FB_TW_TOPIC_ABS_PATH)
 from test_topic import topic_classfiy
@@ -50,6 +51,32 @@ es_flow_text = es
 es_xnr = es
 r_beigin_ts = datetime2ts(R_BEGIN_TIME)
 
+
+
+def google_trans(q, target_language):
+    res = []
+    try:
+        translator = Translator()
+        results = translator.translate(q, target_language)
+        for result in results:
+            res.append(result.text)
+        return res
+    except Exception,e:
+        print 'Exception: ', str(e)
+        return res
+    
+'''
+q为待翻译的语句组成的列表
+trans()函数可选参数target_language, 代表翻译成哪种语言。
+目前支持：
+    target_language='zh-cn'(默认参数)
+    target_language='en'(英语)
+'''
+def trans(q, target_language='zh-cn'):
+    if isinstance(q, list):
+        res = google_trans(q, target_language)
+        return res
+    return False
 
 def save_data2es(data):
     update_uid_list = []
@@ -1123,4 +1150,5 @@ if __name__ == '__main__':
 
     # print detect_by_keywords([u'中国', u'党'], datetime_list)
     # print active_time_compute(uid_list,datetime_list[0])
+
 
