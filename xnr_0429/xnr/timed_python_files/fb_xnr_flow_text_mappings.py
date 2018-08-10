@@ -1,10 +1,11 @@
 # -*- coding:utf-8 -*-
 import sys
 import json
-sys.path.append('../../')
+import time
+sys.path.append('../')
 from global_utils import es_xnr as es, fb_xnr_flow_text_index_name_pre, \
                 fb_xnr_flow_text_index_type
-
+from time_utils import ts2datetime
 
 def fb_xnr_flow_text_mappings(index_name):
     index_info = {
@@ -169,4 +170,5 @@ def fb_daily_inerests_flow_text_mappings(index_name):
 
 if __name__ == '__main__':
 
-    fb_xnr_flow_text_mappings(index_name)
+	index_name = fb_xnr_flow_text_index_name_pre + ts2datetime(int(time.time())+24*3600) 
+	fb_xnr_flow_text_mappings(index_name) 

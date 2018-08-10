@@ -78,6 +78,6 @@ def getQRCode_v2(qq_number):
 
 if __name__ == '__main__':
     #getQRCode()
-    qq_xnr = '841319111'
+    qq_xnr = '80617252'
     new_filepath = getQRCode_v2(qq_xnr)
     print 'new_filepath:', new_filepath

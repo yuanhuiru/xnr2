@@ -131,7 +131,7 @@ $('#myTabs li').on('click',function () {
 		idBox='influence2',idBoxZONG='influe2';
 		$('.influence2').hide();
     	$('#influe2 p').show();
-		urlREL='facebook_xnr_operate/daily_recomment_tweets/?xnr_user_no='+ID_Num+'&sort_item=user_index';
+		urlREL='/facebook_xnr_operate/daily_recomment_tweets/?xnr_user_no='+ID_Num+'&sort_item=user_index';
 	}
     public_ajax.call_request('get',urlREL,related);
  

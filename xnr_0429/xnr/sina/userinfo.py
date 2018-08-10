@@ -144,10 +144,10 @@ if __name__ == '__main__':
     #execute()
     # user = SinaOperateAPI().getUserShow(screen_name='巨星大大')
     # print user
-    # execute()
+    execute()
     #nick_name = '一只失去超能力的超人'
-    nick_name = u'xrodman'
-    print nick_name, type(nick_name)
-    user = SinaOperateAPI().getUserShow(screen_name='一只失去超能力的超人')
+    #nick_name = u'xrodman'
+    #print nick_name, type(nick_name)
+    #user = SinaOperateAPI().getUserShow(screen_name='一只失去超能力的超人')
 
-    print user
+    #print user

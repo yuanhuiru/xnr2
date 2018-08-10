@@ -44,7 +44,11 @@ $('#container .type_page #myTabs a').on('click',function () {
         public_ajax.call_request('get',hotWeiboUrl,hotWeibo);
         recommendUrl='/weibo_xnr_operate/hot_sensitive_recommend_at_user/?sort_item=retweeted';
         obtain('r')
-    }else if (arrow=='#business'){
+    }else if(arrow=='#bigVip'){
+		arrowName='@用户推荐';
+		public_ajax.call_request('get',bigVipWeiboUrl,bigVipWeibo);
+		obtain('r')
+	}else if (arrow=='#business'){
         arrowName='@敏感用户推荐';
         public_ajax.call_request('get',busWeiboUrl,businessWeibo);
         recommendUrl='/weibo_xnr_operate/hot_sensitive_recommend_at_user/?sort_item=sensitive';
@@ -833,6 +837,125 @@ function hotWeibo(data) {
     $('#defaultWeibo2 p').slideUp(700);
     $('.defaultWeibo2 .search .form-control').attr('placeholder','输入关键词快速搜索相关微博（回车搜索）');
 }
+//大V
+//=========热点跟随===========
+$('#bigtheme-2 .demo-label input').on('click',function () {
+    var the=$(this).val();
+    var theSort=$('#bigtheme-3 .demo-label input:radio[name="big3"]:checked').val();
+    var the_url='/weibo_xnr_operate/V_recommend_tweets/?topic_field='+the+'&sort_item='+theSort;
+    public_ajax.call_request('get',the_url,bigVipWeibo)
+});
+$('#bigtheme-3 .demo-label input').on('click',function () {
+    var the=$(this).val();
+    var theSort=$('#bigtheme-2 .demo-label input:radio[name="big2h"]:checked').val();
+    var the_url='/weibo_xnr_operate/V_recommend_tweets/?topic_field='+theSort+'&sort_item='+the;
+    public_ajax.call_request('get',the_url,bigVipWeibo)
+});
+var bigVipWeiboUrl='/weibo_xnr_operate/V_recommend_tweets/?topic_field=民生类_法律&sort_item=timestamp';
+// public_ajax.call_request('get',bigVipWeiboUrl,bigVipWeibo);
+function bigVipWeibo(data) {
+    $('#vipArticle p').show();
+    $('#vipArticle').bootstrapTable('load', data);
+    $('#vipArticle').bootstrapTable({
+        data:data,
+        search: true,//是否搜索
+        pagination: true,//是否分页
+        pageSize: 10,//单页记录数
+        pageList: [2, 5, 10, 20],//分页步进值
+        sidePagination: "client",//服务端分页
+        searchAlign: "left",
+        searchOnEnterKey: false,//回车搜索
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
+        buttonsAlign: "right",//按钮对齐方式
+        locale: "zh-CN",//中文支持
+        detailView: false,
+        showToggle:false,
+        sortName:'bci',
+        sortOrder:"desc",
+        columns: [
+            {
+                title: "",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    var name,txt2,txt,img;
+                    if (row.nick_name==''||row.nick_name=='null'||row.nick_name=='unknown'){
+                        name='未命名';
+                    }else {
+                        name=row.nick_name;
+                    };
+                    if (row.photo_url==''||row.photo_url=='null'||row.photo_url=='unknown'){
+                        img='/static/images/unknown.png';
+                    }else {
+                        img=row.photo_url;
+                    };
+                    var all='';
+                    if (row.text==''||row.text=='null'||row.text=='unknown'){
+                        txt='暂无内容';
+                    }else {
+                    	txt=row.text;
+                        if (row.text.length>=160){
+                            txt2=row.text.substring(0,160)+'...';
+                            all='inline-block';
+                        }else {
+                            txt2=row.text;
+                            all='none';
+                        }
+					};
+                    var str=
+                        '<div class="post_perfect" style="text-align:left;">'+
+                        '   <div id="post_center-hot">'+
+                        '       <img src="'+img+'" alt="" class="center_icon">'+
+                        '       <div class="center_rel">'+
+                        '           <a class="center_1" href="###" style="color: #f98077;">'+name+'</a>'+
+                        '           <span class="time" style="font-weight: 900;color: blanchedalmond;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span>  '+
+                        '           <button data-all="0" style="display: '+all+'" type="button" class="btn btn-primary btn-xs allWord" onclick="allWord(this)">查看全文</button>'+
+                        '   <p class="allall1" style="display:none;">'+txt+'</p>'+
+                                '   <p class="allall2" style="display:none;">'+txt2+'</p>'+
+                                '   <span class="center_2" style="text-align: left;">'+txt2+'</span>'+
+						'           <i class="mid" style="display: none;">'+row.mid+'</i>'+
+                        '           <i class="uid" style="display: none;">'+row.uid+'</i>'+
+                        '           <i class="timestamp" style="display: none;">'+row.timestamp+'</i>'+
+                                               '           <div class="center_3">'+
+                       // '               <span title="事件子观点及相关微博" onclick="related(this)"><i class="icon icon-stethoscope"></i>&nbsp;&nbsp;事件子观点及相关微博</span>'+
+                        '               <span title="复制" onclick="copyPost(this)"><i class="icon icon-copy"></i>&nbsp;&nbsp;复制</span>'+
+                        '               <span title="转发数" onclick="retweet(this,\'热点跟随\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发&nbsp;</span>'+
+                        '               <span title="评论数" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论&nbsp;</span>'+
+                        '               <span title="赞" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
+                        '               <span title="机器人回复" class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
+                        '               <span title="加入语料库" onclick="joinlab(this)"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+
+                        '           </div>'+
+                        '           <div class="forwardingDown" style="width: 100%;display: none;">'+
+                        '               <input type="text" class="forwardingIput" placeholder="转发内容"/>'+
+                        '               <span class="sureFor" onclick="forwardingBtn()">转发</span>'+
+                        '           </div>'+
+                        '           <div class="commentDown" style="width: 100%;display: none;">'+
+                        '               <input type="text" class="comtnt" placeholder="评论内容"/>'+
+                        '               <span class="sureCom" onclick="comMent(this,\'热点跟随\')">评论</span>'+
+                        '           </div>'+
+                        '        </div>'+
+                        '        <div style="margin: 10px 0;display:none;">'+
+                        '           <input type="text" class="point-view-1" placeholder="多个关键词请用逗号分开"/>'+
+                        '           <button type="button" onclick="submitViews(this)" class="btn btn-primary btn-xs point-view-2" ' +
+                        'style="height: 26px;position: relative;top: -1px;">提交子观点任务</button>'+
+                        '        </div>'+
+                        '   </div>'+
+                        '</div>';
+                    return str;
+                }
+            },
+        ],
+    });
+    $('#vipArticle p').slideUp(700);
+    $('.vipArticle .search .form-control').attr('placeholder','输入关键词快速搜索相关微博（回车搜索）');
+}
+
+
+
 
 //新建内容推荐  和  提交子观点
 function submitViews(_this) {

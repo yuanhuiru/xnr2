@@ -1,6 +1,7 @@
 # -*-coding: utf-8-*-
 import time
 import sys
+import traceback
 sys.path.append('..')
 
 from sina.weibo_feedback_at import FeedbackAt
@@ -10,7 +11,7 @@ from sina.weibo_feedback_like import FeedbackLike
 from sina.weibo_feedback_private import FeedbackPrivate
 from sina.weibo_feedback_retweet import FeedbackRetweet
 from tools.Launcher import SinaLauncher
-
+from QQ_mail import sendqqmail
 from weibo_publish_func import newest_time_func
 from global_utils import es_xnr as es,weibo_xnr_index_name,weibo_xnr_index_type
 
@@ -108,14 +109,16 @@ def all_weibo_xnr_crawler():
 			if account_name:
 				execute(account_name,pwd)
 if __name__ == '__main__':
-
-    year, month, day, hour, minute, second = get_present_time()
-    if hour >= 0 and hour <= 7:
-        #execute('weiboxnr01@126.com','xnr123456')
-        #execute('weiboxnr02@126.com','xnr123456')
-        #execute('weiboxnr03@126.com','xnr123456')
-        #execute('weiboxnr04@126.com','xnr1234567')
-        start_ts = int(time.time())
-        all_weibo_xnr_crawler()
-        end_ts = int(time.time())
-        print 'cost..',end_ts-start_ts
+    try:
+        year, month, day, hour, minute, second = get_present_time()
+        if hour >= 0 and hour <= 7:
+            #execute('weiboxnr01@126.com','xnr123456')
+            #execute('weiboxnr02@126.com','xnr123456')
+            #execute('weiboxnr03@126.com','xnr123456')
+            #execute('weiboxnr04@126.com','xnr1234567')
+            start_ts = int(time.time())
+            all_weibo_xnr_crawler()
+            end_ts = int(time.time())
+            print 'cost..',end_ts-start_ts
+    except Exception, e:
+        sendqqmail(traceback.format_exc(e), 'sina/weibo_crawler crashed!!!!')

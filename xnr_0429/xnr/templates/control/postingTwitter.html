@@ -5,8 +5,8 @@
 <!--<link rel="stylesheet" href="/static/css/jquery.sinaEmotion.css">-->
 <link rel="stylesheet" type="text/css" href="/static/css/LL_jquery.eeyellow.Timeline.css" />
 <style>
-    #intelligenceTabs .radyType，#sameRoad .modActCC.cc5 {
-        display: none;
+    #intelligenceTabs .radyType,#sameRoad .modActCC.cc5 {
+        display: none!important;
     }
     .demo-label{display:inline-block;cursor:pointer;font-size: 12px;font-weight: normal;}
     #grouplist .demo-label{width: 95px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;margin-top: 10px;}
@@ -136,7 +136,7 @@
             <li role="presentation" class="active">
                 <a href="#everyday" role="tab" data-toggle="tab"><b class="icon icon-tags"></b>&nbsp;日常发帖</a>
             </li>
-            <li role="presentation">
+            <li role="presentation" style="display:none;">
                 <a href="#hot" role="tab" data-toggle="tab"><b class="icon icon-fire"></b>&nbsp;热点跟随</a>
             </li>
             <li role="presentation">
@@ -423,10 +423,10 @@
                                 <input class="demo-radio" type="radio" name="theme3" value='timestamp' checked>
                                 <span class="demo-checkbox demo-radioInput"></span> 按事件时间
                             </label>
-                            <label class="demo-label" title="按已提交观点分析">
+                            <!--<label class="demo-label" title="按已提交观点分析">
                                 <input class="demo-radio" type="radio" name="theme3" value='compute_status'>
                                 <span class="demo-checkbox demo-radioInput"></span> 按已提交观点分析
-                            </label>
+                            </label>-->
                         </div>
                         <div class="defaultWeibo2">
                             <div id="defaultWeibo2">

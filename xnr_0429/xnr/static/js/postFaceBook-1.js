@@ -40,25 +40,25 @@ $('#container .type_page #myTabs a').on('click',function () {
         //arrowName='@用户推荐';
         //recommendUrl='/facebook_xnr_operate/hot_sensitive_recommend_at_user/?xnr_user_no='+xnrUser;
         //recommendUrl='/facebook_xnr_operate/hot_sensitive_recommend_at_user/?sort_item=timestamp';
-        $('#container .post_post .post-2 #post-2-content').width('100%');
-        $('#container .post_post .post-2 .add_thing').css({'width':'100%'});
-        $('#user_recommend').hide();
+        //$('#container .post_post .post-2 #post-2-content').width('100%');
+        //$('#container .post_post .post-2 .add_thing').css({'width':'100%'});
+        //$('#user_recommend').hide();
     }else if (arrow=='#hot'){
         obtain('r');
-        arrowName='@用户推荐';
-        $('#container .post_post .post-2 #post-2-content').width('736px');
-        $('#container .post_post .post-2 .add_thing').css({'width':'81%'});
-        $('#user_recommend').show();
+        //arrowName='@用户推荐';
+        //$('#container .post_post .post-2 #post-2-content').width('736px');
+        //$('#container .post_post .post-2 .add_thing').css({'width':'81%'});
+        //$('#user_recommend').show();
         public_ajax.call_request('get',hotWeiboUrl,hotWeibo);
-        recommendUrl='/facebook_xnr_operate/hot_sensitive_recommend_at_user/?sort_item=share';
+        //recommendUrl='/facebook_xnr_operate/hot_sensitive_recommend_at_user/?sort_item=share';
     }else if (arrow=='#business'){
         obtain('c');
-        arrowName='@敏感用户推荐';
-        $('#container .post_post .post-2 #post-2-content').width('736px');
-        $('#container .post_post .post-2 .add_thing').css({'width':'81%'});
-        $('#user_recommend').show();
+        //arrowName='@敏感用户推荐';
+        //$('#container .post_post .post-2 #post-2-content').width('736px');
+        //$('#container .post_post .post-2 .add_thing').css({'width':'81%'});
+        //$('#user_recommend').show();
         public_ajax.call_request('get',busWeiboUrl,businessWeibo);
-        recommendUrl='/facebook_xnr_operate/hot_sensitive_recommend_at_user/?sort_item=sensitive';
+        //recommendUrl='/facebook_xnr_operate/hot_sensitive_recommend_at_user/?sort_item=sensitive';
     }else if (arrow=='#reportNote'){
         $('.post_post').hide();
         public_ajax.call_request('get',flow_faw_url,flow_faw);
@@ -70,9 +70,9 @@ $('#container .type_page #myTabs a').on('click',function () {
         var intelligent_writing_url='/intelligent_writing/show_writing_task/?task_source='+intelligentType+'&xnr_user_no='+ID_Num;
         // var intelligent_writing_url='/intelligent_writing/show_writing_task/?task_source=facebook&xnr_user_no=FXNR0005';
         public_ajax.call_request('get',intelligent_writing_url,intelligentList);
-        $('#container .post_post .post-2 #post-2-content').width('100%');
-        $('#container .post_post .post-2 .add_thing').css({'width':'100%'});
-        $('#user_recommend').hide();
+        //$('#container .post_post .post-2 #post-2-content').width('100%');
+       // $('#container .post_post .post-2 .add_thing').css({'width':'100%'});
+        //$('#user_recommend').hide();
     };
     if (arrow!='#intelliGence'){
         $('#intell_type').hide();
@@ -82,7 +82,7 @@ $('#container .type_page #myTabs a').on('click',function () {
     }
     if (arrow!='#reportNote'&&arrow!='#intelliGence'){
         $('#user_recommend .tit').text(arrowName);
-        public_ajax.call_request('get',recommendUrl,recommendlist);
+        //public_ajax.call_request('get',recommendUrl,recommendlist);
     }
 })
 //=========跟踪转发===========
@@ -420,7 +420,7 @@ function addHeavySure() {
         var useradd_url;
         if(m=='uid_string'){
             var reg = new RegExp("^[0-9]*$");
-            if(reg.test(m)){
+            if(reg.test(uid_name)){
                 useradd_url='/facebook_xnr_operate/trace_follow/?xnr_user_no='+ID_Num+'&'+m+'='+uid_name;
             }else {
                 $('#pormpt p').text('UID为数字。');

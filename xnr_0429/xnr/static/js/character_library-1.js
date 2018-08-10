@@ -2,9 +2,9 @@ var field_user_url;
 if (flag==1){
     field_user_url='/weibo_xnr_operate/show_domain_second/';
 }else if (flag==4){
-    field_user_url='/facebook_xnr_create/show_domain/';
+    field_user_url='/facebook_xnr_create/show_domain/?submitter='+admin;
 }else if (flag==5){
-    field_user_url='/twitter_xnr_create/show_domain/';
+    field_user_url='/twitter_xnr_create/show_domain/?submitter='+admin;
 }
 public_ajax.call_request('get',field_user_url,field_user);
 var domainName='';
@@ -18,7 +18,7 @@ function field_user(data) {
 	        	var creatDEFAULT='/'+url2+'/domain2role/?domain_name='+data[k];
 		        public_ajax.call_request('get',creatDEFAULT,creatrole)
 		     }catch(e) {
-        		$('#pormpt p').text('抱歉，该领域下没有对应的身份。');
+        		$('#pormpt p').text('抱歉，该领域正在计算中，请稍后查看角色身份。');
         		$('#pormpt').modal('show');
    			 }
 		}
@@ -79,6 +79,7 @@ function domain(data) {
     $('#container .tit-3 .field-2').html(str);
     $('#container .tit-3 .field-2 input[value="'+data[0]+'"]').attr('checked','true');
     $('#container .tit-3').show();
+	$('#container .tit-3 .field-2 input[value="'+data[0]+'"]').click();
 }
 function allDataFun(_this) {
     var domain_name = $('.field-1 input:radio[name="chara"]:checked').val();
@@ -609,7 +610,7 @@ function locationplace(data,idClassName,name) {
                 name: name,
                 type: 'scatter',
                 coordinateSystem: 'geo',
-                data: convertData(cityData),
+                data:convertData(cityData),
                 symbolSize: 12,
                 label: {
                     normal: {

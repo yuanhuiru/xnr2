@@ -31,7 +31,7 @@ def fb_save_to_xnr_flow_text(tweet_type,xnr_user_no,text, message_type):
 
     #try:
         
-    result = fb_xnr_flow_text_mappings(xnr_flow_text_index_name)
+    #result = fb_xnr_flow_text_mappings(xnr_flow_text_index_name)
         
     index_result = es.index(index=xnr_flow_text_index_name, doc_type=fb_xnr_flow_text_index_type,\
                 id=task_id,body=item_detail)

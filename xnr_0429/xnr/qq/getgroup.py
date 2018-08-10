@@ -22,6 +22,11 @@ def getgroup():
             result[group_number]=group_name
     return result
 
+# xuanhui 
+def getgroup_v3():
+	a = 1
+	return a
+
 def getgroup_v2(qq_xnr):
     group_dict = {}
     #step0: get qqbot_port
@@ -40,10 +45,15 @@ def getgroup_v2(qq_xnr):
     
     qqbot_port = qq_xnr_es_result['qqbot_port']
     print 'qqbot_port..',qqbot_port
-    p_str = 'qq ' + str(qqbot_port) + ' list group'
+    # p_str = 'qq '+str(qqbot_port) + ' list buddy'
+   # p_str = "qq "+str(qqbot_port) + " .List('buddy')"
+    p_str = "qq "+str(qqbot_port) + " list buddy"
+    print("111111111111111111111",p_str)
     p = subprocess.Popen(p_str, shell=True, \
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     line_count = 0
+    print 'print p ======================='	
+    print p
     for line in p.stdout.readlines():
         line_count += 1
         print 'line.==========',line    
@@ -98,19 +108,18 @@ def update_group_name():
 
 
 if __name__ == '__main__':
-    
-    update_group_name() 
-    #groups = getgroup()
-    #qq_xnr = 'QXNR0001'
-    #groups = getgroup_v2(qq_xnr)
-    # for group in groups:
-    #     group_name = group.name
-    #     group_number = group.qq
-    # print group
     # print type(group[0])
     # print dir(group[0])
     # print(group[0].name)
     # print(group[0].qq)
     #print groups
-#     [2017-08-22 10:51:25] [INFO] 请在其他终端使用 qq 命令来控制 QQBot ，示例： qq send buddy jack hello
-# [2017-08-22 10:51:30] [ERROR] 无法和腾讯服务器建立私密连接， 5 秒后将尝试使用非私密连接和腾讯服务器 通讯。若您不希望使用非私密连接，请按 Ctrl+C 退出本程序。
+	# [2017-08-22 10:51:25] [INFO] 请在其他终端使用 qq 命令来控制 QQBot ，示例： qq send buddy jack hello
+	# [2017-08-22 10:51:30] [ERROR] 无法和腾讯服务器建立私密连接， 5 秒后将尝试使用非私密连接和腾讯服务器 通讯。若您不希望使用非私密连接，请按 Ctrl+C 退出本程序。
+    # update_group_name() 
+    # groups = getgroup()	
+    qq_xnr = 'QXNR0023'
+    groups = getgroup_v2(qq_xnr)
+    for group in groups:
+        group_name = group.name
+        group_number = group.qq
+    	print group

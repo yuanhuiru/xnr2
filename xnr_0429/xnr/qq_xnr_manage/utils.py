@@ -15,7 +15,7 @@ from xnr.parameter import MAX_VALUE,LOCALHOST_IP
 from xnr.utils import user_no2qq_id
 from xnr.time_utils import ts2datetime,datetime2ts
 import socket
-from xnr.qq.getgroup import getgroup_v2
+from xnr.qq.getgroup import getgroup_v2,getgroup_v3
 from xnr.qq.receiveQQGroupMessage import execute_v2
 
 
@@ -271,15 +271,14 @@ def create_qq_xnr(xnr_info):
     return [result,qq_group_exist_list]
 
 def login_status(xnr_user_no):
-
-    group_dict = getgroup_v2(xnr_user_no)
-    print 'group_dict======',group_dict
-    if group_dict:
-        login_status = True
-    else:
-        login_status = False
-
-    return login_status
+	
+	group_dict = getgroup_v2(xnr_user_no)
+	print 'group_dict======',group_dict
+	if group_dict:
+		login_status = 'True'
+	else:
+		login_status = 'False'
+	return login_status
 
 def show_qq_xnr_index(MAX_VALUE,submitter):
     query_body = {

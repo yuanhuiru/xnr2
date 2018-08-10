@@ -193,7 +193,7 @@ body {
 }
 
 #container #content #everyday .everyday-2 .ed-2-1,
-#container #content #hot .hot-2 .hot-2-1 {
+#container #content #hot .hot-2 .hot-2-1,#container #content #bigVip .bigVip-2 .bigVip-2-1 {
     width: 200px;
     height: auto;
     min-height: 430px;
@@ -202,7 +202,7 @@ body {
     float: left;
 }
 #container #content #everyday .everyday-2 .ed-2-1 #theme,
-#container #content #hot .hot-2 .hot-2-1 #theme-2{
+#container #content #hot .hot-2 .hot-2-1 #theme-2,#container #content #bigVip .bigVip-2 .bigVip-2-1 #bigtheme-2 {
     margin: 10px 0;
 }
 #container #content #everyday .everyday-2 .ed-2-1 #theme .demo-label{
@@ -211,7 +211,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-#container #content #hot .hot-2 .hot-2-1 #theme-2 .demo-label {
+#container #content #hot .hot-2 .hot-2-1 #theme-2 .demo-label,#container #content #bigVip .bigVip-2 .bigVip-2-1 #bigtheme-2 .demo-label {
     display: block;
     max-width: 160px;
     white-space: nowrap;
@@ -219,24 +219,24 @@ body {
     text-overflow: ellipsis;
 }
 #container #content #everyday .everyday-2 .ed-2-2,
-#container #content #hot .hot-2 .hot-2-2 {
+#container #content #hot .hot-2 .hot-2-2,#container #content #bigVip .bigVip-2 .bigVip-2-2 {
     width: 700px;
     height: auto;
     margin-left: 20px;
     float: left;
 }
 .everyday-2 .ed-2-1 .demo-label{width: 80px;margin: 3px 10px;}
-.hot-2 .hot-2-1 .demo-label {width: 150px;}
+.hot-2 .hot-2-1 .demo-label,.bigVip-2 .bigVip-2-1 .demo-label {width: 150px;}
 .everyday-2 .ed-2-2 .demo-label{width:100px;}
-.hot-2 .hot-2-2 .demo-label{width: 120px;}
-.everyday-2 .ed-2-1 .demo-radioInput,.hot-2 .hot-2-1 .demo-radioInput{margin-right:10px;}
+.hot-2 .hot-2-2 .demo-label,.bigVip-2 .bigVip-2-2 .demo-label{width: 120px;}
+.everyday-2 .ed-2-1 .demo-radioInput,.hot-2 .hot-2-1 .demo-radioInput,.bigVip-2 .bigVip-2-1 .demo-radioInput{margin-right:10px;}
 
 
-#container .type_page #content #hot #post_center-hot {
+#container .type_page #content #hot #post_center-hot,#container .type_page #content #bigVip #post_center-hot {
     position: relative;
     padding: 10px 10px 10px 30px;
 }
-#container .type_page #content #hot #post_center-hot .center_icon {
+#container .type_page #content #hot #post_center-hot .center_icon,#container .type_page #content #bigVip #post_center-hot .center_icon {
     position: absolute;
     top:10px;
     left:3px;
@@ -248,7 +248,7 @@ body {
     /*color: black;*/
     /*width: 200px;*/
 /*}*/
-#container .type_page #content #hot #post_center-hot a {
+#container .type_page #content #hot #post_center-hot a,#container .type_page #content #bigVip #post_center-hot a {
     cursor: pointer;
     display: inline-block;
 }
@@ -293,23 +293,23 @@ body {
     color:#eb7350;
 }
 
-#container #content #hot .post_perfect {
+#container #content #hot .post_perfect,#container #content #bigVip .post_perfect {
     position: relative;
     padding: 10px 10px 10px 30px;
     background: #06162d;
     margin-bottom: 10px;
 }
-#container #content #hot .post_perfect .center_3,
+#container #content #hot .post_perfect .center_3,#container #content #bigVip .post_perfect .center_3,
 #container #content #hot .post_perfect .center_3_top{
     text-align: center;
     border-top: 1px solid slategrey;
     padding-top: 5px;
     margin-top: 10px;
 }
-#container #content #hot .post_perfect .center_3_top {
+#container #content #hot .post_perfect .center_3_top,#container #content #bigVip .post_perfect .center_3_top {
     margin-top: 10px;
 }
-#container #content #hot .post_perfect .center_3 span,
+#container #content #hot .post_perfect .center_3 span,#container #content #bigVip .post_perfect .center_3 span,
 #container #content #hot .post_perfect .center_3_top span {
     display: inline-block;
     /*width: 16%;*/
@@ -326,6 +326,9 @@ body {
 #container #content #hot .post_perfect .center_3 span:nth-child(2),
 #container #content #hot .post_perfect .center_3 span:nth-child(4),
 #container #content #hot .post_perfect .center_3 span:nth-child(6),
+#container #content #bigVip .post_perfect .center_3 span:nth-child(2),
+#container #content #bigVip .post_perfect .center_3 span:nth-child(4),
+#container #content #bigVip .post_perfect .center_3 span:nth-child(6),
 #container #content #hot .post_perfect .center_3_top span:nth-child(2){
     border-left:1px solid slategrey;
     border-right:1px solid slategrey;
@@ -334,10 +337,10 @@ body {
     /*!*width: 30%;*!*/
     /*border-left:1px solid slategrey;*/
 /*}*/
-#container #content #hot .post_perfect .center_3 span:hover {
+#container #content #hot .post_perfect .center_3 span:hover,#container #content #bigVip .post_perfect .center_3 span:hover {
     color: #eb7350;
 }
-#container #content #hot .point-view-1 {
+#container #content #hot .point-view-1,#container #content #bigVip .point-view-1 {
     width: 82%;
     background: transparent;
     border: 1px solid silver;

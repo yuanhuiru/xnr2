@@ -146,10 +146,13 @@
                 <a href="#everyday" role="tab" data-toggle="tab"><b class="icon icon-tags"></b>&nbsp;日常发帖</a>
             </li>
             <li role="presentation">
+                <a href="#business" role="tab" data-toggle="tab"><b class="icon icon-file-alt"></b>&nbsp;业务发帖</a>
+            </li>
+            <li role="presentation">
                 <a href="#hot" role="tab" data-toggle="tab"><b class="icon icon-fire"></b>&nbsp;热点跟随</a>
             </li>
             <li role="presentation">
-                <a href="#business" role="tab" data-toggle="tab"><b class="icon icon-file-alt"></b>&nbsp;业务发帖</a>
+                <a href="#bigVip" role="tab" data-toggle="tab"><b class="icon icon-certificate"></b>&nbsp;大V热点</a>
             </li>
             <li role="presentation">
                 <a href="#reportNote" role="tab" data-toggle="tab"><b class="icon icon-cloud-upload"></b>&nbsp;跟踪转发</a>
@@ -455,13 +458,124 @@
                                 <input class="demo-radio" type="radio" name="theme3" value='timestamp' checked>
                                 <span class="demo-checkbox demo-radioInput"></span> 按事件时间
                             </label>
-                            <label class="demo-label" title="按已提交观点分析">
+                            <!--<label class="demo-label" title="按已提交观点分析">
                                 <input class="demo-radio" type="radio" name="theme3" value='compute_status'>
                                 <span class="demo-checkbox demo-radioInput"></span> 按已提交观点分析
-                            </label>
+                            </label>-->
                         </div>
                         <div class="defaultWeibo2">
                             <div id="defaultWeibo2">
+                                <p style="width: 100%;text-align: center;margin-top: 40px;color: white;">正在拼命加载中...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			
+			<div role="tabpanel" class="weiboTable tab-pane" id="bigVip">
+                <div class="bigVip-1" style="margin: 20px 0;">
+                    <img src="/static/images/icon.png" alt="">
+                    <span style="font-size: 18px;font-weight: 900;color: #fff">大V用户帖子推荐</span>
+                </div>
+                <div class="bigVip-2" style="margin-left: 30px;overflow: hidden;">
+                    <div class="bigVip-2-1">
+                        <span>按主题：</span>
+                        <div id="bigtheme-2">
+                            <label class="demo-label" title="民生类_法律">
+                                <input class="demo-radio" type="radio" name="big2h" value='民生类_法律' checked>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_法律
+                            </label>
+                            <label class="demo-label" title="民生类_就业">
+                                <input class="demo-radio" type="radio" name="big2h" value='民生类_就业'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_就业
+                            </label>
+							 <label class="demo-label" title="民生类_环保">
+                                <input class="demo-radio" type="radio" name="big2h" value='民生类_环保'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_环保
+                            </label>
+                            <label class="demo-label" title="民生类_健康">
+                                <input class="demo-radio" type="radio" name="big2h" value='民生类_健康'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_健康
+                            </label>
+                            <label class="demo-label" title="民生类_住房">
+                                <input class="demo-radio" type="radio" name="big2h" value='民生类_住房'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_住房
+                            </label>
+							 <label class="demo-label" title="民生类_交通">
+                                <input class="demo-radio" type="radio" name="big2h" value='民生类_交通'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_交通
+                            </label>
+                            <label class="demo-label" title="民生类_社会保障">
+                                <input class="demo-radio" type="radio" name="big2h" value='民生类_社会保障'>
+                                <span class="demo-checkbox demo-radioInput"></span> 民生类_社会保障
+                            </label>
+                            <label class="demo-label" title="文体类_娱乐">
+                                <input class="demo-radio" type="radio" name="big2h" value='文体类_娱乐'>
+                                <span class="demo-checkbox demo-radioInput"></span> 文体类_娱乐
+                            </label>
+                            <label class="demo-label" title="科技类">
+                                <input class="demo-radio" type="radio" name="big2h" value='科技类'>
+                                <span class="demo-checkbox demo-radioInput"></span> 科技类
+                            </label>
+                            <label class="demo-label" title="经济类">
+                                <input class="demo-radio" type="radio" name="big2h" value='经济类'>
+                                <span class="demo-checkbox demo-radioInput"></span> 经济类
+                            </label>
+                            <label class="demo-label" title="教育类">
+                                <input class="demo-radio" type="radio" name="big2h" value='教育类'>
+                                <span class="demo-checkbox demo-radioInput"></span> 教育类
+                            </label>
+                            <label class="demo-label" title="军事类">
+                                <input class="demo-radio" type="radio" name="big2h" value='军事类'>
+                                <span class="demo-checkbox demo-radioInput"></span> 军事类
+                            </label>
+                            <label class="demo-label" title="文体类_体育">
+                                <input class="demo-radio" type="radio" name="big2h" value='文体类_体育'>
+                                <span class="demo-checkbox demo-radioInput"></span> 文体类_体育
+                            </label>
+                            <label class="demo-label" title="政治类_外交">
+                                <input class="demo-radio" type="radio" name="big2h" value='政治类_外交'>
+                                <span class="demo-checkbox demo-radioInput"></span> 政治类_外交
+                            </label>
+                            <label class="demo-label" title="政治类_反腐">
+                                <input class="demo-radio" type="radio" name="big2h" value='政治类_反腐'>
+                                <span class="demo-checkbox demo-radioInput"></span> 政治类_反腐
+                            </label>
+                            <label class="demo-label" title="政治类_暴恐">
+                                <input class="demo-radio" type="radio" name="big2h" value='政治类_暴恐'>
+                                <span class="demo-checkbox demo-radioInput"></span> 政治类_暴恐
+                            </label>
+                            <label class="demo-label" title="政治类_地区和平">
+                                <input class="demo-radio" type="radio" name="big2h" value='政治类_地区和平'>
+                                <span class="demo-checkbox demo-radioInput"></span> 政治类_地区和平
+                            </label>
+                            <label class="demo-label" title="政治类_宗教">
+                                <input class="demo-radio" type="radio" name="big2h" value='政治类_宗教'>
+                                <span class="demo-checkbox demo-radioInput"></span> 政治类_宗教
+                            </label>
+							 <label class="demo-label" title="其他类">
+                                <input class="demo-radio" type="radio" name="big2h" value='其他类'>
+                                <span class="demo-checkbox demo-radioInput"></span> 其他类
+                            </label>
+                        </div>
+                    </div>
+                    <div class="bigVip-2-2">
+                        <div id="bigtheme-3" style="text-align: center;">
+                            <label class="demo-label" title="按事件敏感度">
+                                <input class="demo-radio" type="radio" name="big3" value='sensitive'>
+                                <span class="demo-checkbox demo-radioInput"></span> 按事件敏感度
+                            </label>
+                            <label class="demo-label" title="按事件时间">
+                                <input class="demo-radio" type="radio" name="big3" value='timestamp' checked>
+                                <span class="demo-checkbox demo-radioInput"></span> 按事件时间
+                            </label>
+                            <!--<label class="demo-label" title="按已提交观点分析">
+                                <input class="demo-radio" type="radio" name="big3" value='compute_status'>
+                                <span class="demo-checkbox demo-radioInput"></span> 按已提交观点分析
+                            </label>-->
+                        </div>
+                        <div class="vipArticle">
+                            <div id="vipArticle">
                                 <p style="width: 100%;text-align: center;margin-top: 40px;color: white;">正在拼命加载中...</p>
                             </div>
                         </div>

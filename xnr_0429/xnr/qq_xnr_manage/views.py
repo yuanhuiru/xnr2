@@ -103,12 +103,10 @@ def ajax_show_qq_xnr():
 
 @mod.route('/login_status/')
 def ajax_login_status():
-    
     xnr_user_no = request.args.get('xnr_user_no','')
-
     results = login_status(xnr_user_no)
-
-    return json.dumps(results)  # True - 在线, False-离线
+    print json.dumps(results)
+    return json.dumps(results) # True - 在线, False-离线
 
 
 # # http://219.224.134.213:8098/qq_xnr_manage/add_group/?xnr_user_no=QXNR0007&group_numbers=513304542

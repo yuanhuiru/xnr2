@@ -15,7 +15,7 @@ if ((flag==1)||(_gostart_USER.indexOf('W')==0)){
     firstStep='TWfirstStep';
     secondStep='TWsecondStep';
 }
-var field_url=WFT_url+'/show_domain/';
+var field_url=WFT_url+'/show_domain/?submitter='+admin;
 public_ajax.call_request('get',field_url,field);
 function field(data) {
     if(isEmptyObject(data)||(!data)){
@@ -52,7 +52,7 @@ function creatrole(data){
 	if(data.length!=0){
 		defalutRole=data[0];
 	}else {
-		$('#pormpt p').text('抱歉，该领域下没有对应的身份。');
+		$('#pormpt p').text('抱歉，该领域正在计算中，请稍后查看角色身份。');
         $('#pormpt').modal('show');
 	}
 }
@@ -117,7 +117,7 @@ function inModalData(data) {
     if (data.monitor_keywords){
         $('.build-6 .keywords').val(data.monitor_keywords.toString().replace(/&/g,'，'))
     }else {
-        $('.build-6 .keywords').attr(placeholder,'暂无关键词');
+        $('.build-6 .keywords').attr('placeholder','暂无关键词');
     }
     var active_time,day_post_num;
     if (data.active_time=='unknown'||data.active_time=='null'||data.active_time==''||!data.active_time){active_time='未知'}else{active_time=data.active_time};
