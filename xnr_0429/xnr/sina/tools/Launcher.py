@@ -114,11 +114,12 @@ class SinaLauncher():
 
         p = re.compile('location\.replace\(\'(.*?)\'\)')
         p2 = re.compile(r'"userdomain":"(.*?)"')
-
+        print '11111111111111'
         try:
             login_url = p.search(html).group(1)
             # print login_url
             request = urllib2.Request(login_url)
+            print request
             response = urllib2.urlopen(request)
             page = response.read().decode('utf-8')
             print page
