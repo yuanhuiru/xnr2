@@ -597,9 +597,9 @@ def tw_save_to_fans_follow_ES(xnr_user_no,uid,follow_type,trace_type):
 
 
 def add_operate2redis(item_dict):
-
+    print 'add_operate2redis=============================='
+    print item_dict
     queue_dict = {}
-
     queue_dict['channel'] = item_dict['channel'] # weibo、facebook、twitter
     queue_dict['operate_type'] = item_dict['operate_type']  
     # publish-发帖、retweet-转发、comment-评论、like-点赞、follow-关注、unfollow-取消关注、at-提到、private-私信
@@ -607,11 +607,17 @@ def add_operate2redis(item_dict):
     # receive - 回复
 
     queue_dict['content'] = item_dict['content']
-    try:
-        content = r_operate_queue.lpush(operate_queue_name,json.dumps(queue_dict))
-        mark = True
-    except:
-        mark = False
+    while 1:
+        try:
+            content = r_operate_queue.lpush(operate_queue_name,json.dumps(queue_dict))
+            print 'true=========================================='
+            mark = True
+            break
+        except Exception as e:
+            print 'false=========================================='
+            print e
+            #mark = False
+            continue
 
     return mark
 
@@ -621,6 +627,8 @@ if __name__ == '__main__':
     # save_to_fans_follow_ES('WXNR0004','1496814565','followers')
     #es_xnr.delete(index=weibo_xnr_fans_followers_index_name,doc_type=weibo_xnr_fans_followers_index_type,\
     #    id='AV4Zi0NasTFJ_K1Z2dDy')
+    #item_dict = {"channel":"weibo"}
+    #add_operate2redis(item_dict)
     print r_operate_queue.lrange(operate_queue_name,0,8)
     # print r_operate_queue.rpop(operate_queue_name)
 
