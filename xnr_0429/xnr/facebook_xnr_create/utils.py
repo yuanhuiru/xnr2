@@ -485,7 +485,9 @@ def get_save_step_three_2(task_detail):
     try:
         item_fans_followers = dict()
         followers_uids = list(set(task_detail['followers_uids'].split('，')))
-        item_fans_followers['followers_list'] = followers_uids
+#         item_fans_followers['followers_list'] = followers_uids
+        item_fans_followers['fans_list'] = followers_uids
+        
         item_fans_followers['xnr_user_no'] = task_id
         print es.index(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,id=task_id,body=item_fans_followers)
         #把关注任务加到redis队列中
@@ -558,5 +560,6 @@ if __name__ == '__main__':
     domain_create_task(domain_name,create_type,create_time,submitter,remark,compute_status=0)
     '''
     print get_fb_xnr_no()
+
 
 
