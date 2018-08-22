@@ -40,8 +40,11 @@ GROUP_ITER_COUNT = 100
 #读取虚拟人的社区
 def get_xnr_community(xnr_user_no,date_time):
     file_name = './weibo_data/' + xnr_user_no + '_' + ts2datetime(date_time) + '_' +'save_com.json'
-    file_community = open(file_name,'r')
-    community_list = file_community.readlines()
+    try:
+        file_community = open(file_name,'r')
+        community_list = file_community.readlines()
+    except:
+        community_list = []
     #print 'community:',type(community_list)
     return community_list
 
@@ -631,7 +634,10 @@ def get_community_keyword(uid_list,date_time):
 
     keyword_dict = sorted(word_dict_new.items(),key = lambda d:d[1],reverse = True)
     #print 'keyword_dict',keyword_dict,keyword_dict[0],type(keyword_dict[0])
-    keyword_name = keyword_dict[0][0] + '_' + keyword_dict[1][0]
+    try:
+        keyword_name = keyword_dict[0][0] + '_' + keyword_dict[1][0]
+    except:
+        keyword_name = 'X'
     return json.dumps(keyword_dict),keyword_name
 
 
@@ -734,11 +740,20 @@ def get_community_warning_traceresult(community,date_time):
     trace_result = es_xnr.search(index=weibo_trace_community_index_name,\
         doc_type=weibo_trace_community_index_type,body=query_body)['hits']['hits']
     warning_mark = 0
-    for item in trace_result:
-        if item['_source']['warning_rank'] > 0:
-            warning_mark = warning_mark + 1
-        else:
-            pass
+    if trace_result:
+        for item in trace_result:
+            #print 'item::',item['_source'].keys()
+            #if item['_source'].has_key("warning_rank")!=True:
+            #    print item['_source']['community_id']
+            if item['_source'].has_key("warning_rank")==True:
+                if item['_source']['warning_rank'] > 0:
+                    warning_mark = warning_mark + 1
+                else:
+                    pass
+            else:
+                warning_mark = 0
+    else:
+       pass
     return warning_mark
 
 
@@ -901,7 +916,9 @@ if __name__ == '__main__':
     	datetime = datetime2ts(WEIBO_COMMUNITY_DATE)
     	xnr_user_no_list = ['WXNR0004']
     else:
-    	datetime = int(time.time())-2*DAY
+    	#datetime = int(time.time())-2*DAY
+        date="2018-08-12"
+        datetime = datetime2ts(date)
     	xnr_user_no_list = get_compelete_wbxnr()
     start_time = int(time.time())
     for xnr_user_no in xnr_user_no_list:
