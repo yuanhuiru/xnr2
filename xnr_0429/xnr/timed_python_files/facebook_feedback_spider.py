@@ -410,11 +410,14 @@ def main():
             friends_exist(xnr_info, date)
         except Exception,e:
             pass
-        
+    
+    print 'EXCEPTION'
+    print EXCEPTION        
     if EXCEPTION:
         try:
             sendfile2mail(text=EXCEPTION)
-        except:
+        except Exception,e:
+            print e
             pass
         
 if __name__ == '__main__':

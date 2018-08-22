@@ -822,6 +822,7 @@ def get_influ_commented_num(xnr_user_no,current_time):
             return 'es_total_count_found_error'
     except:
         print 'es_total_count_found_error'
+        es_total_count = 0
 
     comment_dict['day_num'] = es_day_count
     comment_dict['total_num'] = es_total_count
@@ -890,6 +891,7 @@ def get_influ_like_num(xnr_user_no,current_time):
             return 'es_total_count_found_error'
     except:
         print 'es_total_count_found_error'
+        es_total_count = 0
 
     like_dict['day_num'] = es_day_count
     like_dict['total_num'] = es_total_count
@@ -942,21 +944,29 @@ def get_influ_at_num(xnr_user_no,current_time):
         }
     }
 
-    es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_at_index_type,\
+    try:
+        es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_at_index_type,\
                     body=query_body_day,request_timeout=999999)
 
-    if es_day_count_result['_shards']['successful'] != 0:
-        es_day_count = es_day_count_result['count']
-    else:
-        return 'es_day_count_found_error'
+        if es_day_count_result['_shards']['successful'] != 0:
+            es_day_count = es_day_count_result['count']
+        else:
+            return 'es_day_count_found_error'
+    except:
+        print 'es_day_count_found_error'
+        es_day_count = 0
 
-    es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_at_index_type,\
+    try:
+        es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_at_index_type,\
                     body=query_body_total,request_timeout=999999)
 
-    if es_total_count_result['_shards']['successful'] != 0:
-        es_total_count = es_total_count_result['count']
-    else:
-        return 'es_total_count_found_error'
+        if es_total_count_result['_shards']['successful'] != 0:
+            es_total_count = es_total_count_result['count']
+        else:
+            return 'es_total_count_found_error'
+    except:
+        print 'es_total_count_found_error'
+        es_total_count = 0
 
     at_dict['day_num'] = es_day_count
     at_dict['total_num'] = es_total_count
@@ -1016,22 +1026,29 @@ def get_influ_private_num(xnr_user_no,current_time):
         }
     }
 
-    es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_private_index_type,\
+    try: 
+        es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_private_index_type,\
                     body=query_body_day,request_timeout=999999)
 
-    if es_day_count_result['_shards']['successful'] != 0:
-        es_day_count = es_day_count_result['count']
-    else:
-        return 'es_day_count_found_error'
+        if es_day_count_result['_shards']['successful'] != 0:
+            es_day_count = es_day_count_result['count']
+        else:
+            return 'es_day_count_found_error'
+    except:
+        print 'es_day_count_found_error'
+        es_day_count = 0
 
-
-    es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_private_index_type,\
+    try:
+        es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_private_index_type,\
                     body=query_body_total,request_timeout=999999)
 
-    if es_total_count_result['_shards']['successful'] != 0:
-        es_total_count = es_total_count_result['count']
-    else:
-        return 'es_total_count_found_error'
+        if es_total_count_result['_shards']['successful'] != 0:
+            es_total_count = es_total_count_result['count']
+        else:
+            return 'es_total_count_found_error'
+    except:
+        print 'es_total_count_found_error'
+        es_total_count = 0
 
     private_dict['day_num'] = es_day_count
     private_dict['total_num'] = es_total_count
@@ -1134,10 +1151,12 @@ def get_pene_follow_group_sensitive(xnr_user_no,current_time_old):
     return follow_group_sensitive
 
 def get_pene_fans_group_sensitive(xnr_user_no,current_time_old):
-    es_results = es.get(index=facebook_xnr_fans_followers_index_name,doc_type=facebook_xnr_fans_followers_index_type,\
+    try:
+        es_results = es.get(index=facebook_xnr_fans_followers_index_name,doc_type=facebook_xnr_fans_followers_index_type,\
                             id=xnr_user_no)["_source"]
-    fans_list = es_results['fans_list']
-
+        fans_list = es_results['fans_list']
+    except:
+        fans_list = []
     # if S_TYPE == 'test':
     #     current_time = datetime2ts(S_DATE_BCI)
     # else:
@@ -1520,7 +1539,7 @@ if __name__ == '__main__':
     if S_TYPE == 'test':
         current_time = datetime2ts(S_DATE)
     else:
-        current_time = int(time.time()-DAY)
+        current_time = int(time.time()-0*DAY)
     cron_compute_mark(current_time)
 
 #     #2017-10-15  2017-10-30

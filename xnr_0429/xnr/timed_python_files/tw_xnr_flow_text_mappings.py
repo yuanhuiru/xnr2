@@ -3,7 +3,7 @@ import sys
 import json
 import time
 sys.path.append('../')
-from global_utils import es_xnr as es, tw_xnr_flow_text_index_name_pre, \
+from global_utils import es_xnr_2 as es, tw_xnr_flow_text_index_name_pre, \
                 tw_xnr_flow_text_index_type
 from time_utils import ts2datetime
 
