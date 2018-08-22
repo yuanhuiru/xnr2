@@ -821,7 +821,7 @@ def get_influ_commented_num(xnr_user_no,current_time):
         else:
             return 'es_total_count_found_error'
     except:
-        return 'es_total_count_found_error'
+        print 'es_total_count_found_error'
 
     comment_dict['day_num'] = es_day_count
     comment_dict['total_num'] = es_total_count
@@ -889,7 +889,7 @@ def get_influ_like_num(xnr_user_no,current_time):
         else:
             return 'es_total_count_found_error'
     except:
-        return 'es_total_count_found_error'
+        print 'es_total_count_found_error'
 
     like_dict['day_num'] = es_day_count
     like_dict['total_num'] = es_total_count
