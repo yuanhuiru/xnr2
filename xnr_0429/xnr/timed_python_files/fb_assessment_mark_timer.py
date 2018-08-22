@@ -247,11 +247,14 @@ def get_tweets_distribute(xnr_user_no, current_time):
     topic_distribute_dict['radar'] = {}
     uid = xnr_user_no2uid(xnr_user_no)
     if xnr_user_no:
-        es_results = es.get(index=facebook_xnr_fans_followers_index_name,doc_type=facebook_xnr_fans_followers_index_type,\
+        try:
+            es_results = es.get(index=facebook_xnr_fans_followers_index_name,doc_type=facebook_xnr_fans_followers_index_type,\
                                 id=xnr_user_no)["_source"]
-        fans_list = []
-        if es_results.has_key('fans_list'):
-            fans_list = es_results['fans_list']
+            fans_list = []
+            if es_results.has_key('fans_list'):
+                fans_list = es_results['fans_list']
+        except:
+            fans_list = []
 
     # friends topic分布 虽然用的名称是fans，但实际上是friends
     try:
@@ -423,10 +426,11 @@ def get_fans_group_distribute(xnr_user_no):
     domain_distribute_dict['radar'] = {}
 
     # 获取所有关注者
-    es_results = es.get(index=facebook_xnr_fans_followers_index_name,doc_type=facebook_xnr_fans_followers_index_type,\
-                            id=xnr_user_no)["_source"]
-    fans_list = es_results['fans_list']
-
+    try:
+        es_results = es.get(index=facebook_xnr_fans_followers_index_name,doc_type=facebook_xnr_fans_followers_index_type,id=xnr_user_no)["_source"]
+        fans_list = es_results['fans_list']
+    except:
+        fans_list = []
     # 获取今日关注者
     fans_list_today = []
     current_time = int(time.time()-DAY)
@@ -808,13 +812,15 @@ def get_influ_commented_num(xnr_user_no,current_time):
         es_day_count = es_day_count_result['count']
     else:
         return 'es_day_count_found_error'
-
-    es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_comment_index_type,\
+    try:
+        es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_comment_index_type,\
                     body=query_body_total,request_timeout=999999)
 
-    if es_total_count_result['_shards']['successful'] != 0:
-        es_total_count = es_total_count_result['count']
-    else:
+        if es_total_count_result['_shards']['successful'] != 0:
+            es_total_count = es_total_count_result['count']
+        else:
+            return 'es_total_count_found_error'
+    except:
         return 'es_total_count_found_error'
 
     comment_dict['day_num'] = es_day_count
@@ -874,12 +880,15 @@ def get_influ_like_num(xnr_user_no,current_time):
     else:
         return 'es_day_count_found_error'
 
-    es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_like_index_type,\
+    try:
+        es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_like_index_type,\
                     body=query_body_total,request_timeout=999999)
 
-    if es_total_count_result['_shards']['successful'] != 0:
-        es_total_count = es_total_count_result['count']
-    else:
+        if es_total_count_result['_shards']['successful'] != 0:
+            es_total_count = es_total_count_result['count']
+        else:
+            return 'es_total_count_found_error'
+    except:
         return 'es_total_count_found_error'
 
     like_dict['day_num'] = es_day_count
@@ -1425,6 +1434,7 @@ def cron_compute_mark(current_time):
     start_time = int(time.time())
     for result in xnr_results:
         xnr_user_no = result['_source']['xnr_user_no']
+        print 'xnr_user_no', xnr_user_no
         #xnr_user_no = 'FXNR0005'
         current_date = ts2datetime(current_time)
         current_time_new = datetime2ts(current_date)
@@ -1519,5 +1529,6 @@ if __name__ == '__main__':
 #         print 'date', date
 #         current_time = datetime2ts(date)
 #         cron_compute_mark(current_time) 
+
 
 

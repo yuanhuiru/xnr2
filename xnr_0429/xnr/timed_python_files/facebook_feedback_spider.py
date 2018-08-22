@@ -368,8 +368,12 @@ def friends_exist(xnr_info, date):
         new_friends_list = [item['uid'] for item in lis]
     except Exception,e:
         EXCEPTION += '\n friends_exist Exception: ' + str(e)
+    try:  
+        friends_list = es.get(index=fb_xnr_fans_followers_index_name, doc_type=fb_xnr_fans_followers_index_type, id=xnr_user_no)['_source']['fans_list']
+    except:
+        print es.index(fb_xnr_fans_followers_index_name, fb_xnr_fans_followers_index_type, body={'fans_list': []}, id=xnr_user_no)
+        friends_list = []
         
-    friends_list = es.get(index=fb_xnr_fans_followers_index_name, doc_type=fb_xnr_fans_followers_index_type, id=xnr_user_no)['_source']['fans_list']
     if not new_friends_list == friends_list:
         print es.update(index=fb_xnr_fans_followers_index_name, doc_type=fb_xnr_fans_followers_index_type, body={'doc': {'fans_list': new_friends_list}}, id=xnr_user_no)
        
@@ -417,6 +421,7 @@ if __name__ == '__main__':
     main()
 
     
+
 
 
 

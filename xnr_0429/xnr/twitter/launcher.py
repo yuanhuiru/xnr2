@@ -42,7 +42,7 @@ class Launcher():
 	def api(self):
 		auth = OAuthHandler(self.consumer_key,self.consumer_secret)
 		auth.set_access_token(self.access_token,self.access_secret)
-		api = tweepy.API(auth)
+		api = tweepy.API(auth, proxy='127.0.0.1:1080')
 		return api
 
 	def get_user(self, uid):
