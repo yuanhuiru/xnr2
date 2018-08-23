@@ -6,7 +6,7 @@ import sys
 
 from facebook.fb_operate import Operation
 from timed_python_files.fb_xnr_flow_text_mappings import fb_xnr_flow_text_mappings
-from global_utils import es_xnr as es, fb_xnr_index_name, fb_xnr_index_type,\
+from global_utils import es_xnr as es,es_xnr_2, fb_xnr_index_name, fb_xnr_index_type,\
                         fb_xnr_flow_text_index_name_pre,fb_xnr_flow_text_index_type
 from utils import fb_save_to_fans_follow_ES, fb_xnr_user_no2uid
 from time_utils import ts2datetime
@@ -33,7 +33,7 @@ def fb_save_to_xnr_flow_text(tweet_type,xnr_user_no,text, message_type):
         
     #result = fb_xnr_flow_text_mappings(xnr_flow_text_index_name)
         
-    index_result = es.index(index=xnr_flow_text_index_name, doc_type=fb_xnr_flow_text_index_type,\
+    index_result = es_xnr_2.index(index=xnr_flow_text_index_name, doc_type=fb_xnr_flow_text_index_type,\
                 id=task_id,body=item_detail)
         
     mark = True

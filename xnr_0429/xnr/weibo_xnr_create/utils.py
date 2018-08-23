@@ -177,19 +177,25 @@ def get_add_other_info(task_detail):
     
     #user = get_userinfo(account_name, password)
     # print 'user:::',user
-    item_dict = {}
+    item_dict = {} 
+    #item_dict['nick_name'] = task_detail['nick_name']
+    #item_dict['location'] = 'zh_CN'
+    #item_dict['gender'] = u'女'
+    #item_dict['description'] = ''
+    #item_dict['career'] = ''
+    #item_dict['age'] = '0'
 #     print 'user'
 #     print user
     if user:
-        item_dict['nick_name'] = user['screen_name']
-        item_dict['location'] = user['location']
-        if user['gender']=='m':
-            item_dict['gender'] = u'男'
-        elif user['gender']=='f':
-            item_dict['gender'] = u'女'
-        item_dict['age'] = '0'
-        item_dict['description'] = user['description']
-        item_dict['career'] = ''
+	    item_dict['nick_name'] = user['screen_name']
+	    item_dict['location'] = user['location']
+	    if user['gender']=='m':
+		    item_dict['gender'] = u'男'
+	    elif user['gender']=='f':
+		    item_dict['gender'] = u'女'
+	    item_dict['description'] = user['description']
+	    item_dict['age'] = '0'
+	    item_dict['career'] = ''
 
     new_task_detail = dict(task_detail,**item_dict)
     
@@ -602,23 +608,25 @@ def get_save_step_three_1(task_detail):
     print 'hhhhhh'
     print 'task_detail...',task_detail
     task_id = task_detail['task_id']
+    uid = task_detail['user_id']
+    print uid
     print 'task_id...',task_id
-    nick_name = task_detail['nick_name'].encode('utf-8')
-    operate = SinaOperateAPI()
-    user_info = operate.getUserShow(screen_name=nick_name)
-    uid = user_info['id']
-    try:
-        if task_detail['weibo_mail_account']:
-            uname = task_detail['weibo_mail_account']
-        else:
-            uname = task_detail['weibo_phone_account']
-        xnr = SinaLauncher(uname, task_detail['password'])
-        status = xnr.login()
-        if not status:
-            return 'account_pwd error'
-        uid = xnr.uid
-    except:
-        return 'account_pwd error'
+    #nick_name = task_detail['nick_name'].encode('utf-8')
+    #operate = SinaOperateAPI()
+    #user_info = operate.getUserShow(screen_name=nick_name)
+    #uid = user_info['id']
+    #try:
+        #if task_detail['weibo_mail_account']:
+            #uname = task_detail['weibo_mail_account']
+        #else:
+            #uname = task_detail['weibo_phone_account']
+        #xnr = SinaLauncher(uname, task_detail['password'])
+        #status = xnr.login()
+        #if not status:
+            #return 'account_pwd error'
+        #uid = xnr.uid
+    #except:
+        #return 'account_pwd error'
     #uid = getUserShow(screen_name=nick_name)['data']['uid']
     print 'task_id2...',task_id
     item_exist = es.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=task_id)['_source']

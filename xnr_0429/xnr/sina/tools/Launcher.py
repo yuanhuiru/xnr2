@@ -8,8 +8,11 @@ import sys
 import urllib
 import urllib2
 
-import rsa
+from QQ_mail import sendqqmail
+import traceback
 
+import rsa
+import traceback
 sys.path.append("..")
 
 
@@ -26,10 +29,13 @@ class SinaLauncher():
         该函数用于模拟预登录过程,并获取服务器返回的 nonce , servertime , pub_key 等信息
         """
         json_pattern = re.compile('\((.*)\)')
+        print self.get_encrypted_name()
         url = 'http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&su=&' \
               + self.get_encrypted_name() + '&rsakt=mod&checkpin=1&client=ssologin.js(v1.4.18)'
+        print url
         try:
             request = urllib2.Request(url)
+            print request
             response = urllib2.urlopen(request)
             # print 'response..',response
             raw_data = response.read().decode('utf-8')
@@ -41,7 +47,8 @@ class SinaLauncher():
             # print data
             return data
         except urllib2.URLError, e:
-            # print "%s" % e.reason
+            #print "%s" % e.reason
+            traceback.print_exc(e)
             return None
 
     def get_encrypted_pw(self, data):
@@ -106,21 +113,32 @@ class SinaLauncher():
         }
         try:
             request = urllib2.Request(url=url, data=post_data, headers=headers)
-            response = urllib2.urlopen(request)
+            while 1:
+                try:
+                    #time.sleep(3)
+                    response = urllib2.urlopen(request)
+                    break
+                except:
+                    continue
             html = response.read().decode('GBK')
             # print html
         except urllib2.URLError as e:
+            traceback.print_exc(e)
             print e.reason
-
         p = re.compile('location\.replace\(\'(.*?)\'\)')
         p2 = re.compile(r'"userdomain":"(.*?)"')
         print '11111111111111'
         try:
             login_url = p.search(html).group(1)
-            # print login_url
+            print 'login_url', login_url
             request = urllib2.Request(login_url)
             print request
+            #while 1:
+            #    try:
             response = urllib2.urlopen(request)
+            #        break
+            #    except:
+            #        continue
             page = response.read().decode('utf-8')
             print page
             self.uid = re.findall('uniqueid":"(\d+)"', page)[0]
@@ -135,13 +153,17 @@ class SinaLauncher():
             # print final
             print "Login success!"
             return True
-        except:
+        except Exception, e:
+            traceback.print_exc(e)
             print 'Login error!'
             return False
 
 
 if __name__ == '__main__':
-    #test = SinaLauncher('weiboxnr04@126.com','xnr1234567')
-    test = SinaLauncher('18737028295','xuanhui99999')
-    test.login()
-    print test.uid
+    try:
+        test = SinaLauncher('weiboxnr04@126.com','xnr1234567')
+        #test = SinaLauncher('18737028295','xuanhui99999')
+        test.login()
+        print test.uid
+    except Exception, e:
+        sendqqmail(traceback.format_exc(e), 'sina/tools/Launcher crashed!!!!')

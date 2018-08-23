@@ -26,6 +26,8 @@ from utils import push_keywords_task,get_submit_tweet,save_to_tweet_timing_list,
 from utils import save_oprate_like
 from xnr.utils import add_operate2redis
 
+import traceback
+
 mod = Blueprint('weibo_xnr_operate', __name__, url_prefix='/weibo_xnr_operate')
 #from xnr import create_app
 
@@ -92,7 +94,13 @@ def ajax_submit_daily_tweet():
     queue_dict['channel'] = 'weibo'
     queue_dict['operate_type'] = 'publish'
     queue_dict['content'] = task_detail
-    mark = add_operate2redis(queue_dict)
+    while 1:
+        try:
+            mark = add_operate2redis(queue_dict)
+            break
+        except Exception, e:
+            traceback.print_exc(e)
+            continue
 
     return json.dumps(mark)
 

@@ -132,7 +132,8 @@ def execute():
     输入发布内容（和rank）
     :return:
     """
-    xnr = SinaLauncher('weiboxnr05@126.com', 'Bh123456')
+    #xnr = SinaLauncher('weiboxnr05@126.com', 'Bh123456')
+    xnr = SinaLauncher('80617252@qq.com', 'xuanhui99999')
     xnr.login()
 
     #user = SinaOperateAPI()

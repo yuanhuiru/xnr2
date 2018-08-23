@@ -331,14 +331,14 @@ def execute():
     输入发布内容（和rank）
     :return:
     """
-    xnr = SinaLauncher('weiboxnr04@126.com', 'xnr1234567')
+    xnr = SinaLauncher('weiboxnr01@126.com', 'xnr123456')
     xnr.login()
 
     user = SinaOperateAPI(xnr.uid)
     # pics = user.request_image_url("['e:/tes33.gif', 'e:/ttest.jpg']")
     # user.pic_ids = ' '.join(pics).strip()
     # print user.pic_ids
-    user.text ='HHHHHHHHHHHH'
+    user.text ='哈哈哈哈哈哈'
     #user.r_mid = '4131527589733848'
     # user.rank = 0
     # if user.rank == 7:

@@ -19,20 +19,13 @@ import selenium.webdriver.support.ui as ui
 from selenium.webdriver.common.action_chains import ActionChains
 from BeautifulSoup import BeautifulSoup
 import random
-from pyvirtualdisplay import Display
+#from pyvirtualdisplay import Display
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-# display = Display(visible=0, size=(1024,768))
-# display.start()
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-# try:
-    # 安管中心环境使用####
-    # driver = webdriver.Firefox()
-# except:
-    # 213环境使用########
-    # cap = DesiredCapabilities().FIREFOX
-    # cap["marionette"] = False
-    # driver = webdriver.Firefox(capabilities=cap)
 
 source_list = [
 "http://widget.weibo.com/dialog/PublishWeb.php?refer=y&app_src=3o33sO&button=pubilish", # 发布窗
@@ -58,25 +51,37 @@ def login_m_weibo_cn(username, password):
     return driver
 
 def publish_by_source(text, driver):
+    wait = WebDriverWait(driver, 15)
     #url = random.choice(source_list)
     url = source_list[2]
-    driver.get(url)
-    try:
-        print 'texta1'
-        texta = driver.find_element_by_xpath("/html/body/div[1]/div/div[2]/div[1]/div/div[2]/textarea")
-        
-    except:
-        print 'texta2'
-        texta = driver.find_element_by_xpath("/html/body/section[1]/section/section[1]/div/div[2]/textarea")
-    texta.send_keys(text)
-    time.sleep(5)
-    try:
-        print 'driver1'
-        driver.find_element_by_xpath("/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[2]/a").click()
-        print '------'
-    except:
-	    #print 'driver2'
-        driver.find_element_by_xpath("//*[@id=\"pl_publish_publishMobile\"]/section/section[1]/div/div[3]/div/a[3]").click()
+    print url
+    while 1:
+        driver.get(url)
+        try:
+            print 'texta1'
+            texta = driver.find_element_by_xpath("/html/body/div[1]/div/div[2]/div[1]/div/div[2]/textarea")
+        except:
+            print 'texta2'
+            texta = driver.find_element_by_xpath("/html/body/section[1]/section/section[1]/div/div[2]/textarea")
+        texta.send_keys(text)
+        time.sleep(5)
+        try:
+            print 'driver1'
+            driver.find_element_by_xpath("/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[2]/a").click()
+            print '------'
+        except:
+            print 'driver2'
+            driver.find_element_by_xpath("//*[@id=\"pl_publish_publishMobile\"]/section/section[1]/div/div[3]/div/a[3]").click()
+        result_p = wait.until(
+            EC.presence_of_element_located((By.XPATH, '//p[@class="result_declare"]'))
+        )
+        if result_p.text == '发布失败':
+            continue
+        else:
+            break
+    
+    print driver.page_source
+    print "publish_by_source Success!!"
     driver.quit()
 
 def publish_by_source_with_picture(text, file, driver):
@@ -139,6 +144,8 @@ if __name__ == '__main__':
     #定义变量
     username = 'weiboxnr01@126.com' #输入你的用户名
     password = 'xnr123456' #输入你的密码
+    #username = '80617252@qq.com' #输入你的用户名
+    #password = 'xuanhui99999' #输入你的密码
     text = '测试oook'.decode('utf-8')
     file = '/home/xnr1/xnr_0429/xnr/static/images/icon.png'
     #weibo_publish_main(username,password,text)
