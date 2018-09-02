@@ -7,7 +7,7 @@ base_path = '/home/xnr1/xnr_0429/xnr/timed_python_files'
 
 def test(index_pre, user_index, redis_task):
     base_str = 'python /home/xnr1/xnr_0429/xnr/timed_python_files/fb_tw_trans_base.py -t ' + index_pre + ' -u ' + user_index + ' -r ' + redis_task
-
+    print base_str
     p_str1 = base_str
  
     command_str = base_str

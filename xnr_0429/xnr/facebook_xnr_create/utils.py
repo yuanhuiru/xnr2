@@ -387,7 +387,11 @@ def get_fb_xnr_no():
     else:   #如果当前redis有记录，则取用
         user_no_max = int(r.get(fb_xnr_max_no))
     return user_no_max
-    
+
+# 初始化
+def create_fans_info(xnr_user_no):
+    print es.index(fb_xnr_fans_followers_index_name, fb_xnr_fans_followers_index_type, body={'fans_list': []}, id=xnr_user_no)
+
 def get_save_step_two(task_detail):
     #update
     user_no_max = get_fb_xnr_no()
@@ -414,6 +418,9 @@ def get_save_step_two(task_detail):
     item_exist['xnr_user_no'] = task_id # 虚拟人编号
     item_exist['create_time'] = int(time.time())
     print es.index(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=task_id,body=item_exist)
+    
+    create_fans_info(item_exist['xnr_user_no'])
+    
     mark = True
     return mark,task_id
 
@@ -560,6 +567,7 @@ if __name__ == '__main__':
     domain_create_task(domain_name,create_type,create_time,submitter,remark,compute_status=0)
     '''
     print get_fb_xnr_no()
+
 
 
 

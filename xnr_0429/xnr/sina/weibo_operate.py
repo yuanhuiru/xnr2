@@ -325,13 +325,26 @@ class SinaOperateAPI:
         return self.__getPostURL(w_url, post_data)
 
 
+def weibo_publish_main(username,password,text,file=''):
+    try:
+        xnr = SinaLauncher(username, password)
+        xnr.login()
+        user = SinaOperateAPI(xnr.uid)
+        user.pic_ids = file
+        user.text = text
+        user.publish()
+        mark = True
+    except:
+        mark = False
+    return mark
+
 def execute():
     """
     输入用户名、密码登录
     输入发布内容（和rank）
     :return:
     """
-    xnr = SinaLauncher('weiboxnr01@126.com', 'xnr123456')
+    xnr = SinaLauncher('13269704912', 'murcielagolp640')
     xnr.login()
 
     user = SinaOperateAPI(xnr.uid)

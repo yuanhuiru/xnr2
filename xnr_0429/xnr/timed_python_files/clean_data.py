@@ -2,6 +2,8 @@
 import time
 import sys
 import os,datetime
+
+from datetime import datetime,date,timedelta
 from wx_regular_cleaning import clean_wx_group_media_files
 
 sys.path.append('../')
@@ -224,14 +226,14 @@ def delete_wbcommunity_temp_files(datetime):
     dirToBeEmptied = './timed_python_files/community/weibo_data' #需要清空的文件夹
 
     ds = list(os.walk(dirToBeEmptied)) #获得所有文件夹的信息列表
-    delta = datetime.timedelta(days=30) #设定30天前的文件为过期
+    delta = timedelta(days=30) #设定30天前的文件为过期
     now = datetime #获取当前时间
 
     for d in ds: #遍历该列表
         os.chdir(d[0]) #进入本级路径，防止找不到文件而报错
         if d[2] != []: #如果该路径下有文件
             for x in d[2]: #遍历这些文件
-            ctime = datetime.datetime.fromtimestamp(os.path.getctime(x)) #获取文件创建时间
+                ctime = datetime.datetime.fromtimestamp(os.path.getctime(x)) #获取文件创建时间
             if ctime < (now-delta): #若创建于delta天前
                 os.remove(x) #则删掉
 
@@ -281,6 +283,7 @@ def delete_writing_task():
         },
         'size':100
     }
+    result = False
     try:
         temp_result = es_xnr.search(index=writing_task_index_name,doc_type=writing_task_index_type,body=query_body)['hits']['hits']
         if temp_result:
@@ -299,50 +302,51 @@ def delete_writing_task():
 
 
 def delete_main_func(datetime):
-
-    delete_weibo_feedback(datetime,feedback_day_num=30)
-
-    delete_new_xnr_flow_text(datetime,new_xnr_flow_text_num=1000)
-
-    delete_group_message(datetime,group_message_num=30)
-
-    delete_twitter_flow_text(datetime,twitter_flow_text_num=8)
-
-    delete_facebook_flow_text(datetime,facebook_flow_text_num=8)
-
-    delete_twitter_count(datetime,twitter_count_num=2)
-
-    delete_facebook_count(datetime,facebook_count_num=2)
-
-    delete_tw_bci(datetime,tw_bci_num=8)
-
-    delete_fb_bci(datetime,fb_bci_num=8)
+    feedback_day_num=30
+    delete_weibo_feedback(datetime,feedback_day_num)
+    new_xnr_flow_text_num=1000
+    delete_new_xnr_flow_text(datetime,new_xnr_flow_text_num)
+    group_message_num=30
+    delete_group_message(datetime,group_message_num)
+    twitter_flow_text_num=8
+    delete_twitter_flow_text(datetime,twitter_flow_text_num)
+    facebook_flow_text_num=8
+    delete_facebook_flow_text(datetime,facebook_flow_text_num)
+    twitter_count_num=2
+    delete_twitter_count(datetime,twitter_count_num)
+    facebook_count_num=2
+    delete_facebook_count(datetime,facebook_count_num)
+    tw_bci_num=8
+    delete_tw_bci(datetime,tw_bci_num)
+    fb_bci_num=8
+    delete_fb_bci(datetime,fb_bci_num)
 
     delete_writing_task()
 
     #hmc
     clean_wx_group_media_files()
-
-    delete_wx_group_message(datetime,wx_group_message_num=30)
-
-    delete_facebook_feedback(datetime,day_num=30)
-
-    delete_fbnew_xnr_flow_text(datetime,day_num=1000)
-
-    delete_twitter_feedback(datetime,day_num=30)
-
-    delete_twnew_xnr_flow_text(datetime,day_num=1000)
+    wx_group_message_num=30
+    delete_wx_group_message(datetime,wx_group_message_num)
+    facebook_feedback_day_num=30
+    delete_facebook_feedback(datetime,facebook_feedback_day_num)
+    fbnew_xnr_flow_text_day_num=1000
+    delete_fbnew_xnr_flow_text(datetime,fbnew_xnr_flow_text_day_num)
+    twitter_feedback_day_num=30
+    delete_twitter_feedback(datetime,twitter_feedback_day_num)
+    twnew_xnr_flow_text_day_num=1000
+    delete_twnew_xnr_flow_text(datetime,twnew_xnr_flow_text_day_num)
 
     #qxk
-    delete_community(datetime,day_num=180)
-
-    delete_user_warning(datetime,day_num=1000)
-
-    delete_event_warning(datetime,day_num=1000)
-
-    delete_speech_warning(datetime,day_num=365)
-
-    delete_timing_warning(datetime,day_num=2000)
+    community_day_num=180
+    delete_community(datetime,community_day_num)
+    user_warning_day_num=1000
+    delete_user_warning(datetime,user_warning_day_num)
+    event_warning_day_num=1000
+    delete_event_warning(datetime,event_warning_day_num)
+    speech_warning_day_num=365
+    delete_speech_warning(datetime,speech_warning_day_num)
+    timing_warning_day_num=2000
+    delete_timing_warning(datetime,timing_warning_day_num)
     
 
 if __name__ == '__main__':

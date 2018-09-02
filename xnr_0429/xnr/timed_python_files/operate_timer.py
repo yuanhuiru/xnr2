@@ -209,8 +209,9 @@ def operate_out_of_redis():
 					print 'operate_timer.py'
 					print e
 					traceback.print_exc()
-					add_operate2redis(queue_dict)
-				#		continue
+					#add_operate2redis(queue_dict)
+					#continue
+					pass
 						
 
 			elif operate_type == 'retweet':
@@ -258,7 +259,7 @@ def operate_out_of_redis():
 				try:
 					mark = get_reply_unfollow(task_detail)
 				except:
-					#add_operate2redis(queue_dict)
+					add_operate2redis(queue_dict)
 					pass
 
 			elif operate_type == 'receive':

@@ -9,6 +9,7 @@ import sys
 import re
 from langconv import *
 from googletrans import Translator
+#from baidu_trans import Translator
 sys.path.append('../cron/trans')
 sys.path.append('../')
 sys.path.append('/home/xnr1/xnr_0429/xnr')
@@ -119,6 +120,7 @@ def trans_with_detail(q, target_language='zh-cn'):
     try:
         translator = Translator()
         results = translator.translate(q, target_language)
+        
         for result in results:
             res.append((result.text, result.src))
     except Exception,e:

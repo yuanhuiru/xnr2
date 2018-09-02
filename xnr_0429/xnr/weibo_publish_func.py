@@ -6,8 +6,8 @@ import sys
 import urllib
 import urllib2
 
-from sina.weibo_publish import weibo_publish_main
-from sina.weibo_operate import SinaOperateAPI
+#from sina.weibo_publish import weibo_publish_main
+from sina.weibo_operate import SinaOperateAPI, weibo_publish_main
 from sina.tools.Launcher import SinaLauncher
 from global_utils import es_xnr as es
 from global_utils import weibo_feedback_comment_index_name_pre,weibo_feedback_comment_index_type,\

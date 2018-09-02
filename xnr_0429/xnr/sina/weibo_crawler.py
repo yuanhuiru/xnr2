@@ -121,4 +121,5 @@ if __name__ == '__main__':
             end_ts = int(time.time())
             print 'cost..',end_ts-start_ts
     except Exception, e:
+        print e
         sendqqmail(traceback.format_exc(e), 'sina/weibo_crawler crashed!!!!')

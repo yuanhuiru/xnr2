@@ -3,10 +3,10 @@ import os
 import time
 import json
 import sys
-from xnr.global_utils import es_xnr as es
-from xnr.global_utils import xnr_flow_text_index_name_pre,xnr_flow_text_index_type
-from xnr.weibo_xnr_flow_text_mappings import weibo_xnr_flow_text_mappings
-from xnr.time_utils import ts2datetime
+from global_utils import es_xnr as es
+from global_utils import xnr_flow_text_index_name_pre,xnr_flow_text_index_type
+from weibo_xnr_flow_text_mappings import weibo_xnr_flow_text_mappings
+from time_utils import ts2datetime
 
 def save_to_xnr_flow_text(tweet_type,xnr_user_no,text):
 	current_time = int(time.time())

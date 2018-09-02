@@ -9,9 +9,9 @@ import re
 
 #reload(sys)
 #sys.path.append('../../')
-from xnr.global_config import S_DATE,S_TYPE,S_DATE_BCI,SYSTEM_START_DATE
-from xnr.global_utils import es_xnr as es
-from xnr.global_utils import weibo_hot_keyword_task_index_name,weibo_hot_keyword_task_index_type,\
+from global_config import S_DATE,S_TYPE,S_DATE_BCI,SYSTEM_START_DATE
+from global_utils import es_xnr as es
+from global_utils import weibo_hot_keyword_task_index_name,weibo_hot_keyword_task_index_type,\
                             weibo_xnr_timing_list_index_name,weibo_xnr_timing_list_index_type,\
                             weibo_xnr_index_name,weibo_xnr_index_type,es_flow_text,flow_text_index_name_pre,\
                             flow_text_index_type,es_user_profile,profile_index_name,profile_index_type,\
@@ -21,7 +21,7 @@ from xnr.global_utils import weibo_hot_keyword_task_index_name,weibo_hot_keyword
                             weibo_hot_subopinion_results_index_name,weibo_hot_subopinion_results_index_type,\
                             weibo_bci_index_name_pre,weibo_bci_index_type,portrait_index_name,portrait_index_type,\
                             es_user_portrait,es_user_profile
-from xnr.global_utils import weibo_feedback_comment_index_name,weibo_feedback_comment_index_type,\
+from global_utils import weibo_feedback_comment_index_name,weibo_feedback_comment_index_type,\
                             weibo_feedback_retweet_index_name,weibo_feedback_retweet_index_type,\
                             weibo_feedback_private_index_name,weibo_feedback_private_index_type,\
                             weibo_feedback_at_index_name,weibo_feedback_at_index_type,\
@@ -36,18 +36,18 @@ from xnr.global_utils import weibo_feedback_comment_index_name,weibo_feedback_co
                             daily_interest_index_type
 
 
-from xnr.time_utils import ts2datetime,datetime2ts,get_flow_text_index_list,\
+from time_utils import ts2datetime,datetime2ts,get_flow_text_index_list,\
                             get_timeset_indexset_list
-from xnr.weibo_publish_func import publish_tweet_func,retweet_tweet_func,comment_tweet_func,private_tweet_func,\
+from weibo_publish_func import publish_tweet_func,retweet_tweet_func,comment_tweet_func,private_tweet_func,\
                                 like_tweet_func,follow_tweet_func,unfollow_tweet_func,create_group_func,\
                                 reply_tweet_func #,at_tweet_func
-from xnr.parameter import DAILY_INTEREST_TOP_USER,DAILY_AT_RECOMMEND_USER_TOP,TOP_WEIBOS_LIMIT,\
+from parameter import DAILY_INTEREST_TOP_USER,DAILY_AT_RECOMMEND_USER_TOP,TOP_WEIBOS_LIMIT,\
                         HOT_AT_RECOMMEND_USER_TOP,HOT_EVENT_TOP_USER,BCI_USER_NUMBER,USER_POETRAIT_NUMBER,\
                         MAX_SEARCH_SIZE,domain_ch2en_dict,topic_en2ch_dict,topic_ch2en_dict,FRIEND_LIST,\
                         FOLLOWERS_LIST,IMAGE_PATH,WHITE_UID_PATH,WHITE_UID_FILE_NAME,TOP_WEIBOS_LIMIT_DAILY,\
                         daily_ch2en,TOP_ACTIVE_SOCIAL,task_source_ch2en
 from save_to_weibo_xnr_flow_text import save_to_xnr_flow_text
-from xnr.utils import uid2nick_name_photo,xnr_user_no2uid,judge_follow_type,judge_sensing_sensor,\
+from utils import uid2nick_name_photo,xnr_user_no2uid,judge_follow_type,judge_sensing_sensor,\
                         get_influence_relative
 
 def get_show_domain():

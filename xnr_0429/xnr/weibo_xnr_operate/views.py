@@ -97,8 +97,11 @@ def ajax_submit_daily_tweet():
     while 1:
         try:
             mark = add_operate2redis(queue_dict)
+            print mark
             break
         except Exception, e:
+            print 'weibo_xnr_operate/views.py!!!!'
+            print e
             traceback.print_exc(e)
             continue
 

@@ -66,7 +66,7 @@ def get_xnr_detail(xnr_user_no):
 		xnr_info=[]
 	return xnr_info
 
-#step 2.1: show completed weibo_xnr information 
+# step 2.1: show completed weibo_xnr information 
 def show_completed_weiboxnr(account_no,now_time):
     query_body={
 		'query':{
@@ -75,7 +75,7 @@ def show_completed_weiboxnr(account_no,now_time):
 					'bool':{
 						'must':[
 							{'term':{'submitter':account_no}},
-							{'term':{'create_status':2}}
+                            {'term':{'create_status':2}}
 						]
 					}					
 				}
@@ -245,6 +245,7 @@ def show_uncompleted_weiboxnr(account_no):
 				'filter':{
 					'bool':{
 						'must':[
+
 							{'term':{'submitter':account_no}},
 							{'range':{
 								'create_status':{
@@ -253,6 +254,7 @@ def show_uncompleted_weiboxnr(account_no):
 								}
 							}
 							}
+
 						]
 					}					
 				}
