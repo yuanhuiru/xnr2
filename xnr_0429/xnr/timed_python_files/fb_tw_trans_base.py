@@ -8,8 +8,8 @@ import getopt
 import sys
 import re
 from langconv import *
-from googletrans import Translator
-#from baidu_trans import Translator
+#from googletrans import Translator
+from youdao_trans import Translator
 sys.path.append('../cron/trans')
 sys.path.append('../')
 sys.path.append('/home/xnr1/xnr_0429/xnr')
