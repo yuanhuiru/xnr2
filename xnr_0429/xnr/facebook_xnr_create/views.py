@@ -123,6 +123,8 @@ def ajax_save_step_three_1():
     task_detail['fb_phone_account'] = request.args.get('fb_phone_account','') # 手机号
     task_detail['password'] = request.args.get('password','') # 密码
     task_detail['nick_name'] = request.args.get('nick_name','') # 用户昵称
+    task_detail['id'] = request.args.get('user_id','') 
+    
     #step2 info
     new_task_detail = get_add_other_info(task_detail)  #nick_name, location, age--0, descripriton, career, uid
     if new_task_detail == 'account error':
@@ -163,5 +165,6 @@ def ajax_modify_base_info():
         task_detail['monitor_keywords'] = monitor_keywords
     mark = get_modify_base_info(task_detail)    
     return json.dumps(mark)
+
 
 

@@ -28,7 +28,7 @@ from global_utils import twitter_flow_text_index_name_pre,twitter_flow_text_inde
 
 
 gap = 10 #指定一个翻译批次的数目
-batch = 3000  #指定一个temp处理的批次
+batch = 300  #指定一个temp处理的批次
 
 #繁体转简体
 def traditional2simplified(sentence):
@@ -86,6 +86,8 @@ def asdjalkfs_trans(qi, target_language='zh-cn'):
     return res
 
 # from trans_v2 import trans
+# version 1
+'''
 def trans(q, target_language='zh-cn'):
     res = []
     try:
@@ -98,6 +100,17 @@ def trans(q, target_language='zh-cn'):
             res = asdjalkfs_trans(q)
         else:
             print 'trans Exception: ', str(e)
+    return res
+'''
+
+# version 2
+def trans(q, target_language='zh-cn'):
+    res = []
+    for q in qi:
+        translator = Translator()
+        q = q.encode('utf8')
+        result = translator.translate(q)
+        res.append(result.text)
     return res
 
 # No JSON object could be decoded。表情真烦。。。翻译通不过，显示No JSON object could be decoded，直接返回原文得了。
@@ -115,6 +128,8 @@ def asdjalkfs_trans_with_detail(qi, target_language='zh-cn'):
 
 # 同时返回text,src字段,分别是翻译后的文本和原文本的语言类型
 # [(text, src), (text, src), ...]
+# version 1
+'''
 def trans_with_detail(q, target_language='zh-cn'):
     res = []
     try:
@@ -128,6 +143,17 @@ def trans_with_detail(q, target_language='zh-cn'):
             res = asdjalkfs_trans_with_detail(q)
         else:
             print 'trans_with_detail Exception: ', str(e)
+    return res
+'''
+
+# version 2
+def trans_with_detail(qi, target_language='zh-cn'):
+    res = []
+    for q in qi:
+        translator = Translator()
+        q = q.encode('utf8')
+        result = translator.translate(q)
+        res.append((result.text, result.src))
     return res
 
 def my_bulk_func(bulk_action, index_name, doc_type):
@@ -362,4 +388,5 @@ if __name__ == '__main__':
                 print 'Done.'
     except Exception,e:
         print 'Translate Task Exception:', str(e)
+
 

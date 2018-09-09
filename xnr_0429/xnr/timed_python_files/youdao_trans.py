@@ -4,6 +4,7 @@ import md5
 import urllib
 import random
 import langid
+import re
 
 appinfo = [
     ('3026da95302fe406', 'D6Sueb74kdW3nj6qjSaMTGGQTngoHMjW')]
@@ -17,7 +18,7 @@ class Translator():
     def load_appinfo(self):
         return random.choice(appinfo)
     
-    def trans(self):
+    def trans(self, q):
         appKey, secretKey = self.load_appinfo()
         salt = str(random.randint(1, 65536))
         s1 = md5.new()
@@ -45,21 +46,27 @@ class Translator():
             self.toLang = 'zh-CHS'
         elif target_language == 'en':
             self.toLang = 'EN'
-
-        while test_num:
-            text = self.trans()
-            if text:
-                break
-            test_num = test_num - 1
-        if not text:
-            text = q
+        
         src = self.langdetect(q)
+        if src == 'zh':
+            text = q
+        else:
+            while test_num:
+                text = self.trans(q)
+                if text:
+                    break
+                test_num = test_num - 1
+            if not text:
+                text = q
+        
         return TransRes(src, text)
         
 if __name__ == '__main__':
     q = "‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏طالبة جامعية ‏‏من مواليد [١٩٩١م] طموحي الحصول على الدكتوراه في تخصصي من هواياتي: كتابه الخط العربي وعشقي مايسمى [بالتصوير"
     q = '你好啊'
-    t = Translator()
-    r = t.translate(q)
+    q = u'\u30b9\u30de\u30dbRPG\u306f\u4eca\u3053\u308c\u3092\u3084\u3063\u3066\u308b\u3088\u3002\u4eca\u306f\u3053\u306e\u30a4\u30d9\u30f3\u30c8\u304c\u958b\u50ac\u4e2d\uff01\u3000\u2192\u3000https://t.co/Fhdz3QQ3OI https://t.co/Jo2iC4w5OB'
+    q = q.encode('utf8')
+    r = Translator().translate(q)
     print r.text, r.src
     
+

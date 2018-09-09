@@ -447,20 +447,24 @@ def get_add_other_info(task_detail):
         account_name = fb_phone_account
     password = task_detail['password']
     nick_name = str(task_detail['nick_name'])
+    id = str(task_detail['id'])
+    
+    '''
     try:
         user = Userinfo(account_name, password)
         info_dict = user.getUserinfo()
     except Exception,e:
         print e
         return 'account error'
+    '''
     item_dict = {}
-    if user:
-        item_dict['nick_name'] = nick_name
-        item_dict['id'] = info_dict['id']
-        item_dict['location'] = info_dict['location']
-        item_dict['age'] = info_dict['age']
-        item_dict['description'] = info_dict['description']
-        item_dict['career'] = info_dict['career']
+#     if user:
+    item_dict['nick_name'] = nick_name
+    item_dict['id'] = id
+    item_dict['location'] = ''
+    item_dict['age'] = ''
+    item_dict['description'] = ''
+    item_dict['career'] = ''
     new_task_detail = dict(task_detail,**item_dict)
     return new_task_detail
 
@@ -567,6 +571,7 @@ if __name__ == '__main__':
     domain_create_task(domain_name,create_type,create_time,submitter,remark,compute_status=0)
     '''
     print get_fb_xnr_no()
+
 
 
 
