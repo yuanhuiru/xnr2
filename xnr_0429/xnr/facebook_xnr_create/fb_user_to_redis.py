@@ -35,7 +35,7 @@ for doc_info in allDoc['hits']['hits']:
         print e
 
     #print json.dumps(doc_info,ensure_ascii=False)['nick_name']
-    print content, 'already push to aliyun redis----------------------------------------------------------------------'
+    print content, 'already push to aliyun redis !!!!!!----------------------------------------------------------------------'
 
 print cl.lrange('params', 0, 10)
 
