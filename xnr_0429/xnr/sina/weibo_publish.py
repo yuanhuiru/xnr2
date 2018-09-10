@@ -50,6 +50,7 @@ def login_m_weibo_cn(username, password):
         driver.find_element_by_id("loginAction").send_keys(Keys.RETURN)
         # sleep以应对验证码
         time.sleep(10)
+        driver.save_screenshot('11111.png')
         return driver
     except Exception, e:
         traceback.print_exc(e)
@@ -152,16 +153,19 @@ def weibo_publish_main(username,password,text,file=''):
 
 if __name__ == '__main__':
     #定义变量
-    username = 'weiboxnr01@126.com' #输入你的用户名
-    password = 'xnr123456' #输入你的密码
+    username = 'magnificenthill@sina.com' #输入你的用户名
+    password = 'yunzhonghaihai92' #输入你的密码
     #username = '80617252@qq.com' #输入你的用户名
     #password = 'xuanhui99999' #输入你的密码
+
     text = '测试oook'.decode('utf-8')
-    file = '/home/xnr1/xnr_0429/xnr/static/images/icon.png'
-    #weibo_publish_main(username,password,text)
+
+    #file = '/home/xnr1/xnr_0429/xnr/static/images/icon.png'
+    weibo_publish_main(username,password,text)
     
-    if file:
-        weibo_publish_with_picture(username,password,text,file)
-    else:
-        weibo_publish(username,password,text)
+    #if file:
+    #    weibo_publish_with_picture(username,password,text,file)
+    #else:
+    #    weibo_publish(username,password,text)
+    #login_m_weibo_cn(username, password)
     
