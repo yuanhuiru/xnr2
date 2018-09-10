@@ -917,7 +917,7 @@ if __name__ == '__main__':
     	xnr_user_no_list = ['WXNR0004']
     else:
     	#datetime = int(time.time())-2*DAY
-        date="2018-08-12"
+        date="2018-08-19"
         datetime = datetime2ts(date)
     	xnr_user_no_list = get_compelete_wbxnr()
     start_time = int(time.time())
