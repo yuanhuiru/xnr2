@@ -121,6 +121,7 @@ class SinaLauncher():
                 except:
                     continue
             html = response.read().decode('GBK')
+            print html
             # print html
         except urllib2.URLError as e:
             traceback.print_exc(e)
@@ -161,9 +162,10 @@ class SinaLauncher():
 
 if __name__ == '__main__':
     try:
-        test = SinaLauncher('weiboxnr04@126.com','xnr1234567')
-        #test = SinaLauncher('18737028295','xuanhui99999')
+        test = SinaLauncher('18513720522','yunzhonghaihai92')
+        #test = SinaLauncher('13269704912','murcielagolp640')
         test.login()
         print test.uid
     except Exception, e:
-        sendqqmail(traceback.format_exc(e), 'sina/tools/Launcher crashed!!!!')
+        traceback.print_exc(e)
+        #sendqqmail(traceback.format_exc(e), 'sina/tools/Launcher crashed!!!!')
