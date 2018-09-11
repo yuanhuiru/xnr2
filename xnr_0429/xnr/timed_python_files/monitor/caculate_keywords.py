@@ -128,8 +128,11 @@ def compute_keywords_mark():
 
     mark_list=[]
     for xnr_user_no in xnr_user_list:
+        print xnr_user_no
+        start_time = int(time.time())
         keywords_task_detail=dict()
-        keyword_value_string=json.dumps(xnr_keywords_compute(xnr_user_no))
+        temp_string = xnr_keywords_compute(xnr_user_no)
+        keyword_value_string=json.dumps(temp_string)
         keywords_task_detail['keyword_value_string']=keyword_value_string
         keywords_task_detail['xnr_user_no']=xnr_user_no
         #keywords_task_detail['date_time']=date_time
@@ -149,6 +152,8 @@ def compute_keywords_mark():
             mark=True
         except:
             mark=False
+        end_time = int(time.time())
+        print 'cost_time',end_time - start_time
         mark_list.append(mark)
     print 'mark_list:', mark_list
     return mark_list

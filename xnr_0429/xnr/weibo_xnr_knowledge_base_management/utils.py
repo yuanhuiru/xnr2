@@ -353,7 +353,12 @@ def get_show_domain_group_summary(submitter):
             item = {}
             result = result['_source']
             # print 'result::',result
-            item['group_size'] = result['group_size']
+            # author xuan
+            if result['group_size'] == '' or result['group_size'] == 0:
+                item['group_size'] = 0
+            else:
+                item['group_size'] = result['group_size']
+            #item['group_size'] = result['group_size']
             item['domain_name'] = result['domain_name']
             item['create_time'] = result['create_time']
             item['compute_status'] = result['compute_status']

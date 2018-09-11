@@ -175,21 +175,26 @@ def ajax_save_step_three_1():
     task_detail['weibo_phone_account'] = request.args.get('weibo_phone_account','') # 手机号
     task_detail['password'] = request.args.get('password','') # 密码
     task_detail['nick_name'] = request.args.get('nick_name','') # 用户昵称
+    # get user uid xuan
+    task_detail['user_id'] = request.args.get('user_id','') # 用户uid
+    mark = get_save_step_three_1(task_detail)
+    if mark:
+        return json.dumps(mark)
     #print 'nick_name::',task_detail['nick_name']
     #print 'taskid!!',task_detail['task_id']
     #step2 info
-    new_task_detail = get_add_other_info(task_detail)  #nick_name, location, gender, age--0, descripriton
+    #new_task_detail = get_add_other_info(task_detail)  #nick_name, location, gender, age--0, descripriton
 
     #new_task_detail = dict(task_detail, **results)
-    if new_task_detail == 'nick_name error':
+    #if new_task_detail == 'nick_name error':
         #print 'name error!!'
-        return json.dumps(new_task_detail)
+        #return json.dumps(new_task_detail)
         
     #results = get_user_info(task_detail)
-    else:
-        mark = get_save_step_three_1(new_task_detail)
+    #else:
+        #mark = get_save_step_three_1(new_task_detail)
 
-        return json.dumps(mark)  #True：保存成功  False：保存失败
+        #return json.dumps(mark)  #True：保存成功  False：保存失败
 
 # 保存第三步信息2  关注成功
 @mod.route('/save_step_three_2/')

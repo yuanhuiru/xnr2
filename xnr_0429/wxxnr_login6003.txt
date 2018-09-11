@@ -2,3 +2,8 @@
 {u'acknowledged': True}
 wx_sent_group_message_2018-06-22
 {u'acknowledged': True}
+[H[Jwx_group_message_2018-07-06
+{u'acknowledged': True}
+wx_sent_group_message_2018-07-06
+{u'acknowledged': True}
+[3;J[H[2J
