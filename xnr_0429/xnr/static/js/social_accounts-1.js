@@ -1,11 +1,12 @@
-var name1,name2,name3,password;
+var name1,name2,name3,name4,password;
 $('#go_bind').on('click',function () {
     name1=$('#username1').val();
     name2=$('#username2').val();
     name3=$('#username3').val();
+    name4=$('#username4').val();
     password=$('#passwords').val();
-    if ((name1==''||name2=='')&&password==''&&name3==''){
-        $('#_bind_per #information').text('账号名密码不能为空。');
+    if ((name1==''||name2=='')||password==''||name3==''||name4==''){
+        $('#_bind_per #information').text('账号、密码、昵称、UID不能为空。');
     }else {
         $('#_bind_per #information').text('是否将该用户绑定为虚拟人？');
     }
@@ -52,7 +53,7 @@ function userLIST() {
         url1='tw_mail_account',url2='tw_phone_account';
     }
     var bind_url=WFT_url+'/save_step_three_1/?task_id='+taskID+'&'+url1+'='+name1 +
-        '&'+url2+'='+name2+'&nick_name='+name3+'&password='+password;
+        '&'+url2+'='+name2+'&nick_name='+name3+'&password='+password+'&user_id='+name4;
     public_ajax.call_request('get',bind_url,bindSF);
 }
 function list(person) {
