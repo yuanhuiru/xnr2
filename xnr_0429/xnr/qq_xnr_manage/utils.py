@@ -89,8 +89,9 @@ def get_qq_xnr_no():
 def get_login_name(xnr_user_no):
 
     try:
+        print 'execut get_login_name function--------------------------------------------------------------------------------'
         get_results = es_xnr.get(index=qq_xnr_index_name,doc_type=qq_xnr_index_type,id=xnr_user_no)['_source']
-
+        print get_results, 'es results-=-=-=-=-=-==-=-=-=========================-----------------------------------------------' 
         qq_number = get_results['qq_number']
         qqbot_port = get_results['qqbot_port']
         access_id = get_results['access_id']
@@ -102,10 +103,14 @@ def get_login_name(xnr_user_no):
         qqbot_port = str(qqbot_port)
         qqbot_mc = access_id #'sirtgdmgwiivbegf'
         #qqbot_mc = 'worunhzbzyipdagc'
-        p_str1 = 'python '+ ABS_LOGIN_PATH + ' -i '+qqbot_port + ' -o ' + qqbot_num + ' -m ' + qqbot_mc + ' >> login'+qqbot_port+'.txt'
+        # yuanlai >>>>>>>>>>>>8.20
+        #p_str1 = 'python '+ ABS_LOGIN_PATH + ' -i '+qqbot_port + ' -o ' + qqbot_num + ' -m ' + qqbot_mc + ' >> login'+qqbot_port+'.txt'
+        # xuanhui 8.20 把邮件发送到80217252
+        p_str1 = 'python '+ ABS_LOGIN_PATH + ' -i '+qqbot_port + ' -o ' + '80617252' + ' -m ' + qqbot_mc + ' >> login'+qqbot_port+'.txt'
         #p_str1 = 'python '+ ABS_LOGIN_PATH + ' -i '+qqbot_port + ' -o ' + qqbot_num + ' -m ' + qqbot_mc
         command_str = 'python '+ ABS_LOGIN_PATH + ' -i '+qqbot_port + ' -o ' + qqbot_num + ' -m ' + qqbot_mc
         print 'p_str1:', p_str1
+        print '========================================================================='
         p_str2 = 'pgrep -f ' + '"' + command_str + '"'
         print 'p_str2::',p_str2
         process_ids = subprocess.Popen(p_str2, \

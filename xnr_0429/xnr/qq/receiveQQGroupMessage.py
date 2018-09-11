@@ -37,7 +37,11 @@ def onQQMessage(bot, contact, member, content):
     # content : str 对象，消息内容
     INFO('test groups %s', bot.List('group'))
     INFO('bot.conf %s', bot.conf)
+    print '========================================================================recive qq message start'
     print 'contact.============.',contact
+    print contact.qq, contact.nick
+    print '-----------------------------------------------------------------------------'
+
     if contact.ctype == 'group':
         INFO('群的 QQ.. %s', contact.qq)  # #NULL
         INFO('群的昵称.. %s', contact.nick) # 嘿哼哈
@@ -146,5 +150,6 @@ if __name__ == '__main__':
     #print 'qqbot_port, qqbot_num. qqbot_mailauth:', qqbot_port
     #print 'qqbot_mailauth:', qqbot_mailauth
    # print 'qqbot_num:', qqbot_num
+    # 2018.8.20 yuanlai
     execute_v2(qqbot_port, qqbot_num, qqbot_mailauth)
     #mailauthcode:sirtgdmgwiivbegf
