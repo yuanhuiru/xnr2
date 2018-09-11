@@ -13,3 +13,11 @@ save qrcode picture
 trying to save qrcode picture
 save qrcode picture
 global name 'FileNotFoundError' is not defined
+[H[J[H[J[H[Jwx_group_message_2018-07-10
+{u'acknowledged': True}
+wx_sent_group_message_2018-07-10
+{u'acknowledged': True}
+[H[Jwx_sent_group_message_2018-08-02
+{u'acknowledged': True}
+wx_group_message_2018-08-02
+{u'acknowledged': True}
