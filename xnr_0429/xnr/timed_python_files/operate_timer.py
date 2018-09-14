@@ -69,10 +69,12 @@ def operate_out_of_redis():
 					if operate_type == 'publish':
 						try:
 							print 'task_detail..',task_detail
+							print '==========================================22222222222222222222222222222222222222222222222222facebookredis',task_detail
 							mark = get_submit_tweet_fb(task_detail)
 						except Exception, e:
 							#add_operate2redis(queue_dict)
 							print 111111111111111, e
+							print '111111111111111get submit_baocuo', e
 							pass
 
 					elif operate_type == 'retweet':
