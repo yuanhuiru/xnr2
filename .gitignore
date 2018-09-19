@@ -102,10 +102,11 @@ ENV/
 
 #
 *.csv
-#*.json
+*.json
 *.png
 *.gif
 *.mp3
 *.wav
 *.zip
+*.log.*
 
