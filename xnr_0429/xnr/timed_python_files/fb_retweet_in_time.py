@@ -2,13 +2,14 @@
 import random
 import time
 import sys
+import json
 sys.path.append('../')
 from global_config import S_TYPE,S_DATE_FB
 from global_utils import es_xnr_2 as es_xnr,fb_xnr_fans_followers_index_name,fb_xnr_fans_followers_index_type,\
                     es_flow_text,facebook_flow_text_index_name_pre,flow_text_index_type,\
                     fb_xnr_retweet_timing_list_index_name,fb_xnr_retweet_timing_list_index_type,\
                     fb_xnr_index_name,fb_xnr_index_type,fb_xnr_timing_list_index_name,\
-                    fb_xnr_timing_list_index_type
+                    fb_xnr_timing_list_index_type,RE_QUEUE as ali_re, FB_TWEET_PARAMS
 from parameter import MAX_SEARCH_SIZE,RETWEET_START_TS,RETWEET_END_TS,TRACE_FOLLOW_LIST,task_source_ch2en
 from utils import fb_uid2nick_name_photo
 from facebook_publish_func import fb_retweet,fb_publish
@@ -36,8 +37,10 @@ def read_tracing_followers_tweet():
 
     results = es_xnr.search(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,\
                 body=query_body)['hits']['hits']
+    print results
     if results:
         for result in results:
+            print result
             result = result['_source']
             
             xnr_user_no = result['xnr_user_no']
@@ -183,18 +186,29 @@ def publish_operate_timing():
     results = es_xnr.search(index=fb_xnr_timing_list_index_name,doc_type=\
                     fb_xnr_timing_list_index_type,body=query_body)['hits']['hits']
     #print 'results::',results
+    print 'results::',results
     if results:
         for result in results:
             print 'fb_retweet_in_time.publish_operate_timing'
+            print result
             _id = result['_id']
             result = result['_source']
+            xnr_user_no = result['xnr_user_no']
+            if xnr_user_no == 'null':
+                print xnr_user_no
+                continue
             timestamp_set = result['post_time']
             print timestamp_set
             if timestamp_set <= int(time.time()):
+				
+                print 'timestamp, time.time()====================================================================='
+                print timestamp_set, time.time()
                 print '!!'
                 text = result['text'].encode('utf-8')
-                tweet_type = task_source_ch2en[result['task_source']]
-                xnr_user_no = result['xnr_user_no']
+                #tweet_type = task_source_ch2en[result['task_source']]
+                tweet_type = result['task_source']
+
+                print tweet_type
 
                 # try:
                 #     p_url = result['p_url']
@@ -209,6 +223,7 @@ def publish_operate_timing():
                 # except:
                 #     rankid = ''
                 #r_fid = result['fid']
+                print '==========================================', xnr_user_no
 
                 es_get_result = es_xnr.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
 
@@ -222,8 +237,23 @@ def publish_operate_timing():
                     account_name = fb_phone_account
                 else:
                     return False
-                        
-                mark = fb_publish(account_name, password, text, tweet_type, xnr_user_no)
+                
+                # add to aliyun redis about some fb_publish need params kn                       
+                #mark = fb_publish(account_name, password, text, tweet_type, xnr_user_no)
+                if account_name:
+                    try:
+                        fb_tweet_params_dict = {}
+                        fb_tweet_params_dict["account_name"] = account_name
+                        fb_tweet_params_dict["password"] = password
+                        fb_tweet_params_dict["text"] = text
+                        fb_tweet_params_dict["tweet_type"] = tweet_type
+                        fb_tweet_params_dict["xnr_user_no"] = xnr_user_no
+                        ali_re.lpush(FB_TWEET_PARAMS, json.dumps(fb_tweet_params_dict))
+                        mark = True
+                    except Exception as e:
+                        print e
+                else:
+                    mark = False
 
                 if mark:
                     #task_id = xnr_user_no + '_' + r_fid
@@ -245,7 +275,7 @@ def publish_operate_timing():
 if __name__ == '__main__':
 
     # 定时发帖
-    #publish_operate_timing()
+    publish_operate_timing()
 
     # 定时跟踪转发
     read_tracing_followers_tweet()

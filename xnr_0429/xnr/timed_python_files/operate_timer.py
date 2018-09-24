@@ -68,8 +68,11 @@ def operate_out_of_redis():
 				try:
 					if operate_type == 'publish':
 						try:
-							print 'task_detail..',task_detail
 							print '==========================================22222222222222222222222222222222222222222222222222facebookredis',task_detail
+							# add channel and operate_type kn
+							task_detail['channel'] = "facebook"
+							task_detail['operate_type'] = "publish"
+							print 'task_detail..',task_detail
 							mark = get_submit_tweet_fb(task_detail)
 						except Exception, e:
 							#add_operate2redis(queue_dict)
@@ -79,12 +82,16 @@ def operate_out_of_redis():
 
 					elif operate_type == 'retweet':
 						try:
+							task_detail['channel'] = "facebook"
+							task_detail['operate_type'] = "retweet"
 							mark = get_retweet_operate_fb(task_detail)
 						except Exception,e:
 							print 222222222222222, e
 							# add_operate2redis(queue_dict)
 					elif operate_type == 'comment':
 						try:
+							task_detail['channel'] = "facebook"
+							task_detail['operate_type'] = "comment"
 							mark = get_comment_operate_fb(task_detail)
 						except Exception, e:
 							#add_operate2redis(queue_dict)
@@ -92,13 +99,18 @@ def operate_out_of_redis():
 							pass
 					elif operate_type == 'like':
 						try:
+							task_detail['channel'] = "facebook"
+							task_detail['operate_type'] = "like"
 							mark = get_like_operate_fb(task_detail)
 						except Exception, e:
 							#add_operate2redis(queue_dict)
 							print 444444444444444, e
 							pass
+
 					elif operate_type == 'at':
 						try:
+							task_detail['channel'] = "facebook"
+							task_detail['operate_type'] = "at"
 							mark = get_at_operate_fb(task_detail)
 						except Exception, e:
 							#add_operate2redis(queue_dict)
@@ -107,6 +119,8 @@ def operate_out_of_redis():
 
 					elif operate_type == 'private':
 						try:
+							task_detail['channel'] = "facebook"
+							task_detail['operate_type'] = "private"
 							mark = get_private_operate_fb(task_detail)
 						except Exception, e:
 							#add_operate2redis(queue_dict)
@@ -115,6 +129,8 @@ def operate_out_of_redis():
 
 					elif operate_type == 'add':
 						try:
+							task_detail['channel'] = "facebook"
+							task_detail['operate_type'] = "add"
 							mark = get_add_friends(task_detail)
 						except Exception, e:
 							#add_operate2redis(queue_dict)
@@ -123,6 +139,8 @@ def operate_out_of_redis():
 
 					elif operate_type == 'confirm':
 						try:
+							task_detail['channel'] = "facebook"
+							task_detail['operate_type'] = "confirm"
 							mark = get_confirm_friends(task_detail)
 						except Exception, e:
 							#add_operate2redis(queue_dict)
@@ -131,6 +149,8 @@ def operate_out_of_redis():
 
 					elif operate_type == 'delete':
 						try:
+							task_detail['channel'] = "facebook"
+							task_detail['operate_type'] = "delete"
 							mark = get_delete_friends(task_detail)
 						except Exception, e:
 							#add_operate2redis(queue_dict)

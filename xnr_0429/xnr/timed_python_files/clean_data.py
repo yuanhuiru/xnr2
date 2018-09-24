@@ -78,7 +78,9 @@ from global_utils import writing_task_index_name,writing_task_index_type
 
 
 def public_delete_func(index_pre,datetime,day_num):
+
     date = ts2datetime(datetime - day_num*DAY)
+    print 'date:::',date
     index_name = index_pre + date
     index_exist = es_xnr.indices.exists(index=index_name)
     if index_exist:
@@ -89,6 +91,7 @@ def public_delete_func(index_pre,datetime,day_num):
 
 def outpublic_delete_func(index_pre,datetime,day_num):
     date = ts2datetime(datetime - day_num*DAY)
+    print 'date:::',date
     index_name = index_pre + date
     index_exist = es_xnr_2.indices.exists(index=index_name)
     if index_exist:
@@ -350,7 +353,7 @@ def delete_main_func(datetime):
     
 
 if __name__ == '__main__':
-    datetime = int(time.time())
+    datetime = int(time.time()) - DAY
     delete_main_func(datetime)
 
 
