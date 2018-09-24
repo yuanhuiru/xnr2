@@ -48,9 +48,9 @@ def fb_save_to_xnr_flow_text(tweet_type,xnr_user_no,text, message_type):
 def fb_publish(account_name, password, text, tweet_type, xnr_user_no):
     print '123'
     print 'account_name,password..',account_name,password
-    operation = Operation(account_name,password)
-    print 'operation...',operation
-    print operation.publish(text)
+    #operation = Operation(account_name,password)
+    #print 'operation...',operation
+    #print operation.publish(text)
     mark = True
     # except:
     #     mark = False
@@ -70,13 +70,15 @@ def fb_publish(account_name, password, text, tweet_type, xnr_user_no):
 # 评论
 def fb_comment(account_name, password, _id, uid, text, tweet_type, xnr_user_no):
 
-    operation = Operation(account_name,password)
+    #operation = Operation(account_name,password)
     print 'uid', uid
-    _id = _id.split('_')[1]
+    #_id = _id.split('_')[1]
+    # add uid from views kn
+    #uid = _id.split('_')[0]
     print 'fid', _id, type(_id)
     #try:
-    print operation.comment(uid,_id,text)
-    mark = True
+    #print operation.comment(uid,_id,text)
+    #mark = True
     # except:
     #     mark = False
 

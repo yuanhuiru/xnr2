@@ -162,8 +162,8 @@ class SinaLauncher():
 
 if __name__ == '__main__':
     try:
-        test = SinaLauncher('18513720522','yunzhonghaihai92')
-        #test = SinaLauncher('13269704912','murcielagolp640')
+        #test = SinaLauncher('18513720522','yunzhonghaihai92')
+        test = SinaLauncher('13269704912','murcielagolp640')
         test.login()
         print test.uid
     except Exception, e:

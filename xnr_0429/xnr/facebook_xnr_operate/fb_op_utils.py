@@ -16,7 +16,7 @@ from global_utils import es_xnr_2 as es,es_xnr, fb_xnr_index_name,fb_xnr_index_t
 					fb_hot_subopinion_results_index_name, fb_hot_subopinion_results_index_type, \
 					es_fb_user_portrait, fb_portrait_index_name, fb_portrait_index_type, \
 					fb_bci_index_name_pre, fb_bci_index_type, fb_xnr_fans_followers_index_name, \
-                    fb_xnr_fans_followers_index_type
+                    fb_xnr_fans_followers_index_type, RE_QUEUE as ali_re, FB_TWEET_PARAMS
 
 
 from facebook_publish_func import fb_publish, fb_comment, fb_retweet, fb_follow, fb_unfollow, \
@@ -35,12 +35,18 @@ def get_robot_reply(question):
     return get_message_from_tuling(question)
 
 def get_submit_tweet_fb(task_detail):
-
+	
+	print 'get_submit_tweet_fb,start execute========================='
 	text = task_detail['text']
 	tweet_type = task_detail['tweet_type']
+	channel = task_detail['channel']
+	operate_type = task_detail['operate_type']
 	xnr_user_no = task_detail['xnr_user_no']
-
-	es_xnr_result = es.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
+	try:
+		es_xnr_result = es.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
+	except Exception as e:
+		print e
+	print es_xnr_result
 	fb_mail_account = es_xnr_result['fb_mail_account']
 	fb_phone_account = es_xnr_result['fb_phone_account'].strip()
 	password = str(es_xnr_result['password'].strip())
@@ -57,7 +63,22 @@ def get_submit_tweet_fb(task_detail):
 		account_name = False
 
 	if account_name:
-		mark = fb_publish(account_name, password, text, tweet_type, xnr_user_no)
+		print '--------------------------------==================================-------------------------------------------------------'
+        # add params to aliyunredis kn
+		try:	
+			fb_tweet_params_dict = {}
+			fb_tweet_params_dict["account_name"] = account_name 
+			fb_tweet_params_dict["password"] = password 
+			fb_tweet_params_dict["text"] = text 
+			fb_tweet_params_dict["tweet_type"] =tweet_type 
+			fb_tweet_params_dict["xnr_user_no"] =xnr_user_no
+			fb_tweet_params_dict["channel"] = channel
+			fb_tweet_params_dict["operate"] = operate_type
+			print FB_TWEET_PARAMS, '===================================================fb params'
+			ali_re.lpush(FB_TWEET_PARAMS, json.dumps(fb_tweet_params_dict))
+			mark = fb_publish(account_name, password, text, tweet_type, xnr_user_no)
+		except Exeption as e:
+			print e
 		#mark = fb_publish('+8613520874771', '13018119931126731x', text, tweet_type, xnr_user_no)
 	else:
 		mark = False
@@ -495,6 +516,9 @@ def get_comment_operate_fb(task_detail):
 	tweet_type = task_detail['tweet_type']
 	xnr_user_no = task_detail['xnr_user_no']
 	_id = task_detail['r_fid']
+    # add channel and operate_type kn
+	channel = task_detail['channel']
+	operate_type = task_detail['operate_type']
 	#_id = ??????
 	uid = task_detail['r_uid']
 
@@ -512,6 +536,19 @@ def get_comment_operate_fb(task_detail):
 		account_name = False
 
 	if account_name:
+        # add params from 45 to aliyunn redis kn
+		fb_tweet_params_dict = {}
+		fb_tweet_params_dict["account_name"] = account_name 
+		fb_tweet_params_dict["password"] = password 
+		fb_tweet_params_dict["_id"] = _id 
+		fb_tweet_params_dict["uid"] = uid 
+		fb_tweet_params_dict["text"] = text 
+		fb_tweet_params_dict["tweet_type"] =tweet_type 
+		fb_tweet_params_dict["xnr_user_no"] =xnr_user_no
+		fb_tweet_params_dict["channel"] = channel
+		fb_tweet_params_dict["operate"] = operate_type
+		print FB_TWEET_PARAMS, '===================================================fb params'
+		ali_re.lpush(FB_TWEET_PARAMS, json.dumps(fb_tweet_params_dict))
 		mark = fb_comment(account_name, password, _id, uid, text, tweet_type, xnr_user_no)
 		#mark = fb_comment('13520874771', '13018119931126731x', _id, uid, text, tweet_type, xnr_user_no)
 	else:
@@ -524,6 +561,9 @@ def get_retweet_operate_fb(task_detail):
 	text = task_detail['text']
 	tweet_type = task_detail['tweet_type']
 	xnr_user_no = task_detail['xnr_user_no']
+    # add channel and operate_type kn
+	channel = task_detail['channel']
+	operate_type = task_detail['operate_type']
 	_id = task_detail['r_fid']
 	#_id = ??????
 	uid = task_detail['r_uid']
@@ -542,6 +582,19 @@ def get_retweet_operate_fb(task_detail):
 		account_name = False
 
 	if account_name:
+        # add params from 45 to aliyunn redis comment kn
+		fb_tweet_params_dict = {}
+		fb_tweet_params_dict["account_name"] = account_name 
+		fb_tweet_params_dict["password"] = password 
+		fb_tweet_params_dict["_id"] = _id 
+		fb_tweet_params_dict["uid"] = uid 
+		fb_tweet_params_dict["text"] = text 
+		fb_tweet_params_dict["tweet_type"] =tweet_type 
+		fb_tweet_params_dict["xnr_user_no"] =xnr_user_no
+		fb_tweet_params_dict["channel"] = channel
+		fb_tweet_params_dict["operate"] = operate_type
+		print FB_TWEET_PARAMS, '===================================================fb params'
+		ali_re.lpush(FB_TWEET_PARAMS, json.dumps(fb_tweet_params_dict))
 		mark = fb_retweet(account_name, password, _id, uid, text, tweet_type, xnr_user_no)
 		#mark = fb_retweet('13520874771', '13018119931126731x', _id, uid, text, tweet_type, xnr_user_no)
 	else:
@@ -584,6 +637,9 @@ def get_like_operate_fb(task_detail):
 	_id = task_detail['r_fid']
 	#_id = ??????
 	uid = task_detail['r_uid']
+    # add channel and operate_type kn
+	channel = task_detail['channel']
+	operate_type = task_detail['operate_type']
 
 	es_xnr_result = es.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
 
@@ -599,6 +655,16 @@ def get_like_operate_fb(task_detail):
 		account_name = False
 
 	if account_name:
+        # add params from 45 to aliyunn redis like kn
+		fb_tweet_params_dict = {}
+		fb_tweet_params_dict["account_name"] = account_name 
+		fb_tweet_params_dict["password"] = password 
+		fb_tweet_params_dict["_id"] = _id 
+		fb_tweet_params_dict["uid"] = uid 
+		fb_tweet_params_dict["channel"] = channel
+		fb_tweet_params_dict["operate"] = operate_type
+		print FB_TWEET_PARAMS, '===================================================fb params'
+		ali_re.lpush(FB_TWEET_PARAMS, json.dumps(fb_tweet_params_dict))
 		mark = fb_like(account_name,password, _id, uid)
 		#mark = fb_like('13520874771', '13018119931126731x', _id, uid)
 	else:
