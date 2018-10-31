@@ -106,7 +106,7 @@ function weibo(data) {
                         '        <div class="speak_center">'+
                         '            <div class="center_rel">'+
                         '                <img src="'+img+'" alt="" class="center_icon">'+
-                        '                <a class="center_1 centerNAME" style="color:#f98077;">'+name+'</a>'+
+                        '                <a class="center_1 centerNAME" href="https://weibo.com/u/'+row.uid+'" style="color:#f98077;">'+name+'</a>'+
                         '                <a class="mid" style="display: none;">'+item.mid+'</a>'+
                         '                <a class="uid" style="display: none;">'+item.uid+'</a>'+
                         '                <a class="timestamp" style="display: none;">'+item.timestamp+'</a>'+

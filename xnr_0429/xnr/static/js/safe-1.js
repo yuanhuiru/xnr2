@@ -528,7 +528,7 @@ function weiboData(data) {
                         '   <div class="post_center-hot">'+
                         '       <img src="'+img+'" class="center_icon">'+
                         '       <div class="center_rel">'+
-                        '           <a class="center_1" href="###" style="color: #f98077;">'+name+'</a>'+
+                        '           <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>'+
                         '           <span class="time" style="font-weight:700;color:#f6a38e;display: inline-block;margin-left:5px;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span> '+
                         // '           <span class="location" style="font-weight:700;color:blanchedalmond;display: inline-block;margin-left:5px;"><i class="icon icon-screenshot"></i>&nbsp;&nbsp;'+location+'</span>  '+
                         '           <i class="mid" style="display: none;">'+row.mid+'</i>'+

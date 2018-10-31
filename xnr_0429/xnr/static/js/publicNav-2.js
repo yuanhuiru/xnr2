@@ -80,6 +80,10 @@ Array.prototype.removeByValue = function(val) {
         }
     }
 };
+//跳转微博首页
+function jumpWeibo(uid){
+	window.open('https://weibo.com/u/'+uid);
+}
 //查看全文
 function allWord(_this) {
     var a=$(_this).attr('data-all');
@@ -191,7 +195,7 @@ function thumbs(_this) {
     var MFT = $(_this).parents('.center_rel').find('.'+mft_id).text();
     var time=$(_this).parents('.center_rel').find('.timestamp').text();
     var likePost_url='/'+urlFirst_zpd+'/like_operate/?'+mft_id+'='+MFT+'&xnr_user_no='+ID_Num+'&timestamp='+time;
-    if (loadingType=='faceBook'){
+    if (loadingType=='faceBook'||loadingType=='twitter'){
         var uid = $(_this).parents('.center_rel').find('.uid').text();
         likePost_url+='&uid='+uid;
     }

@@ -571,7 +571,7 @@ function weibo(idx,data,words) {
                         // '            <img src="'+img+'" alt="" class="center_icon">'+
                         '            <div class="center_rel center_rel_weibo" style="text-align: left;">'+
                         '                <img src="'+img+'" alt="" class="center_icon">'+
-                        '                <a class="center_1" style="color: #f98077;">'+name+'</a>'+
+                        '                <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>'+
                         '                <a class="mid" style="display: none;">'+item.mid+'</a>'+
                         '                <a class="uid" style="display: none;">'+item.uid+'</a>'+
                         '                <a class="timestamp" style="display: none;">'+item.timestamp+'</a>'+

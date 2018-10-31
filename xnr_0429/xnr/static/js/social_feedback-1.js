@@ -176,7 +176,7 @@ function com(data) {
                         var str=
                             '<div class="commentAll infoAll center_rel" style="text-align: left;">'+
                             '    <div class="commentEvery">'+
-                            '        <img src="'+img+'" alt="" class="com-head">'+
+                            '        <img src="'+img+'" onclick="jumpWeibo(\''+row.uid+'\')" class="com-head">'+
                             '        <div class="com com-1">'+
                             '            <b class="com-1-name">来自 '+user+'</b>&nbsp;&nbsp;&nbsp;'+
                             '            <span class="time" style="font-weight: 900;color:blanchedalmond;"><i class="icon icon-time"></i>&nbsp;'+time+'</span>&nbsp;&nbsp;'+
@@ -316,7 +316,7 @@ function letter(data) {
                     var str=
                         '<div class="letterAll infoAll center_rel" style="background:rgba(8,23,44,0.35);text-align:left;">'+
                         '    <div class="letterEvery">'+
-                        '        <img src="'+img+'" alt="" class="let-head">'+
+                        '        <img src="'+img+'" onclick="jumpWeibo(\''+row.uid+'\')" class="let-head">'+
                         '        <div class="let let-1">'+
                         '            <span class="com-2-name" style="display: none;">'+name+'</span>'+
                         '            <b class="let-1-name">来自 '+user+'&nbsp;'+name+'</b>&nbsp;&nbsp;&nbsp;'+
@@ -428,7 +428,7 @@ function reply(data) {
                     var str=
                         '<div class="replyAll infoAll center_rel" style="text-align:left;">'+
                         '    <div class="replyEvery">'+
-                        '        <img src="'+img+'" alt="" class="rep-head">'+
+                        '        <img src="'+img+'" onclick="jumpWeibo(\''+row.uid+'\')" class="rep-head">'+
                         '        <span style="display: none;" class="mid">'+row.mid+'</span>'+
                         '        <span style="display: none;" class="r_mid">'+row.root_mid+'</span>'+
                         '        <span style="display: none;" class="uid">'+row.uid+'</span>'+

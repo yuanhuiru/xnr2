@@ -145,7 +145,7 @@ function reportDefaul(data) {
                                     str+=
                                         '<div class="center_rel" style="margin-bottom: 10px;background:#06162d;padding: 5px 10px;">'+
                                         '   <img src="'+img+'" alt="" class="center_icon">'+
-                                        '   <a class="center_1" style="color:#f98077;">'+name+'</a>'+
+                                        '   <a class="center_1" style="color:#f98077;" href="https://weibo.com/u/'+item.uid+'">'+name+'</a>'+
                                         // '   <a class="mid" style="display: none;">'+item.mid+'</a>'+
                                         // '   <a class="timestamp" style="display: none;">'+item.timestamp+'</a>'+
                                         '   <span class="cen3-1" style="color:#f6a38e;"><i class="icon icon-time"></i>&nbsp;'+time+'</span>'+

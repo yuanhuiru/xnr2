@@ -573,7 +573,7 @@ function mainWeibo(_data,idx) {
                         '       <i class="icon icon-warning-sign weiboFlag" style="'+sye_2+'"></i>'+
                         '   </div>'+
                         '   <img src="'+img+'" alt="" class="center_icon">'+
-                        '   <a class="center_1" style="color:#f98077;">'+name+'</a>'+
+                        '   <a class="center_1" href="https://weibo.com/u/'+row.uid+'"  style="color:#f98077;">'+name+'</a>'+
                         '   <span class="cen3-1" style="color:#f6a38e;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+time+'</span>'+
                         '   <a class="mid" style="display: none;">'+row.mid+'</a>'+
                         '   <a class="uid" style="display: none;">'+row.uid+'</a>'+

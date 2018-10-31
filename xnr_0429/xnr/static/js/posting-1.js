@@ -638,7 +638,7 @@ function defalutWords(data) {
                         '   <div class="post_center-hot">'+
                         '       <img src="'+img+'" class="center_icon">'+
                         '       <div class="center_rel">'+
-                        '           <a class="center_1" href="###" style="color: #f98077;">'+name+'</a>'+
+                        '           <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>'+
                         '           <span class="time" style="font-weight: 900;color:blanchedalmond;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span>  '+
                         '           <button data-all="0" style="display: '+all+'" type="button" class="btn btn-primary btn-xs allWord" onclick="allWord(this)">查看全文</button>'+
                         '   <p class="allall1" style="display:none;">'+txt+'</p>'+
@@ -795,7 +795,7 @@ function hotWeibo(data) {
                         '   <div id="post_center-hot">'+
                         '       <img src="'+img+'" alt="" class="center_icon">'+
                         '       <div class="center_rel">'+
-                        '           <a class="center_1" href="###" style="color: #f98077;">'+name+'</a>'+
+                        '           <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>'+
                         '           <span class="time" style="font-weight: 900;color: blanchedalmond;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span>  '+
                         '           <button data-all="0" style="display: '+all+'" type="button" class="btn btn-primary btn-xs allWord" onclick="allWord(this)">查看全文</button>'+
                         '   <p class="allall1" style="display:none;">'+txt+'</p>'+
@@ -911,7 +911,7 @@ function bigVipWeibo(data) {
                         '   <div id="post_center-hot">'+
                         '       <img src="'+img+'" alt="" class="center_icon">'+
                         '       <div class="center_rel">'+
-                        '           <a class="center_1" href="###" style="color: #f98077;">'+name+'</a>'+
+                        '           <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>'+
                         '           <span class="time" style="font-weight: 900;color: blanchedalmond;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span>  '+
                         '           <button data-all="0" style="display: '+all+'" type="button" class="btn btn-primary btn-xs allWord" onclick="allWord(this)">查看全文</button>'+
                         '   <p class="allall1" style="display:none;">'+txt+'</p>'+
@@ -1263,7 +1263,7 @@ function businessWeibo(data) {
                         '   <div class="post_center-business">'+
                         '       <img src="'+img+'" class="center_icon">'+
                         '       <div class="center_rel">'+
-                        '           <a class="center_1" href="###" style="color: #f98077;">'+name+'</a>：'+
+                        '           <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>：'+
                         '           <span class="time" style="font-weight: 900;color:blanchedalmond;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span>  '+
                         '           <button data-all="0" style="display: '+all+'" type="button" class="btn btn-primary btn-xs allWord" onclick="allWord(this)">查看全文</button>'+
                         '   <p class="allall1" style="display:none;">'+txt+'</p>'+
