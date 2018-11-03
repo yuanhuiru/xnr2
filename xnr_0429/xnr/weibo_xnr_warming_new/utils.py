@@ -28,6 +28,10 @@ from xnr.global_utils import R_CLUSTER_FLOW2 as r_cluster
 
 from xnr.weibo_report_management_mappings import weibo_report_management_mappings
 
+from xnr.global_utils import weibo_user_history_warning_index_name,weibo_user_history_warning_index_type,\
+                             weibo_event_history_warning_index_name,weibo_event_history_warning_index_type,\
+                             weibo_speech_history_warning_index_name,weibo_speech_history_warning_index_type
+
 #查询用户昵称
 def get_user_nickname(uid):
     try:
@@ -90,7 +94,6 @@ def lookup_history_user_warming(xnr_user_no,start_time,end_time):
     }
 
     user_warming_list=get_xnr_warming_index_listname(weibo_user_warning_index_name_pre,start_time,end_time)
-
     try:
         temp_results=es_xnr.search(index=user_warming_list,doc_type=weibo_user_warning_index_type,body=query_body)['hits']['hits']
         results=[]
