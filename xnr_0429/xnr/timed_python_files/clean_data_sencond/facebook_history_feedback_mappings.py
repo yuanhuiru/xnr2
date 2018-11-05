@@ -210,7 +210,7 @@ def facebook_history_feedback_retweet_mappings(index_name, index_type):
 
 
 # 标记
-def facebook_hisroty_feedback_at_mappings(index_name, index_type):
+def facebook_history_feedback_at_mappings(index_name, index_type):
     index_info = {
         'settings': {
             'number_of_replicas': 0,
@@ -506,11 +506,12 @@ def facebook_history_feedback_friends_mappings(index_name, index_type):  ## 粉�
 
 
 if __name__ == '__main__':
-    facebook_feedback_like_mappings(facebook_history_feedback_like_index_name, facebook_feedback_like_index_type)
-    facebook_feedback_retweet_mappings(facebook_history_feedback_retweet_index_name, facebook_feedback_retweet_index_type)
-    facebook_feedback_at_mappings(facebook_history_feedback_at_index_name, facebook_feedback_at_index_type)
-    facebook_feedback_comment_mappings(facebook_history_feedback_comment_index_name, facebook_feedback_comment_index_type)
-    facebook_feedback_private_mappings(facebook_history_feedback_private_index_name, facebook_feedback_private_index_type)
-    facebook_feedback_friends_mappings(facebook_history_feedback_friends_index_name, facebook_feedback_friends_index_type)
+    facebook_history_feedback_like_mappings(facebook_history_feedback_like_index_name, facebook_feedback_like_index_type)
+    facebook_history_feedback_retweet_mappings(facebook_history_feedback_retweet_index_name, facebook_feedback_retweet_index_type)
+    facebook_history_feedback_at_mappings(facebook_history_feedback_at_index_name, facebook_feedback_at_index_type)
+    facebook_history_feedback_comment_mappings(facebook_history_feedback_comment_index_name, facebook_feedback_comment_index_type)
+    facebook_history_feedback_private_mappings(facebook_history_feedback_private_index_name, facebook_feedback_private_index_type)
+    facebook_history_feedback_friends_mappings(facebook_history_feedback_friends_index_name, facebook_feedback_friends_index_type)
+
 
 
