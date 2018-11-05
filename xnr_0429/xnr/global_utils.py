@@ -673,7 +673,9 @@ twitter_user_index_type = 'user'
 
 tw_xnr_flow_text_index_name_pre = 'tw_xnr_flow_text_'
 tw_xnr_flow_text_index_type = 'text'
+
 new_tw_xnr_flow_text_index_name_pre = 'new_tw_xnr_flow_text_'
+new_history_tw_xnr_flow_text_index_name = 'new_history_tw_xnr_flow_text'
 new_tw_xnr_flow_text_index_type = 'text'
 
 tw_xnr_index_name='tw_xnr'
