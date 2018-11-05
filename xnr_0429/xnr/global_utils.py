@@ -512,7 +512,9 @@ facebook_user_index_type = 'user'
 
 fb_xnr_flow_text_index_name_pre = 'fb_xnr_flow_text_'
 fb_xnr_flow_text_index_type = 'text'
+
 new_fb_xnr_flow_text_index_name_pre = 'new_fb_xnr_flow_text_'
+new_history_fb_xnr_flow_text_index_name = 'new_history_fb_xnr_flow_text'
 new_fb_xnr_flow_text_index_type = 'text'
 
 # use to publish tweet at future time
@@ -956,6 +958,7 @@ facebook_user_trans_task_name = 'facebook_user_trans_task'
 RE_QUEUE = redis.Redis(host='60.205.190.67', port=6379)
 FB_TWEET_PARAMS = 'fb_tweet_params'
 TW_TWEET_PARAMS = 'tw_tweet_params'
+
 
 
 
