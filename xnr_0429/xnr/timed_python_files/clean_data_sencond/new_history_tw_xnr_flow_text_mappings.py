@@ -4,7 +4,7 @@ import json
 reload(sys)
 sys.path.append('../../')
 
-from global_utils import es_xnr as es, new_history_tw_xnr_flow_text_index_name,
+from global_utils import es_xnr as es, new_history_tw_xnr_flow_text_index_name
 
 
 def new_history_tw_xnr_flow_text_mappings(index_name):
