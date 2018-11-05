@@ -16,7 +16,7 @@ from global_utils import es_xnr_2 as es,es_xnr, fb_xnr_index_name,fb_xnr_index_t
 					fb_hot_subopinion_results_index_name, fb_hot_subopinion_results_index_type, \
 					es_fb_user_portrait, fb_portrait_index_name, fb_portrait_index_type, \
 					fb_bci_index_name_pre, fb_bci_index_type, fb_xnr_fans_followers_index_name, \
-                    fb_xnr_fans_followers_index_type, RE_QUEUE as ali_re, FB_TWEET_PARAMS
+                    fb_xnr_fans_followers_index_type, RE_QUEUE as ali_re, FB_TWEET_PARAMS, TW_TWEET_PARAMS
 
 
 from facebook_publish_func import fb_publish, fb_comment, fb_retweet, fb_follow, fb_unfollow, \
@@ -609,6 +609,9 @@ def get_at_operate_fb(task_detail):
 	tweet_type = task_detail['tweet_type']
 	xnr_user_no = task_detail['xnr_user_no']
 	user_name = task_detail['nick_name']
+    # add channel and operate_type kn
+	channel = task_detail['channel']
+	operate_type = task_detail['operate_type']
 
 	es_xnr_result = es.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
 
@@ -624,7 +627,19 @@ def get_at_operate_fb(task_detail):
 		account_name = False
 
 	if account_name:
-		mark = fb_mention(account_name,password, user_name, text, xnr_user_no, tweet_type)
+        # add params from 45 to aliyunn redis comment kn
+		fb_tweet_params_dict = {}
+		fb_tweet_params_dict["account_name"] = account_name 
+		fb_tweet_params_dict["password"] = password 
+		fb_tweet_params_dict["user_name"] = user_name 
+		fb_tweet_params_dict["text"] = text 
+		fb_tweet_params_dict["xnr_user_no"] =xnr_user_no
+		fb_tweet_params_dict["tweet_type"] =tweet_type 
+		fb_tweet_params_dict["channel"] = channel
+		fb_tweet_params_dict["operate"] = operate_type
+		print FB_TWEET_PARAMS, '===================================================fb params'
+		ali_re.lpush(FB_TWEET_PARAMS, json.dumps(fb_tweet_params_dict))
+		mark = fb_mention(account_name, password, user_name, text, xnr_user_no, tweet_type)
 		#mark = fb_mention('13520874771', '13018119931126731x', text, xnr_user_no, tweet_type)
 	else:
 		mark = False
@@ -731,6 +746,9 @@ def get_private_operate_fb(task_detail):
     xnr_user_no = task_detail['xnr_user_no']
     text = task_detail['text']
     uid = task_detail['uid']
+    # add channel and operate_type kn
+    channel = task_detail['channel']
+    operate_type = task_detail['operate_type']
 
     es_xnr_result = es.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
 
@@ -746,9 +764,19 @@ def get_private_operate_fb(task_detail):
         account_name = False
 
     if account_name:
-        mark = fb_message(account_name, password,  text, uid)
+        # add params from 45 to aliyunn redis like kn
+		fb_tweet_params_dict = {}
+		fb_tweet_params_dict["account_name"] = account_name 
+		fb_tweet_params_dict["password"] = password 
+		fb_tweet_params_dict["text"] = text
+		fb_tweet_params_dict["uid"] = uid
+		fb_tweet_params_dict["channel"] = channel
+		fb_tweet_params_dict["operate"] = operate_type
+		print FB_TWEET_PARAMS, '===================================================fb params'
+		ali_re.lpush(FB_TWEET_PARAMS, json.dumps(fb_tweet_params_dict))
+		mark = fb_message(account_name, password,  text, uid)
         #mark = fb_message('13520874771', '13018119931126731x', text, uid)
-        print 'private!!'
+		print 'private!!'
         #mark = fb_message('8618348831412','Z1290605918',  text, uid)
 
     else:
@@ -761,6 +789,10 @@ def get_add_friends(task_detail):
 
     xnr_user_no = task_detail['xnr_user_no']
     uid = task_detail['uid']
+    # add channel and operate_type kn
+    channel = task_detail['channel']
+    operate_type = task_detail['operate_type']
+
 
     es_xnr_result = es.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
 
@@ -776,7 +808,16 @@ def get_add_friends(task_detail):
         account_name = False
 
     if account_name:
-        mark = fb_add_friend(account_name, password, uid)
+        # add params from 45 to aliyunn redis like kn
+		fb_tweet_params_dict = {}
+		fb_tweet_params_dict["account_name"] = account_name 
+		fb_tweet_params_dict["password"] = password 
+		fb_tweet_params_dict["uid"] = uid
+		fb_tweet_params_dict["channel"] = channel
+		fb_tweet_params_dict["operate"] = operate_type
+		print FB_TWEET_PARAMS, '===================================================fb params'
+		ali_re.lpush(FB_TWEET_PARAMS, json.dumps(fb_tweet_params_dict))
+		mark = fb_add_friend(account_name, password, uid)
         #mark = fb_add_friend('13520874771', '13018119931126731x', uid)
         #mark = fb_message('8618348831412','Z1290605918',  text, uid)
 
@@ -790,6 +831,9 @@ def get_confirm_friends(task_detail):
 
     xnr_user_no = task_detail['xnr_user_no']
     uid = task_detail['uid']
+    # add channel and operate_type kn
+    channel = task_detail['channel']
+    operate_type = task_detail['operate_type']
 
     es_xnr_result = es.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
 
@@ -805,7 +849,16 @@ def get_confirm_friends(task_detail):
         account_name = False
 
     if account_name:
-        mark = fb_confirm(account_name, password, uid)
+        # add params from 45 to aliyunn redis like kn
+		fb_tweet_params_dict = {}
+		fb_tweet_params_dict["account_name"] = account_name 
+		fb_tweet_params_dict["password"] = password 
+		fb_tweet_params_dict["uid"] = uid
+		fb_tweet_params_dict["channel"] = channel
+		fb_tweet_params_dict["operate"] = operate_type
+		print FB_TWEET_PARAMS, '===================================================fb params'
+		ali_re.lpush(FB_TWEET_PARAMS, json.dumps(fb_tweet_params_dict))
+		mark = fb_confirm(account_name, password, uid)
         #mark = fb_confirm('13520874771', '13018119931126731x', uid)
         #mark = fb_message('8618348831412','Z1290605918',  text, uid)
 
@@ -819,6 +872,10 @@ def get_delete_friend(task_detail):
 
     xnr_user_no = task_detail['xnr_user_no']
     uid = task_detail['uid']
+    # add channel and operate_type kn
+    channel = task_detail['channel']
+    operate_type = task_detail['operate_type']
+
 
     es_xnr_result = es.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
 
@@ -834,7 +891,16 @@ def get_delete_friend(task_detail):
         account_name = False
 
     if account_name:
-        mark = fb_delete_friend(account_name, password, uid)
+        # add params from 45 to aliyunn redis like kn
+		fb_tweet_params_dict = {}
+		fb_tweet_params_dict["account_name"] = account_name 
+		fb_tweet_params_dict["password"] = password 
+		fb_tweet_params_dict["uid"] = uid
+		fb_tweet_params_dict["channel"] = channel
+		fb_tweet_params_dict["operate"] = operate_type
+		print FB_TWEET_PARAMS, '===================================================fb params'
+		ali_re.lpush(FB_TWEET_PARAMS, json.dumps(fb_tweet_params_dict))
+		mark = fb_delete_friend(account_name, password, uid)
         #mark = fb_delete_friend('13520874771', '13018119931126731x', uid)
         #mark = fb_message('8618348831412','Z1290605918',  text, uid)
 

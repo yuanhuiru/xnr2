@@ -2,7 +2,10 @@ import redis
 import json
 
 
-cl = redis.Redis(host='60.205.190.67', port=6379, db=0)
+# 60.205.190.67
+
+# 47.94.133.29
+cl = redis.Redis(host='47.94.133.29', port=9506, db=0)
 operate_info = {}
 operate_info['task_id'] = 1
 operate_info['task_info'] = 'execute spider 1'

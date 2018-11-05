@@ -17,7 +17,8 @@ from global_utils import es_xnr_2 as es, es_xnr, tw_xnr_index_name,tw_xnr_index_
                     tw_hot_subopinion_results_index_name, tw_hot_subopinion_results_index_type, \
                     es_tw_user_portrait, tw_portrait_index_name, tw_portrait_index_type, \
                     tw_bci_index_name_pre, tw_bci_index_type,tw_xnr_fans_followers_index_name,\
-                    tw_xnr_fans_followers_index_type
+                    tw_xnr_fans_followers_index_type, RE_QUEUE as ali_re, FB_TWEET_PARAMS, TW_TWEET_PARAMS
+
 
 
 from twitter_publish_func import tw_publish, tw_comment, tw_retweet, tw_follow, tw_unfollow, tw_like, tw_mention, tw_message
@@ -27,13 +28,15 @@ from parameter import topic_ch2en_dict, TOP_WEIBOS_LIMIT, HOT_EVENT_TOP_USER, HO
 from time_utils import datetime2ts, ts2datetime
 
 def get_submit_tweet_tw(task_detail):
-
+    print 'get_submit_tweet_tw ============================================================================='
     text = task_detail['text']
     tweet_type = task_detail['tweet_type']
+    channel = task_detail['channel']
+    operate_type = task_detail['operate_type']
     xnr_user_no = task_detail['xnr_user_no']
-
+    print text, channel, operate_type, xnr_user_no
     es_xnr_result = es.get(index=tw_xnr_index_name,doc_type=tw_xnr_index_type,id=xnr_user_no)['_source']
-
+    print es_xnr_result
     tw_mail_account = es_xnr_result['tw_mail_account']
     tw_phone_account = es_xnr_result['tw_phone_account']
     password = es_xnr_result['password']
@@ -46,11 +49,27 @@ def get_submit_tweet_tw(task_detail):
         account_name = False
 
     if account_name:
-        mark = tw_publish(account_name, password, text, tweet_type, xnr_user_no)
+        print '--------------------------------------------====================================--------------------------------------------'
+        # add params to aliyunredis kn
+        try:
+            tw_tweet_params_dict = {}
+            tw_tweet_params_dict['account_name'] = account_name
+            tw_tweet_params_dict['password'] = password
+            tw_tweet_params_dict['text'] = text
+            tw_tweet_params_dict['tweet_type'] = tweet_type
+            tw_tweet_params_dict['xnr_user_no'] = xnr_user_no
+            tw_tweet_params_dict['channel'] = channel
+            tw_tweet_params_dict['operate'] = operate_type
+            print TW_TWEET_PARAMS, '========================================tw params'
+            ali_re.lpush(TW_TWEET_PARAMS, json.dumps(tw_tweet_params_dict))
+            print 'push to aliyun redis sucessful'
+            mark = tw_publish(account_name, password, text, tweet_type, xnr_user_no)
+        except Exception as e:
+            print e
 
     else:
         mark = False
-
+        print 'no account_name'
     return mark
 
 def tw_save_to_tweet_timing_list(task_detail):
@@ -477,6 +496,8 @@ def get_comment_operate_tw(task_detail):
     tweet_type = task_detail['tweet_type']
     xnr_user_no = task_detail['xnr_user_no']
     _id = task_detail['r_fid']
+    channel = task_detail['channel']
+    operate_type = task_detail['operate_type']
     #_id = ??????
     uid = task_detail['r_uid']
     #nick_name = task_detail['nick_name']
@@ -495,8 +516,25 @@ def get_comment_operate_tw(task_detail):
         account_name = False
 
     if account_name:
-        print '123'
-        mark = tw_comment(account_name, password, _id, uid, text, tweet_type, xnr_user_no)
+        print '--------------------------------------------====================================--------------------------------------------'
+        # add params to aliyunredis kn
+        try:
+            tw_tweet_params_dict = {}
+            tw_tweet_params_dict['account_name'] = account_name
+            tw_tweet_params_dict['password'] = password
+            tw_tweet_params_dict['_id'] = _id
+            tw_tweet_params_dict['uid'] = uid
+            tw_tweet_params_dict['text'] = text
+            tw_tweet_params_dict['tweet_type'] = tweet_type
+            tw_tweet_params_dict['xnr_user_no'] = xnr_user_no
+            tw_tweet_params_dict['channel'] = channel
+            tw_tweet_params_dict['operate'] = operate_type
+            print TW_TWEET_PARAMS, '========================================tw params'
+            ali_re.lpush(TW_TWEET_PARAMS, json.dumps(tw_tweet_params_dict))
+            print 'push to aliyun redis sucessful'
+            mark = tw_comment(account_name, password, _id, uid, text, tweet_type, xnr_user_no)
+        except Exception as e:
+            print e
     else:
         mark = False
 
@@ -507,6 +545,8 @@ def get_retweet_operate_tw(task_detail):
     text = task_detail['text']
     tweet_type = task_detail['tweet_type']
     xnr_user_no = task_detail['xnr_user_no']
+    channel = task_detail['channel']
+    operate_type = task_detail['operate_type']
     _id = task_detail['r_fid']
     #_id = ??????
     uid = task_detail['r_uid']
@@ -525,8 +565,26 @@ def get_retweet_operate_tw(task_detail):
         account_name = False
 
     if account_name:
-        mark = tw_retweet(account_name, password, _id, uid, text, tweet_type, xnr_user_no)
+        print '--------------------------------------------====================================--------------------------------------------'
+        # add params to aliyunredis kn
+        try:
+            tw_tweet_params_dict = {}
+            tw_tweet_params_dict['account_name'] = account_name
+            tw_tweet_params_dict['password'] = password
+            tw_tweet_params_dict['_id'] = _id
+            tw_tweet_params_dict['uid'] = uid
+            tw_tweet_params_dict['text'] = text
+            tw_tweet_params_dict['tweet_type'] = tweet_type
+            tw_tweet_params_dict['xnr_user_no'] = xnr_user_no
+            tw_tweet_params_dict['channel'] = channel
+            tw_tweet_params_dict['operate'] = operate_type
+            print TW_TWEET_PARAMS, '========================================tw params'
+            ali_re.lpush(TW_TWEET_PARAMS, json.dumps(tw_tweet_params_dict))
+            print 'push to aliyun redis sucessful'
+            mark = tw_retweet(account_name, password, _id, uid, text, tweet_type, xnr_user_no)
 
+        except Exception as e:
+            print e
     else:
         mark = False
 
@@ -564,9 +622,12 @@ def get_at_operate_tw(task_detail):
 def get_like_operate_tw(task_detail):
 
     xnr_user_no = task_detail['xnr_user_no']
-    _id = task_detail['r_fid']
+    channel = task_detail['channel']
+    operate_type = task_detail['operate_type']
+    _id = task_detail['r_tid']
+    print "=================task_detail[rfid]", _id
     #_id = ??????
-    #uid = task_detail['r_uid']
+    uid = task_detail['r_uid']
 
     es_xnr_result = es.get(index=tw_xnr_index_name,doc_type=tw_xnr_index_type,id=xnr_user_no)['_source']
 
@@ -582,7 +643,24 @@ def get_like_operate_tw(task_detail):
         account_name = False
 
     if account_name:
-        mark = tw_like(account_name,password, _id)
+        print '--------------------------------------------====================================--------------------------------------------'
+        # add params to aliyunredis kn
+        try:
+            tw_tweet_params_dict = {}
+            tw_tweet_params_dict['account_name'] = account_name
+            tw_tweet_params_dict['password'] = password
+            tw_tweet_params_dict['_id'] = _id
+            tw_tweet_params_dict['uid'] = uid
+            tw_tweet_params_dict['xnr_user_no'] = xnr_user_no
+            tw_tweet_params_dict['channel'] = channel
+            tw_tweet_params_dict['operate'] = operate_type
+            print TW_TWEET_PARAMS, '========================================tw params'
+            ali_re.lpush(TW_TWEET_PARAMS, json.dumps(tw_tweet_params_dict))
+            print 'push to aliyun redis sucessful'
+            mark = tw_like(account_name,password, _id, uid)
+
+        except Exception as e:
+            print e
 
     else:
         mark = False
@@ -648,6 +726,8 @@ def get_unfollow_operate_tw(task_detail):
 def get_private_operate_tw(task_detail):
 
     xnr_user_no = task_detail['xnr_user_no']
+    channel = task_detail['channel']
+    operate_type = task_detail['operate_type']
     text = task_detail['text']
     uid = task_detail['uid']
 
@@ -665,7 +745,24 @@ def get_private_operate_tw(task_detail):
         account_name = False
 
     if account_name:
-        mark = tw_message(account_name, password,  text, uid)
+        print '--------------------------------------------====================================--------------------------------------------'
+        # add params to aliyunredis kn
+        try:
+            tw_tweet_params_dict = {}
+            tw_tweet_params_dict['account_name'] = account_name
+            tw_tweet_params_dict['password'] = password
+            tw_tweet_params_dict['text'] = text
+            tw_tweet_params_dict['uid'] = uid
+            tw_tweet_params_dict['xnr_user_no'] = xnr_user_no
+            tw_tweet_params_dict['channel'] = channel
+            tw_tweet_params_dict['operate'] = operate_type
+            print TW_TWEET_PARAMS, '========================================tw params'
+            ali_re.lpush(TW_TWEET_PARAMS, json.dumps(tw_tweet_params_dict))
+            print 'push to aliyun redis sucessful'
+            mark = tw_message(account_name, password, text, uid)
+
+        except Exception as e:
+            print e
 
     else:
         mark = False

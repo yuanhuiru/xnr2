@@ -22,16 +22,18 @@ def load_batch_data(redis_task):
         return redis_task_temp
     return False
 
-# def remove_batch_data(redis_task, length):
-#     redis_task_temp = redis_task + '_temp'
-#     for i in range(length):
-#         r.rpop(redis_task)
-#     r.delete(redis_task_temp)
+def remove_batch_data(redis_task, length):
+    for i in range(length):
+        r.rpop(redis_task)
+
+def main(redis_task):
+    result = load_batch_data(redis_task)
+    if result:
+        remove_batch_data(redis_task, batch)
 
 if __name__ == '__main__':
-    load_batch_data('twitter_flow_text_trans_task')
-    load_batch_data('facebook_flow_text_trans_task')
-    load_batch_data('facebook_user_trans_task')
-    load_batch_data('twitter_user_trans_task')
-
+    main('twitter_flow_text_trans_task')
+    main('facebook_flow_text_trans_task')
+    main('facebook_user_trans_task')
+    main('twitter_user_trans_task')
 

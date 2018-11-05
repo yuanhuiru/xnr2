@@ -161,15 +161,23 @@ def operate_out_of_redis():
 					continue
 
 		elif channel == 'twitter':
+			print '======================twitter===========================channel'
 			if operate_type == 'publish':
+				print '======================twitter===========================publish'
 				try:
+					# add channel and operate_type
+					task_detail['channel'] = "twitter"
+					task_detail['operate_type'] = "publish"
 					mark = get_submit_tweet_tw(task_detail)
+					
 				except:
 					#add_operate2redis(queue_dict)
 					pass
 
 			elif operate_type == 'retweet':
 				try:
+					task_detail['channel'] = "twitter"
+					task_detail['operate_type'] = "retweet"
 					mark = get_retweet_operate_tw(task_detail)
 				except:
 					#add_operate2redis(queue_dict)
@@ -177,6 +185,8 @@ def operate_out_of_redis():
 
 			elif operate_type == 'comment':
 				try:
+					task_detail['channel'] = "twitter"
+					task_detail['operate_type'] = "comment"
 					mark = get_comment_operate_tw(task_detail)
 				except:
 					#add_operate2redis(queue_dict)
@@ -184,9 +194,13 @@ def operate_out_of_redis():
 
 			elif operate_type == 'like':
 				try:
+					task_detail['channel'] = "twitter"
+					task_detail['operate_type'] = "like"
+					print 'next diaoyong get_like_operate_tw'
 					mark = get_like_operate_tw(task_detail)
-				except:
+				except Exception as e:
 					#add_operate2redis(queue_dict)
+					print e
 					pass
 
 			elif operate_type == 'at':
@@ -198,6 +212,8 @@ def operate_out_of_redis():
 
 			elif operate_type == 'private':
 				try:
+					task_detail['channel'] = "twitter"
+					task_detail['operate_type'] = "private"
 					mark = get_private_operate_tw(task_detail)
 				except:
 					#add_operate2redis(queue_dict)
@@ -239,6 +255,7 @@ def operate_out_of_redis():
 			elif operate_type == 'retweet':
 				try:
 					mark = get_reply_retweet(task_detail)
+					print "retweet operate_timer-----------------------------"
 				except:
 					#add_operate2redis(queue_dict)
 					pass

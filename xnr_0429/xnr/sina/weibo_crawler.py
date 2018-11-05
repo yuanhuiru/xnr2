@@ -92,7 +92,6 @@ def all_weibo_xnr_crawler():
 	}
 
 	search_results = es.search(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,body=query_body)['hits']['hits']
-
 	if search_results:
 		for result in search_results:
 			result = result['_source']
@@ -108,11 +107,11 @@ def all_weibo_xnr_crawler():
 
 			if account_name:
 				execute(account_name,pwd)
+
 if __name__ == '__main__':
     try:
         year, month, day, hour, minute, second = get_present_time()
         if hour >= 0 and hour <= 7:
-            #execute('weiboxnr01@126.com','xnr123456')
             #execute('weiboxnr02@126.com','xnr123456')
             #execute('weiboxnr03@126.com','xnr123456')
             #execute('weiboxnr04@126.com','xnr1234567')
@@ -120,6 +119,7 @@ if __name__ == '__main__':
             all_weibo_xnr_crawler()
             end_ts = int(time.time())
             print 'cost..',end_ts-start_ts
+            all_weibo_xnr_crawler()
     except Exception, e:
         print e
         sendqqmail(traceback.format_exc(e), 'sina/weibo_crawler crashed!!!!')

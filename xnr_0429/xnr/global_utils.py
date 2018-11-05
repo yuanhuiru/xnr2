@@ -735,6 +735,28 @@ tw_hot_content_recommend_results_index_type = 'content_recommend'
 tw_hot_subopinion_results_index_name = 'tw_subopinion_results'
 tw_hot_subopinion_results_index_type = 'subopinion'
 
+#use to save history data
+weibo_user_history_warning_index_name = 'weibo_user_history_warning'
+weibo_user_history_warning_index_type = 'text'
+weibo_event_history_warning_index_name = 'weibo_event_history_warning'
+weibo_event_history_warning_index_type = 'text'
+weibo_speech_history_warning_index_name = 'weibo_speech_history_warning'
+weibo_speech_history_warning_index_type = 'text'
+
+facebook_user_history_warning_index_name = 'facebook_user_history_warning'
+facebook_user_history_warning_index_type = 'text'
+facebook_event_history_warning_index_name = 'facebook_event_history_warning'
+facebook_event_history_warning_index_type = 'text'
+facebook_speech_history_warning_index_name = 'facebook_speech_history_warning'
+facebook_speech_history_warning_index_type = 'text'
+
+twitter_user_history_warning_index_name = 'twitter_user_history_warning'
+twitter_user_history_warning_index_type = 'text'
+twitter_event_history_warning_index_name = 'twitter_event_history_warning'
+twitter_event_history_warning_index_type = 'text'
+twitter_speech_history_warning_index_name = 'twitter_speech_history_warning'
+twitter_speech_history_warning_index_type = 'text'
+
 
 #module2.1: init redis
 def _default_redis(host=REDIS_HOST_46, port=REDIS_PORT_46, db=0):
@@ -924,5 +946,6 @@ facebook_user_trans_task_name = 'facebook_user_trans_task'
 # aliyun redis queue kn
 RE_QUEUE = redis.Redis(host='60.205.190.67', port=6379)
 FB_TWEET_PARAMS = 'fb_tweet_params'
+TW_TWEET_PARAMS = 'tw_tweet_params'
 
 

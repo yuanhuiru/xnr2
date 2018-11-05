@@ -13,7 +13,7 @@ def get_result_from_redis():
     cl = redis.Redis(host='60.205.190.67', port=6379, db=0)
 
     print cl.lrange('result_info', 0, 10)
-    result_info = cl.rpop('result_info')
+    result_info = cl.rpop('facebook_result_info')
     print 'pop info'
     print result_info
     try:

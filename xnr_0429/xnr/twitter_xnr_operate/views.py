@@ -298,9 +298,12 @@ def ajax_like_operate():
     task_detail = dict()
     task_detail['xnr_user_no'] = request.args.get('xnr_user_no','')
     task_detail['r_tid'] = request.args.get('tid','') # 被转发帖子
+   
     #task_detail['r_uid'] = request.args.get('uid','') # 被转发帖子的用户
     
     task_detail['r_uid'] = request.args.get('uid','') # 被转发帖子的用户
+    print '==================-------------------------===================='
+    print task_detail['r_tid'], task_detail['r_uid']
     task_detail['timestamp'] = int(request.args.get('timestamp',''))
     mark_s = save_oprate_like(task_detail)    
 

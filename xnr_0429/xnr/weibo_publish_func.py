@@ -163,12 +163,8 @@ def publish_tweet_func(account_name,password,text,p_url,rank,rankid,tweet_type,x
 ## 转发微博
 def retweet_tweet_func(account_name,password,text,r_mid,tweet_type,xnr_user_no):
 
-    xnr = SinaLauncher(account_name,password)
-    xnr.login()
-    user = SinaOperateAPI(xnr.uid)
-    user.text = text
-    user.r_mid = r_mid
-    mark = user.retweet()
+    sina_operate_api = SinaOperateAPI(account_name, password)
+    mark = sina_operate_api.retweet(mid=r_mid, content=text)
 
     # 保存微博
     if mark:
@@ -183,26 +179,16 @@ def retweet_tweet_func(account_name,password,text,r_mid,tweet_type,xnr_user_no):
 
 ## 回复
 def reply_tweet_func(account_name,password,text,r_mid,mid,uid):
-    xnr = SinaLauncher(account_name,password)
-    xnr.login()
-    user = SinaOperateAPI(xnr.uid)
-    user.text = text
-    user.r_mid = r_mid
-    # user.r_uid = xnr.uid
-    user.uid = uid
-    user.cid = mid
-    mark = user.receive()
+
+    sina_operate_api = SinaOperateAPI(account_name,password)
+    mark = sina_operate_api.receive(uid=uid, content=text)
     return mark
 
 ## 评论微博
 def comment_tweet_func(account_name,password,text,r_mid,tweet_type,xnr_user_no):
 
-    xnr = SinaLauncher(account_name,password)
-    xnr.login()
-    user = SinaOperateAPI(xnr.uid)
-    user.text = text
-    user.r_mid = r_mid
-    mark = user.comment()
+    sina_operate_api = SinaOperateAPI(account_name,password)
+    mark = sina_operate_api.comment(mid=r_mid, content=text)
     #mark = user.receive()
 
     # 保存微博
@@ -217,35 +203,26 @@ def comment_tweet_func(account_name,password,text,r_mid,tweet_type,xnr_user_no):
     return mark
 
 # ## 私信
-def private_tweet_func(account_name,password,text,r_mid):
-    xnr = SinaLauncher(account_name,password)
-    xnr.login()
-    user = SinaOperateAPI(xnr.uid)
-    user.text = text
-    user.r_mid = r_mid
-    mark = user.privmessage()
+def private_tweet_func(account_name,password,text,uid):
+
+    sina_operate_api = SinaOperateAPI(xnr.uid)
+    mark = sina_operate_api.privmessage(uid=uid, content=text)
 
     return mark
 
 ## 点赞
 def like_tweet_func(account_name,password,r_mid):
 
-    xnr = SinaLauncher(account_name,password)
-    xnr.login()
-    user = SinaOperateAPI(xnr.uid)
-    user.r_mid = r_mid
-    mark = user.like()
+    sina_operate_api = SinaOperateAPI(account_name,password)
+    mark = sina_operate_api.like(mid=r_mid)
 
     return mark
 
 ## 关注
 def follow_tweet_func(xnr_user_no,account_name,password,uid,trace_type):
 
-    xnr = SinaLauncher(account_name,password)
-    xnr.login()
-    user = SinaOperateAPI(xnr.uid)
-    user.r_mid = uid
-    mark = user.followed()
+    sina_operate_api = SinaOperateAPI(account_name,password)
+    mark = sina_operate_api.followed(uid=uid)
     save_type = 'followers'
     follow_type = 'follow'
     save_to_fans_follow_ES(xnr_user_no,uid,save_type,follow_type,trace_type)
@@ -255,11 +232,8 @@ def follow_tweet_func(xnr_user_no,account_name,password,uid,trace_type):
 ## 取消关注
 def unfollow_tweet_func(xnr_user_no,account_name,password,uid):
 
-    xnr = SinaLauncher(account_name,password)
-    xnr.login()
-    user = SinaOperateAPI(xnr.uid)
-    user.r_mid = uid
-    mark = user.unfollowed()
+    sina_operate_api = SinaOperateAPI(account_name,password)
+    mark = sina_operate_api.unfollowed(uid=uid)
 
     save_type = 'followers'
     follow_type = 'unfollow'
@@ -269,15 +243,15 @@ def unfollow_tweet_func(xnr_user_no,account_name,password,uid):
     return mark
 
 ## 创建群组
-def create_group_func(account_name,password,group,members):
-    xnr = SinaLauncher(account_name,password)
-    xnr.login()
-    user = SinaOperateAPI(xnr.uid)
-    user.group = group
-    user.members = members
-    mark = user.createGroup()
+#def create_group_func(account_name,password,group,members):
+#    xnr = SinaLauncher(account_name,password)
+#    xnr.login()
+#    user = SinaOperateAPI(xnr.uid)
+#    user.group = group
+#    user.members = members
+#    mark = user.createGroup()
 
-    return mark
+#    return mark
 
 
 def getUserShow(uid=None, screen_name=None):

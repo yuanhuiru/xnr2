@@ -3,10 +3,12 @@
 '''
 use to save function about database
 '''
+import sys
 import os
 import time
 import datetime
 import json
+sys.path.append("/home/xnr1/xnr_0429/")
 from xnr.global_utils import es_user_portrait,es_xnr,weibo_xnr_index_name,weibo_xnr_index_type,\
                              weibo_xnr_fans_followers_index_name,weibo_xnr_fans_followers_index_type,\
                              es_user_profile,profile_index_name,profile_index_type,\
@@ -125,8 +127,12 @@ def show_completed_weiboxnr(account_no,now_time):
 def count_fans_num(xnr_user_no):
     try:
         result=es_xnr.get(index=weibo_xnr_fans_followers_index_name,doc_type=weibo_xnr_fans_followers_index_type,id=xnr_user_no)['_source']
+        print "===========================result"
+        print "-------------------===========================--------------------------------result"
+        print result
         followers_list=result['fans_list']
         number=len(followers_list)
+        print number
     except:
         number=0
     return number
@@ -471,6 +477,9 @@ def show_today_history_count(xnr_user_no,start_time,end_time):
     lookup_type='fans_list'
     #今日总粉丝数
     fans_list=lookup_xnr_fans_followers(xnr_user_no,lookup_type)
+    print 'fans all =============================================================='
+    print fans_list
+    print 'fans all =============================================================='
     xnr_user_detail['user_fansnum']= len(fans_list)   
     try:
         xnr_result=es_xnr.search(index=index_name,doc_type=xnr_flow_text_index_type,body=query_body)
@@ -608,6 +617,7 @@ def show_condition_history_count(xnr_user_no,start_time,end_time):
 #历史统计表查询组织
 def show_history_count(xnr_user_no,date_range):	
     if S_TYPE == 'test':
+        print '======================test'
         test_time_gap=date_range['end_time']-date_range['start_time']
         test_datetime_gap=int(test_time_gap/DAY)
         #print 'test_datetime_gap',test_datetime_gap
@@ -621,12 +631,17 @@ def show_history_count(xnr_user_no,date_range):
     #print 'date_range',date_range
 
     if date_range['type']=='today':
+        print "today==================================="
         start_time=datetime2ts(ts2datetime(date_range['end_time']))
         end_time=date_range['end_time']       #当前时间
         #print 'today_time:',start_time,end_time
         xnr_date_info=show_today_history_count(xnr_user_no,start_time,end_time)
-        
+        print "today_history_info==================================="
+        print xnr_date_info
+        print "today_history_info==================================="
+
     else:
+        print "condition==================================="
         start_time=date_range['start_time']
         end_time=date_range['end_time']
         now_time=int(time.time())
@@ -637,7 +652,8 @@ def show_history_count(xnr_user_no,date_range):
             start_time=system_start_time
         #print 'condition_time:',start_time,end_time
         xnr_date_info=show_condition_history_count(xnr_user_no,start_time,end_time)
-        
+        print "condition_history_count==================================="
+        print xnr_date_info
     #xnr_date_info.sorted(key=lambda k:k['date_time'],reverse=True)
     #print 'xnr_date_info',xnr_date_info
     Cumulative_statistics_dict=xnr_cumulative_statistics(xnr_date_info,xnr_user_no)
@@ -1283,6 +1299,7 @@ def lookup_detail_weibouser(uid):
 	return result
 
 #step 4.4: list of concerns
+
 '''
 def wxnr_list_concerns(user_id,order_type):
     try:
@@ -1332,6 +1349,7 @@ def wxnr_list_concerns(user_id,order_type):
     user_result.sort(key=lambda k:(k.get(order_type,0)),reverse=True)
     return user_result
 '''
+
 def lookup_xnr_fans_followers(user_id,lookup_type):
     try:
         xnr_result=es_xnr.get(index=weibo_xnr_fans_followers_index_name,doc_type=weibo_xnr_fans_followers_index_type,id=user_id)['_source']
@@ -1360,6 +1378,7 @@ def wxnr_list_concerns(user_id,order_type):
     print 'followers!!',int(time.time())
     lookup_type='followers_list'
     followers_list=lookup_xnr_fans_followers(user_id,lookup_type)
+
 
     query_body={
         'query':{
@@ -1453,7 +1472,10 @@ def wxnr_list_fans(user_id,order_type):
     try:
         xnr_result=es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=user_id)['_source']
         xnr_uid=xnr_result['uid']
+        #print '=======================================xnr_uid'
+        #print xnr_uid
     except:
+        #print '=======================================not find anything about xnr_uid and some error occur'
         xnr_uid=''
     
     lookup_type='fans_list'
@@ -1474,10 +1496,14 @@ def wxnr_list_fans(user_id,order_type):
     xnr_fans_result=[]
     if xnr_uid:
         fans_result=es_xnr.search(index=weibo_feedback_fans_index_name,doc_type=weibo_feedback_fans_index_type,body=query_body)['hits']['hits']
+        #print '===========================================,fans_result'
+        #print fans_result
         for item in fans_result:
             user_dict=dict()
             fans_uid=item['_source']['uid']
             set_mark =  set_intersection(fans_uid,fans_list)
+            #print '===========================================,set_mark'
+            #print set_mark 
             #if fans_uid in fans_list:
             if set_mark > 0:
                 user_dict['uid']=fans_uid
@@ -1503,11 +1529,24 @@ def wxnr_list_fans(user_id,order_type):
                 xnr_fans_result.append(user_dict)
             else:
                 pass
+                # add xuanhui kn
+                #user_dict['uid']=fans_uid
+                #user_dict['influence']=0
+                #user_dict['sensitive']=0
+                #user_dict['topic_string']=''
+                #user_dict['photo_url']=item['_source']['photo_url']            
+                #user_dict['nick_name']=item['_source']['nick_name']
+                #user_dict['sex']=item['_source']['sex']
+                #user_dict['fan_source']=item['_source']['fan_source']  #微博推荐
+                #user_dict['user_location']=item['_source']['geo']
+                #xnr_fans_result.append(user_dict)
     else:
         xnr_fans_result=[]
 
     #对结果按要求排序
     xnr_fans_result.sort(key=lambda k:(k.get(order_type,0)),reverse=True)
+    print "================================================xnr_fans_result"
+    print xnr_fans_result
     return xnr_fans_result
 
 
@@ -1613,3 +1652,4 @@ def delete_receive_like():
         result_list.append(result)
 
     return result_list
+
