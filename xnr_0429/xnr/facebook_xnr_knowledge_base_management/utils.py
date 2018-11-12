@@ -67,7 +67,7 @@ def domain_update_task(domain_name,create_type,create_time,submitter,description
         domain_task_dict['remark'] = remark
         domain_task_dict['compute_status'] = compute_status
 
-        r.lpush(tw_target_domain_detect_queue_name,json.dumps(domain_task_dict))
+        r.lpush(fb_target_domain_detect_queue_name,json.dumps(domain_task_dict))
 
         item_exist = dict()
         
@@ -164,7 +164,7 @@ def export_group_info(domain_name, mail):
     res['members_num'] = domain_details['group_size']
     
     
-    domain_info = es.get(index=tw_domain_index_name,doc_type=tw_domain_index_type,id=domain_pinyin)['_source']
+    domain_info = es.get(index=fb_domain_index_name,doc_type=fb_domain_index_type,id=domain_pinyin)['_source']
     res['create_info']['remark'] = domain_info['remark']
     res['create_info']['submitter'] = domain_info['submitter']
     res['create_info']['create_type'] = domain_info['create_type']
@@ -235,7 +235,7 @@ def get_generate_example_model(domain_name,role_name, mail):
     
     
     domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
-    role_en = tw_domain_ch2en_dict[role_name]
+    role_en = fb_domain_ch2en_dict[role_name]
     task_id = domain_pinyin + '_' + role_en
     es_result = es.get(index=fb_role_index_name,doc_type=fb_role_index_type,id=task_id)['_source']
     item = es_result
@@ -316,7 +316,7 @@ def get_generate_example_model(domain_name,role_name, mail):
     item['day_post_num'] = np.mean(day_post_num_list).tolist()
     item['role_name'] = role_name
     
-    task_id_new = 'tw_' + domain_pinyin + '_' + role_en
+    task_id_new = 'fb_' + domain_pinyin + '_' + role_en
     example_model_file_name = EXAMPLE_MODEL_PATH + task_id_new + '.json'
     try:
         with open(example_model_file_name,"w") as dump_f:
@@ -343,7 +343,7 @@ def get_show_example_model():
 def get_export_example_model(domain_name,role_name):
     domain_pinyin = pinyin.get(domain_name,format='strip',delimiter='_')
     role_en = fb_domain_ch2en_dict[role_name]
-    task_id = 'tw_' + domain_pinyin + '_' + role_en
+    task_id = 'fb_' + domain_pinyin + '_' + role_en
     example_model_file_name = EXAMPLE_MODEL_PATH + task_id + '.json'
     with open(example_model_file_name,"r") as dump_f:
         es_result = json.load(dump_f)
@@ -548,7 +548,7 @@ def show_corpus_fb(corpus_type):
     return results
 
 
-def show_corpus_class_tw(create_type,corpus_type):
+def show_corpus_class_fb(create_type,corpus_type):
     query_body={
         'query':{
             'filtered':{
@@ -568,7 +568,7 @@ def show_corpus_class_tw(create_type,corpus_type):
         results.append(item['_source'])
     return results
 
-def show_condition_corpus_tw(corpus_condition):
+def show_condition_corpus_fb(corpus_condition):
     query_body={
         'query':{
             'filtered':{
@@ -604,9 +604,9 @@ def show_different_corpus(task_detail):
     else:
         if task_detail['request_type'] == 'all':
             if task_detail['create_type']:
-                result['theme_corpus'] = show_corpus_class_tw(task_detail['create_type'],theme_corpus)
+                result['theme_corpus'] = show_corpus_class_fb(task_detail['create_type'],theme_corpus)
                 
-                result['daily_corpus'] = show_corpus_class_tw(task_detail['create_type'],daily_corpus)
+                result['daily_corpus'] = show_corpus_class_fb(task_detail['create_type'],daily_corpus)
             else:
                 pass
         else:
@@ -621,10 +621,10 @@ def show_different_corpus(task_detail):
                 theme_corpus_condition.append({'terms':{'theme_daily_name':task_detail['theme_type_1']}})
                 theme_corpus_condition.append({'term':{'corpus_type':theme_corpus}})
 
-                result['theme_corpus'] = show_condition_corpus_tw(theme_corpus_condition)
+                result['theme_corpus'] = show_condition_corpus_fb(theme_corpus_condition)
             else:
                 if task_detail['create_type']:
-                    result['theme_corpus'] = show_corpus_class_tw(task_detail['create_type'],theme_corpus)
+                    result['theme_corpus'] = show_corpus_class_fb(task_detail['create_type'],theme_corpus)
                 else:
                     result['theme_corpus'] = show_corpus_fb(theme_corpus)
 
@@ -633,10 +633,10 @@ def show_different_corpus(task_detail):
                 daily_corpus_condition.append({'terms':{'theme_daily_name':task_detail['theme_type_2']}})
                 daily_corpus_condition.append({'term':{'corpus_type':daily_corpus}})
                 
-                result['daily_corpus'] = show_condition_corpus_tw(daily_corpus_condition)
+                result['daily_corpus'] = show_condition_corpus_fb(daily_corpus_condition)
             else:
                 if task_detail['create_type']:
-                    result['daily_corpus'] = show_corpus_class_tw(task_detail['create_type'],daily_corpus)
+                    result['daily_corpus'] = show_corpus_class_fb(task_detail['create_type'],daily_corpus)
                 else:
                     result['daily_corpus'] = show_corpus_fb(daily_corpus)
 
