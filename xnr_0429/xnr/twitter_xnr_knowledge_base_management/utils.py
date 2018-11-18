@@ -260,11 +260,11 @@ def get_generate_example_model(domain_name,role_name, mail):
     # 心理特征
     psy_feature_list = []
     psy_feature = json.loads(item['psy_feature'])
-    try: 
-        for i in range(TOP_PSY_FEATURE):
+    for i in range(TOP_PSY_FEATURE):
+        try:
             psy_feature_list.append(psy_feature[i][0])
-    except:
-        pass
+        except:
+            pass
     item['psy_feature'] = '&'.join(psy_feature_list)
     role_group_uids = json.loads(item['member_uids'])
 

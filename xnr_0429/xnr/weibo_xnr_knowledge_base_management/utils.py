@@ -475,6 +475,7 @@ def get_show_domain_role_info(domain_name,role_name):
     role_en = domain_ch2en_dict[role_name]
 
     task_id = domain_pinyin + '_' + role_en
+    print task_id
     try:
         es_result = es.get(index=weibo_role_index_name,doc_type=weibo_role_index_type,id=task_id)['_source']
     except:

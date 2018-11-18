@@ -324,6 +324,8 @@ def ajax_show_comment():
         task_detail['end_ts'] = datetime2ts('2017-10-07')
 
     results = get_show_comment(task_detail)
+    print results
+    print "show comment==================================================================================== yes or no"
     return json.dumps(results)
 
 @mod.route('/reply_comment/')

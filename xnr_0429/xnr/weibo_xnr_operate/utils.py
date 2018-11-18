@@ -43,8 +43,8 @@ from xnr.global_utils import weibo_xnr_save_like_index_name,weibo_xnr_save_like_
 from xnr.time_utils import ts2datetime,datetime2ts,get_flow_text_index_list,\
                             get_timeset_indexset_list, get_db_num,get_new_xnr_flow_text_index_list
 from xnr.weibo_publish_func import publish_tweet_func,retweet_tweet_func,comment_tweet_func,private_tweet_func,\
-                                like_tweet_func,follow_tweet_func,unfollow_tweet_func,create_group_func,\
-                                reply_tweet_func #,at_tweet_func
+                                like_tweet_func,follow_tweet_func,unfollow_tweet_func,\
+                                reply_tweet_func #,at_tweet_func create_group_func,
 from xnr.parameter import DAILY_INTEREST_TOP_USER,DAILY_AT_RECOMMEND_USER_TOP,TOP_WEIBOS_LIMIT,\
                         HOT_AT_RECOMMEND_USER_TOP,HOT_EVENT_TOP_USER,BCI_USER_NUMBER,USER_POETRAIT_NUMBER,\
                         MAX_SEARCH_SIZE,domain_ch2en_dict,topic_en2ch_dict,topic_ch2en_dict,FRIEND_LIST,\
@@ -716,10 +716,11 @@ def get_show_comment(task_detail):
     sort_item = task_detail['sort_item']
     start_ts = task_detail['start_ts']
     end_ts = task_detail['end_ts']
-
+    print xnr_user_no, sort_item, start_ts, end_ts
     es_result = es.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
+    print "============================================weibo_xnr_index_type uid"
     uid = es_result['uid']
-
+    print uid
     query_body = {
         'query':{
             'bool':{

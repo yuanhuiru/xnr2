@@ -2,6 +2,7 @@
 #-*- coding:utf-8 -*-
 import json
 import pinyin
+import time
 import numpy as np
 from xnr.global_config import S_TYPE,S_DATE_TW as S_DATE
 from xnr.global_utils import es_xnr_2 as es
@@ -24,7 +25,7 @@ from xnr.utils import fb_uid2nick_name_photo as uid2nick_name_photo,\
 from textrank4zh import TextRank4Keyword, TextRank4Sentence
 from xnr.parameter import MAX_VALUE,MAX_SEARCH_SIZE,fb_domain_ch2en_dict,fb_tw_topic_en2ch_dict,fb_domain_en2ch_dict,\
                         EXAMPLE_MODEL_PATH,TOP_ACTIVE_TIME,TOP_PSY_FEATURE
-from xnr.time_utils import ts2datetime,datetime2ts,get_facebook_flow_text_index_list as get_flow_text_index_list
+from xnr.time_utils import ts2datetime,datetime2ts,get_facebook_flow_text_index_list as get_flow_text_index_list,ts2datetime_full
 
 es_flow_text = es
 es_user_portrait = es
@@ -253,8 +254,13 @@ def get_generate_example_model(domain_name,role_name, mail):
     # 心理特征
     psy_feature_list = []
     psy_feature = json.loads(item['psy_feature'])
+    # print 'psy_feature', psy_feature
     for i in range(TOP_PSY_FEATURE):
-        psy_feature_list.append(psy_feature[i][0])
+        try:
+            psy_feature_list.append(psy_feature[i][0])
+        except:
+            pass
+    # print 'psy_feature_list', psy_feature_list
     item['psy_feature'] = '&'.join(psy_feature_list)
     role_group_uids = json.loads(item['member_uids'])
 
