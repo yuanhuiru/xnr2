@@ -366,6 +366,7 @@ def get_daily_recomment_tweets_from_es(xnr_user_no,sort_item):
 #     _id = xnr_user_no +'_'+ sort_item
     _id = 'all_xnr_user_index'
     
+    print es, index_name, active_social_index_type, _id 
     try:
         result = json.loads(es.get(index=index_name, doc_type=active_social_index_type,id=_id)['_source']['result'])
     except:
