@@ -319,7 +319,13 @@ def get_generate_example_model(domain_name,role_name, mail):
     item['active_time'] = active_time_list_np_sort.tolist()
 
     day_post_num_list = np.array(json.loads(item['day_post_num']))
+    #print item['day_post_num']
     item['day_post_num'] = np.mean(day_post_num_list).tolist()
+    #print 'day_post_num before:', [item['day_post_num']], type(item['day_post_num'])
+    if not item['day_post_num'] > 0:
+        item['day_post_num'] = 0
+    #print 'day_post_num after:', item['day_post_num']
+
     item['role_name'] = role_name
     
     task_id_new = 'fb_' + domain_pinyin + '_' + role_en
@@ -341,6 +347,7 @@ def get_show_example_model():
     es_results = es.search(index=fb_example_model_index_name,doc_type=fb_example_model_index_type,\
         body={'query':{'match_all':{}}})['hits']['hits']
     result_all = []
+    print fb_example_model_index_name, fb_example_model_index_type, es
     for result in es_results:
         result = result['_source']
         result_all.append(result)
@@ -353,6 +360,7 @@ def get_export_example_model(domain_name,role_name):
     example_model_file_name = EXAMPLE_MODEL_PATH + task_id + '.json'
     with open(example_model_file_name,"r") as dump_f:
         es_result = json.load(dump_f)
+    print type(es_result), example_model_file_name
     return es_result
 
 def get_create_type_content(create_type,keywords_string,seed_users,all_users):

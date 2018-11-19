@@ -181,7 +181,7 @@ def retweet_tweet_func(account_name,password,text,r_mid,tweet_type,xnr_user_no):
 def reply_tweet_func(account_name,password,text,r_mid,mid,uid):
 
     sina_operate_api = SinaOperateAPI(account_name,password)
-    mark = sina_operate_api.receive(uid=uid, content=text)
+    mark = sina_operate_api.receive(mid=mid, r_mid=r_mid, content=text)
     return mark
 
 ## 评论微博

@@ -324,6 +324,9 @@ def get_generate_example_model(domain_name,role_name, mail):
 
     day_post_num_list = np.array(json.loads(item['day_post_num']))
     item['day_post_num'] = np.mean(day_post_num_list).tolist()
+    if not item['day_post_num'] > 0:
+        item['day_post_num'] = 0
+
     item['role_name'] = role_name
     
     task_id_new = 'tw_' + domain_pinyin + '_' + role_en

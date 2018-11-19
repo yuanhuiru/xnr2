@@ -174,6 +174,11 @@ def get_generate_example_model(domain_name,role_name):
 
     day_post_num_list = np.array(json.loads(item['day_post_num']))
     item['day_post_num'] = np.mean(day_post_num_list).tolist()
+    if not item['day_post_num'] > 0:
+        item['day_post_num'] = 0
+
+
+
     item['role_name'] = role_name
     
     task_id_new =domain_pinyin + '_' + role_en
@@ -203,7 +208,7 @@ def get_show_example_model():
     #print '!!!!!',{'query':{'term':{'xnr_user_no':xnr_user_no}}}
     es_results = es.search(index=weibo_example_model_index_name,doc_type=weibo_example_model_index_type,\
         body={'query':{'match_all':{}}})['hits']['hits']
-
+    print weibo_example_model_index_name, weibo_example_model_index_type
     result_all = []
     for result in es_results:
         result = result['_source']

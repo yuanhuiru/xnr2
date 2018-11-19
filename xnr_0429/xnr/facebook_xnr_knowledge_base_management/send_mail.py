@@ -67,7 +67,7 @@ if __name__ == '__main__':
     content = {
         'subject': '扫描二维码以登陆微信虚拟人',
         'text': '当前微信虚拟人【duolahanbao】【已掉线】，请管理员及时扫码进行登陆，以免影响业务谢谢。',
-        'files_path': '/home/ubuntu8/fff/xnr_static.zip',	#支持多个，以逗号隔开
+        'files_path': '/home/xnr1/xnr_0429/xnr/example_model/fb_xi_jin_ping_si_xiang_other.json,/home/xnr1/xnr_0429/xnr/example_model/fb_xi_si_xiang_3_other.json',	#支持多个，以逗号隔开
         }
     from_user = {
         'name': '虚拟人项目（微信）',
