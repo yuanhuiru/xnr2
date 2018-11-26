@@ -6,11 +6,27 @@ import md5
 import urllib
 import random
 import json
+import langid
+#from trans import traditional2simplified
+from langconv import *
 
 appid = '20181119000236501' #你的appid
 secretKey = 'ptHQmHhGnwy0hkWYGjAt' #你的密钥
 
+#繁体转简体
+def traditional2simplified(sentence):
+    '''
+    将sentence中的繁体字转为简体字
+    :param sentence: 待转换的句子
+    :return: 将句子中繁体字转换为简体字之后的句子
+    '''
+    sentence = Converter('zh-hans').convert(sentence)
+    return sentence
+
 def translate(q):
+    #if langid.classify(q)[0] == 'zh':
+    #    return traditional2simplified(q)
+
     httpClient = None
     myurl = '/api/trans/vip/translate'
     fromLang = 'auto'
@@ -22,7 +38,16 @@ def translate(q):
     m1.update(sign)
     sign = m1.hexdigest()
     #s = [u'\u71c8\u7c60\u9001\u540c\u4e8b\u4e86 \u54c7\uff01           '][0].encode('utf8')
-    q = q.encode('utf8')
+    
+    try:
+        q = q.encode('utf8')
+    except:
+        pass
+    if langid.classify(q)[0] == 'zh':
+        return traditional2simplified(q.decode('utf8'))
+
+
+
     #print [s], [q]
     q = urllib.quote(q)
     #print q
@@ -45,3 +70,4 @@ def translate(q):
 
 if __name__ == '__main__':
     print translate('The kids who can go and drink with dad are all good kids.❤️❤️❤️')
+    print translate("「只有弱者才會逞強，只有強者才懂示弱 。 刻薄是因為底子薄，尖酸是因為心裡酸 ")
