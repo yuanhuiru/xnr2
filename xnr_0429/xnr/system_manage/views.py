@@ -233,6 +233,10 @@ def ajax_show_all_xnr():
 @mod.route('/show_all_users_account/')
 def ajax_show_all_users_account():
 	results=show_all_users_account()
+	xnr_list = []
+	for result in results:
+		xnr_list.append(result["user_name"])
+	print json.dumps(xnr_list, ensure_ascii=False)
 	return json.dumps(results)
 
 

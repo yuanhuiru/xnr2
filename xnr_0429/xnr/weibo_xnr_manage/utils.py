@@ -127,12 +127,12 @@ def show_completed_weiboxnr(account_no,now_time):
 def count_fans_num(xnr_user_no):
     try:
         result=es_xnr.get(index=weibo_xnr_fans_followers_index_name,doc_type=weibo_xnr_fans_followers_index_type,id=xnr_user_no)['_source']
-        print "===========================result"
-        print "-------------------===========================--------------------------------result"
-        print result
+        #print "===========================result"
+        #print "-------------------===========================--------------------------------result"
+        #print result
         followers_list=result['fans_list']
         number=len(followers_list)
-        print number
+        #print number
     except:
         number=0
     return number
@@ -477,9 +477,9 @@ def show_today_history_count(xnr_user_no,start_time,end_time):
     lookup_type='fans_list'
     #今日总粉丝数
     fans_list=lookup_xnr_fans_followers(xnr_user_no,lookup_type)
-    print 'fans all =============================================================='
-    print fans_list
-    print 'fans all =============================================================='
+    #print 'fans all =============================================================='
+    #print fans_list
+    #print 'fans all =============================================================='
     xnr_user_detail['user_fansnum']= len(fans_list)   
     try:
         xnr_result=es_xnr.search(index=index_name,doc_type=xnr_flow_text_index_type,body=query_body)
