@@ -1432,7 +1432,7 @@ def get_related_recommendation(task_detail):
         
         nest_query_list.append({'wildcard':{'keywords_string':'*'+monitor_keyword+'*'}})
         nest_query_list.append({'wildcard':{'keywords_string':'*'+monitor_traditional_keyword+'*'}})
-
+    print 'nest_query_list', nest_query_list
     #弃用，改用转发网络
     # recommend_list_r = es.get(index=fb_xnr_fans_followers_index_name,doc_type=fb_xnr_fans_followers_index_type,id=xnr_user_no)['_source']
     # recommend_list = []

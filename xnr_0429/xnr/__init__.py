@@ -150,7 +150,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'SecretKeyForSessionSigning'
 
     app.config['SECURITY_REGISTERABLE'] = True
-    app.config['SECURITY_REGISTER_URL'] = '/create_account'
+    app.config['SECURITY_REGISTER_URL'] = '/create_accounts'
     
     mail = Mail(app)
     app.config['MAIL_SERVER'] = 'smtp.163.com'

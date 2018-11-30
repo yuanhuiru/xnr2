@@ -406,9 +406,13 @@ def count_text_num(uid_list, fb_flow_text_index_list):
         }
         text_num = 0
         for index_name in fb_flow_text_index_list:
-            result = es.count(index=index_name, doc_type=facebook_flow_text_index_type,body=textnum_query_body)
-            if result['_shards']['successful'] != 0:
-                text_num += result['count']
+            try:
+                result = es.count(index=index_name, doc_type=facebook_flow_text_index_type,body=textnum_query_body)
+                if result['_shards']['successful'] != 0:
+                    text_num += result['count']
+            except Exception,e:
+                # print e
+                pass
         count_result[uid] = text_num
     return count_result
 
@@ -655,4 +659,5 @@ if __name__ == '__main__':
 # time used:  65.2284970284
 # update_topic:  True
 # time used:  12.6456358433
+
 

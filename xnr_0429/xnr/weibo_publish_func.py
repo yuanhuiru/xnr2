@@ -165,6 +165,8 @@ def retweet_tweet_func(account_name,password,text,r_mid,tweet_type,xnr_user_no):
 
     sina_operate_api = SinaOperateAPI(account_name, password)
     mark = sina_operate_api.retweet(mid=r_mid, content=text)
+    print '转发成功-----------------------------------------------------------'
+    print mark
 
     # 保存微博
     if mark:
