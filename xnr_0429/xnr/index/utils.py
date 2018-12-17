@@ -7,7 +7,7 @@ from xnr.parameter import TRANS_PATH
 #trans_path = '/home/ubuntu8/yuanhuiru/xnr/xnr1/xnr/cron/trans/'
 sys.path.append(TRANS_PATH)
 from trans import voice2text
-
+from load_weibo_url import load_weibo_url_func
 #from trans import trans as text_trans
 '''
 def utils_text_trans(q):
@@ -33,4 +33,10 @@ def utils_voice_trans(voice_path):
         r = voice2text(voice_path)
         if r:
             return r
+    return False
+
+def utils_url_trans(uid, mid):
+    url = load_weibo_url_func(uid, mid)
+    if url:
+        return url
     return False

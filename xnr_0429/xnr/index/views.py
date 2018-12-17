@@ -7,8 +7,7 @@ from flask import Blueprint, url_for, render_template, request,\
                   abort, flash, session, redirect
 
 from xnr.extensions import db, user_datastore
-from utils import utils_text_trans, utils_voice_trans
-
+from utils import utils_text_trans, utils_voice_trans, utils_url_trans
 mod = Blueprint('index', __name__, url_prefix='/index')
 
 @mod.route('/login/')
@@ -75,3 +74,16 @@ def voice_trans():
         if res:
             return json.dumps(res)
     return None 
+
+# 根据mid,uid转微博url，以供跳转到对应的微博
+@mod.route('/url_trans/')
+def url_trans():
+    uid =  request.args.get('uid', '')
+    mid =  request.args.get('mid', '')
+    if uid and mid:
+        #url trans
+        res = utils_url_trans(uid, mid)
+        if res:
+            return json.dumps(res)
+    return None
+
