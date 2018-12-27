@@ -320,24 +320,27 @@ def create_weibo_community(xnr_user_no,today_time):
     #给定的nodes可能会因为网络结构或排序被删掉
     s = time.time()
     #得到划分的社区
-    G,allG,coms_list = find_from_uid_list(xnr_user_no)
-    print 'group evaluate...'
+    try:
+        G,allG,coms_list = find_from_uid_list(xnr_user_no)
+        print 'group evaluate...'
 
-    all_influence = get_evaluate_max(influence_index,influence_type,'bci_week_ave')
-    all_sensitive = get_evaluate_max(sensitive_index,sensitive_type,'sensitive_week_ave')
+        all_influence = get_evaluate_max(influence_index,influence_type,'bci_week_ave')
+        all_sensitive = get_evaluate_max(sensitive_index,sensitive_type,'sensitive_week_ave')
 
     #print 'allG nodes:',allG.number_of_nodes()        
     #print 'G nodes:',G.number_of_nodes()
 
-    file_path = './weibo_data/' + xnr_user_no + '_' + ts2datetime(today_time) + '_' +'save_com.json'
-    print 'file_path:',file_path
-    f = open(file_path,'w')
-    for k,v in enumerate(coms_list):
+        file_path = './weibo_data/' + xnr_user_no + '_' + ts2datetime(today_time) + '_' +'save_com.json'
+        print 'file_path:',file_path
+        f = open(file_path,'w')
+        for k,v in enumerate(coms_list):
         #计算评价指标
-        f.write(json.dumps(group_evaluate(xnr_user_no,v,all_influence,all_sensitive,G))+'\n')
+            f.write(json.dumps(group_evaluate(xnr_user_no,v,all_influence,all_sensitive,G))+'\n')
     #print 'total time:',time.time()-s
     #print 'eq:',ExtendQ(allG,coms_list)
-    mark = True
+        mark = True
+    except:
+        mark = False
     return mark
 
 
@@ -349,8 +352,8 @@ if __name__ == '__main__':
         today_time = datetime2ts(WEIBO_COMMUNITY_DATE)
         xnr_user_no_list = ['WXNR0004']
     else:
-        #today_time = time.time()-1*DAY
-        today_time = datetime2ts('2018-07-15')
+        today_time = time.time() - 1*DAY
+        #today_time = datetime2ts('2018-07-15')
         print ts2datetime(today_time)
         xnr_user_no_list = get_compelete_wbxnr()
 
