@@ -916,9 +916,9 @@ if __name__ == '__main__':
     	datetime = datetime2ts(WEIBO_COMMUNITY_DATE)
     	xnr_user_no_list = ['WXNR0004']
     else:
-    	#datetime = int(time.time())-2*DAY
-        date="2018-08-19"
-        datetime = datetime2ts(date)
+    	datetime = int(time.time())-1*DAY
+        #date="2018-08-19"
+        #datetime = datetime2ts(date)
     	xnr_user_no_list = get_compelete_wbxnr()
     start_time = int(time.time())
     for xnr_user_no in xnr_user_no_list:

@@ -26,7 +26,7 @@ r_beigin_ts = datetime2ts(R_BEGIN_TIME)
 
 sys.path.append(TRANS_PATH)
 #print sys.path
-from trans_v2 import trans, simplified2traditional, traditional2simplified
+#from trans_v2 import simplified2traditional, traditional2simplified
 
 sys.path.append('../../timed_python_files/community/')
 from weibo_publicfunc import get_compelete_wbxnr
@@ -175,14 +175,14 @@ def detect_by_keywords(keywords,datetime_list):
     # en_keywords_list = trans(keywords_list, target_language='en')
     for i in range(len(keywords)):
         keyword = keywords[i]
-        traditional_keyword = simplified2traditional(keyword)
+        #traditional_keyword = simplified2traditional(keyword)
         
         # if len(en_keywords_list) == len(keywords_list): #确保翻译没出错
         #     en_keyword = en_keywords_list[i]
         #     nest_query_list.append({'wildcard':{query_item:'*'+en_keyword+'*'}})
         
         nest_query_list.append({'wildcard':{query_item:'*'+keyword+'*'}})
-        nest_query_list.append({'wildcard':{query_item:'*'+traditional_keyword+'*'}})
+        #nest_query_list.append({'wildcard':{query_item:'*'+traditional_keyword+'*'}})
 
     count = MAX_DETECT_COUNT
     if len(nest_query_list) == 1:
@@ -334,6 +334,14 @@ def get_expand_userid_list(xnr_keywords,xnr_relationer,datetime_list):
 
     return expand_userid_list
 
+def get_xnrmonitor_keywords(xnr_user_no):
+    try:
+        xnr_result=es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
+        monitor_keywords=xnr_result['monitor_keywords']
+        monitor_keywords_list = monitor_keywords.split(',')
+    except:
+        monitor_keywords_list=[]
+    return monitor_keywords_list
 
 def create_xnr_targetuser(xnr_user_no):
     # #step1:查找虚拟人列表
@@ -367,6 +375,10 @@ def create_xnr_targetuser(xnr_user_no):
         xnr_keywords = xnr_keyword[:10]
     else:
         xnr_keywords = xnr_keyword
+
+    monitor_keywords = get_xnrmonitor_keywords(xnr_user_no)
+    xnr_keywords.extend(monitor_keywords)
+    #print xnr_keywords
     #step3.2：查找虚拟人的关注用户或好友
     xnr_relationer = get_xnr_relationer(xnr_user_no)
     print 'xnr_relatiner::',len(xnr_relationer)
@@ -374,7 +386,7 @@ def create_xnr_targetuser(xnr_user_no):
     expand_userid_list = get_expand_userid_list(xnr_keywords,xnr_relationer,datetime_list)
     print 'user_num::',len(expand_userid_list)
     user_num = len(expand_userid_list)
-    if user_num <100:
+    if user_num <30:
         temp_uidlist = create_xnr_targetuser('WXNR0010')
         expand_userid_list.extend(temp_uidlist)
         temp_uidlist_2 = create_xnr_targetuser('WXNR0009')

@@ -762,15 +762,18 @@ if __name__ == '__main__':
 
     if S_TYPE == 'test':
         # test_date = WEIBO_COMMUNITY_DATE
-        test_date = '2016-11-27'
+        test_date = '2018-11-25'
         now_time = datetime2ts(test_date)
-        # for i in range(0,7):
-        #     test_time = now_time + i*DAY
-        #     trace_xnr_community(test_time)
-        #     i = i+1
+        community_list = get_trace_community(now_time)
+        for i in range(0,7):
+            test_time = now_time + i*DAY
+            print 'date::',ts2datetime(test_time)
+            for community in community_list:
+                trace_xnr_community(community,test_time)
+                i = i+1
     else:
-        #now_time = int(time.time())-DAY
-        now_time = datetime2ts('2018-07-09')
+        now_time = int(time.time())-DAY
+        #now_time = datetime2ts('2018-11-25')
     community_list = get_trace_community(now_time)
     for community in community_list:
         trace_xnr_community(community,now_time)
