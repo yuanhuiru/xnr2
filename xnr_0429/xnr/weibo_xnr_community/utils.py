@@ -35,7 +35,9 @@ def get_community_index(date_time):
         if es_xnr.indices.exists(index = index_name):
             index_name_list.append(index_name)
         else:
-        	pass
+            index_name = 'weibo_community_2018-11-25'
+            index_name_list.append(index_name)
+        	#pass
     return index_name_list
 
 
@@ -315,9 +317,25 @@ def get_warning_orgnize(result):
 #新社区预警内容组织
 def get_newcommunity_warning(xnr_user_no,community_id,start_time,end_time):
     weibo_community_index_name = get_community_index(end_time)
-    community_result = es_xnr.get(index=weibo_community_index_name,\
-    	doc_type=weibo_community_index_type,id=community_id)['_source']
-    warning_type = community_result['warning_type']
+    print 'id::',community_id
+    try:
+        community_result = es_xnr.get(index=weibo_community_index_name,doc_type=weibo_community_index_type,id=community_id)['_source']
+    except:
+        community_result = dict()
+        community_result['warning_type'] = ''
+        community_result['xnr_user_no']  = xnr_user_no
+        community_result['community_id'] = community_id
+        community_result['create_time'] = ''
+        community_result['nodes'] = ''
+        community_result['num'] = ''    
+
+        community_result['density'] = 0
+        community_result['cluster']=0
+        community_result['max_influence']=0
+        community_result['mean_influence']=0
+        community_result['max_sensitive']= 0
+        community_result['mean_sensitive']=0    
+        community_result['warning_type']=0
 
     warning_result = dict()
     warning_result['xnr_user_no'] = community_result['xnr_user_no']

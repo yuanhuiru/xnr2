@@ -75,6 +75,7 @@ def ajax_create_domain():
     keywords_string = request.args.get('keywords_string','')  # 按关键词方式，以中文逗号“，”分割。若是不是按关键词，则不传递此参数
     seed_users = request.args.get('seed_users','')  # 按种子用户方式，不同uid之间以中文逗号“，”分隔
     all_users = request.args.get('all_users','')  #按所有用户方式，传递所有uid
+    # 如果是关键词则获取关键词
     create_type_new = get_create_type_content(create_type,keywords_string,seed_users,all_users)
     create_time = int(time.time())
     submitter = request.args.get('submitter','admin@qq.com')
