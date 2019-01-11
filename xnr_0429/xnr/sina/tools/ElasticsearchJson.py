@@ -3,6 +3,7 @@ import json
 import time
 import redis
 import elasticsearch
+import traceback
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk, scan
 from sensitive.get_sensitive import get_sensitive_info,get_sensitive_user
@@ -60,10 +61,10 @@ def save_to_redis_fans_follow(uid_xnr,uid,save_item):
 
 
 def executeES(indexName, typeName, listData):
-    #current_time = int(time.time())
-    #indexName += '_' + ts2datetime(current_time)
+    current_time = int(time.time())
+    # indexName += '_' + ts2datetime(current_time)
     
-    #print 'listData:',listData
+    # print 'listData:',listData
     for list_data in listData:
         
         data = {}
@@ -71,44 +72,61 @@ def executeES(indexName, typeName, listData):
         for key, val in jsonData.items():
             # print key, '====', val
             data[key] = val
-            # data['update_time'] = current_time
-
-        
+            data['update_time'] = current_time
+        print 'indexName', indexName
+        print indexName == 'weibo_feedback_follow'
+        #print indexName      
         if indexName != 'weibo_feedback_group':
-            
-            xnr_user_no = uid2xnr_user_no(data["root_uid"])
+            #print data
+            # xnr_user_no = uid2xnr_user_no(data["root_uid"])
+            if uid2xnr_user_no(data["uid"]):
+                xnr_user_no = uid2xnr_user_no(data["uid"])
+            else:
+                xnr_user_no = uid2xnr_user_no(data["root_uid"])
+            #if not xnr_user_no:
+            #    continue
+            #else:
+            #    pass
+            #print data["root_uid"]
+            #print data['uid']
+            try:
+                sensor_mark = judge_sensing_sensor(xnr_user_no,data['uid'])
+                data['sensor_mark'] = sensor_mark
 
-            sensor_mark = judge_sensing_sensor(xnr_user_no,data['uid'])
-            data['sensor_mark'] = sensor_mark
+                trace_follow_mark = judge_trace_follow(xnr_user_no,data['uid'])
+                data['trace_follow_mark'] = trace_follow_mark
 
-            trace_follow_mark = judge_trace_follow(xnr_user_no,data['uid'])
-            data['trace_follow_mark'] = trace_follow_mark
-
-            data['sensitive_info'] = get_sensitive_info(data['timestamp'],data['mid'])
-            data['sensitive_user'] = get_sensitive_user(data['timestamp'],data['uid'])
+                data['sensitive_info'] = get_sensitive_info(data['timestamp'],data['mid'])
+                data['sensitive_user'] = get_sensitive_user(data['timestamp'],data['uid'])
+            except:
+                pass
 
         # else:
         #     print 'group index else'
         #     _id = data["mid"]
 
-
+            print 'indexName:', indexName
             if indexName == 'weibo_feedback_follow':
                 # 修改 _id、保存至fans_followers_es表
+                print "root_uid", data["root_uid"]
                 _id = data["root_uid"]+'_'+data["mid"]
-                xnr_user_no = uid2xnr_user_no(data["root_uid"])
                 
                 save_type = 'followers'
                 follow_type = 'follow'
-
-                if xnr_user_no:      
-                    save_to_fans_follow_ES(xnr_user_no,data["uid"],save_type,follow_type)
-                    save_to_redis_fans_follow(xnr_user_no,data["uid"],save_type)
+                try:
+                    xnr_user_no = uid2xnr_user_no(data["root_uid"])
+                    if xnr_user_no:
+                        save_to_fans_follow_ES(xnr_user_no,data["uid"],save_type,follow_type)
+                        save_to_redis_fans_follow(xnr_user_no,data["uid"],save_type)
+                except Exception, e:
+                    traceback.print_exc(e)
 
                     # sensor_mark = judge_sensing_sensor(xnr_user_no,data['uid'])
                     # data['sensor_mark'] = sensor_mark
 
                     # trace_follow_mark = judge_trace_follow(xnr_user_no,data['uid'])
                     # data['trace_follow_mark'] = trace_follow_mark
+                print 1111111111111111111111111111111111111111111111111111111
                 print 'save to es!!!!',es.index(index=indexName, doc_type=typeName, id=_id, body=data)
 
             elif indexName == 'weibo_feedback_fans':
@@ -127,24 +145,31 @@ def executeES(indexName, typeName, listData):
                     # trace_follow_mark = judge_trace_follow(xnr_user_no,data['uid'])
                     # data['trace_follow_mark'] = trace_follow_mark
                 try:
+                    print 1111111
                     es.get(index=indexName,doc_type=typeName,id=_id)
                 except:
                     print 'save to es!!!!',es.index(index=indexName, doc_type=typeName, id=_id, body=data)
-            
+            # print 'indexName', indexName
+            # print indexName == 'weibo_feedback_comment'
             elif indexName == 'weibo_feedback_comment':
+                print '+++++++++++++++++++++++++++++++++++++++++++++++'
                 indexName_date =indexName + '_' + ts2datetime(data['timestamp'])
                 date_time = ts2datetime(data['timestamp'])
                 # print 'date!!!!!!!',date_time
                 # print 'indexName_date:::',indexName_date
                 mappings_func = weibo_feedback_comment_mappings
                 _id = data["mid"]
+                # print "_id", _id
                 # print 'comment_id........',_id
                 mappings_func(date_time)
-                # print 'data:::',data
+                #print 'data:::',data
+                #print indexName_date, typeName
+                print 'indexName_date', indexName_date
+                print 'typeName', typeName
                 print 'save to es!!!!',es.index(index=indexName_date, doc_type=typeName, id=_id, body=data)
 
             elif indexName == 'weibo_feedback_retweet':
-                # indexName += '_' + ts2datetime(data['timestamp'])
+                indexName += '_' + ts2datetime(data['timestamp'])
                 indexName_date =indexName + '_' + ts2datetime(data['timestamp'])
 
                 date_time = ts2datetime(data['timestamp'])
@@ -152,6 +177,7 @@ def executeES(indexName, typeName, listData):
                 mappings_func = weibo_feedback_retweet_mappings
                 _id = data["mid"]
                 mappings_func(date_time)
+                #print json.dumps(data, ensure_ascii=False)
                 print 'save to es!!!!',es.index(index=indexName_date, doc_type=typeName, id=_id, body=data)
 
             elif indexName == 'weibo_feedback_at':
@@ -163,6 +189,10 @@ def executeES(indexName, typeName, listData):
                 mappings_func = weibo_feedback_at_mappings
                 _id = data["mid"]
                 mappings_func(date_time)
+                print 'intex: ', indexName_date
+                print 'doc_type: ', typeName
+                print 'id: ', _id
+                
                 print 'save to es!!!!',es.index(index=indexName_date, doc_type=typeName, id=_id, body=data)
 
             elif indexName == 'weibo_feedback_like':
@@ -197,7 +227,7 @@ def executeES(indexName, typeName, listData):
         # #print 'typeName.....',typeName
         # print 'es...',es
 
-        # print 'save to es!!!!',es.index(index=indexName, doc_type=typeName, id=_id, body=data)
+        #print 'save to es!!!!',es.index(index=indexName, doc_type=typeName, id=_id, body=data)
 
     print 'update %s ES done' % indexName
 
