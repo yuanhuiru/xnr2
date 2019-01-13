@@ -296,6 +296,7 @@ def operate_out_of_redis():
 
 			elif operate_type == 'unfollow':
 				try:
+					print "weibo_unfollow-======================0-============================================="
 					mark = get_reply_unfollow(task_detail)
 				except:
 					add_operate2redis(queue_dict)
@@ -303,6 +304,7 @@ def operate_out_of_redis():
 
 			elif operate_type == 'receive':
 				try:
+					print "weibo_reply_total-========================0-=============================================="
 					mark = get_reply_total(task_detail)
 				except:
 					#add_operate2redis(queue_dict)

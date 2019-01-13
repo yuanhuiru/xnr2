@@ -861,7 +861,11 @@ def get_detect_information():
     task_information_dict = {}
     try:
         task_information_string = r.rpop(weibo_target_domain_detect_queue_name)
+        print 'successful'
+        print task_information_string
+
     except:
+        print "some bad in your comupte base"
         task_information_string = ''
     #test
     #r_group.rpush(group_detect_queue_name, task_information_string)

@@ -141,11 +141,12 @@ def tw_xnr_user_no2uid(xnr_user_no):
 def uid2xnr_user_no(uid):
     try:
         query_body = {
-            'query':{
-                'term':{'uid':uid}
-            }
+        'query':{
+            'term':{'uid':uid}
         }
+    }
         result = es_xnr.search(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,body=query_body)['hits']['hits']
+        #print result
         xnr_user_no = result[0]['_source']['xnr_user_no']
 
     except:
@@ -256,7 +257,7 @@ def save_to_fans_follow_ES(xnr_user_no,uid,save_type,follow_type,trace_type='ord
 
 ## 判断是否为敏感人物传感器
 def judge_sensing_sensor(xnr_user_no,uid):
-    
+    print index_sensing, type_sensing, xnr_user_no
     exist_item = es_xnr.exists(index=index_sensing,doc_type=type_sensing,id=xnr_user_no)
 
     if not exist_item:

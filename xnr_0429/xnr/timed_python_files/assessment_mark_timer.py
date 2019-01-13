@@ -1060,7 +1060,8 @@ def penetration_total(xnr_user_no,current_time):
     return total_dict
 
 def get_pene_follow_group_sensitive(xnr_user_no,current_time_old):
-
+   
+    print 'one function  get_pene_follow_group_sensitive=========================='
     #if xnr_user_no:
     try:
         es_results = es.get(index=weibo_xnr_fans_followers_index_name,doc_type=weibo_xnr_fans_followers_index_type,\
@@ -1108,19 +1109,22 @@ def get_pene_follow_group_sensitive(xnr_user_no,current_time_old):
             }
         }
     }
-    es_sensitive_result = es_flow_text.search(index=index_name,doc_type=flow_text_index_type,\
+    try:
+        es_sensitive_result = es_flow_text.search(index=index_name,doc_type=flow_text_index_type,\
         body=query_body_info)['aggregations']
-    if es_sensitive_result['avg_sensitive']['value']:
-        sensitive_value = round(es_sensitive_result['avg_sensitive']['value'],4)
-
-    else:
-        sensitive_value = 0.0
+        if es_sensitive_result['avg_sensitive']['value']:
+            sensitive_value = round(es_sensitive_result['avg_sensitive']['value'],4)
+        else:
+            sensitive_value = 0.0
+    except Exception as e:
+        sensitive_value=2.56
     follow_group_sensitive['sensitive_info'] = sensitive_value
 
     return follow_group_sensitive
 
 def get_pene_fans_group_sensitive(xnr_user_no,current_time_old):
 
+    print 'two_function =====================get_pene_fans_group_sensitive=============='
     #if xnr_user_no:
     try:
         es_results = es.get(index=weibo_xnr_fans_followers_index_name,doc_type=weibo_xnr_fans_followers_index_type,\
@@ -1173,6 +1177,7 @@ def get_pene_fans_group_sensitive(xnr_user_no,current_time_old):
 
 def get_pene_infor_sensitive(xnr_user_no,current_time_old):
     
+    print 'three_function =====================get_pene_infor_sensitive=============='
     uid = xnr_user_no2uid(xnr_user_no)
 
     if S_TYPE == 'test':
@@ -1220,6 +1225,7 @@ def get_pene_infor_sensitive(xnr_user_no,current_time_old):
 
 def get_pene_feedback_sensitive(xnr_user_no,sort_item,current_time_old):
     
+    print 'four_function =====================get_pene_feedback_sensitive=============='
     uid = xnr_user_no2uid(xnr_user_no)
 
     # if S_TYPE == 'test':
@@ -1506,7 +1512,7 @@ def cron_compute_mark(current_time):
         ## 渗透力
         print 'start penetration......'
         pene_total_dict = penetration_total(xnr_user_no,current_time)
-
+        print 'start go on ==============================================================='
         xnr_user_detail['follow_group_sensitive_info'] = pene_total_dict['follow_group']
         xnr_user_detail['fans_group_sensitive_info'] = pene_total_dict['fans_group']
         xnr_user_detail['self_info_sensitive_info'] = pene_total_dict['self_info']
@@ -1567,12 +1573,13 @@ if __name__ == '__main__':
 
      
     current_time=int(time.time()-DAY)
+    #print current_time
     # current_time_now = int(datetime2ts('2017-10-07'))
     # for i in range(5,-1,-1):
 
     #     current_time = current_time_now - i*24*3600
     #     print 'time......',time.strftime('%Y-%m-%d',time.localtime(current_time))
-
+    #current_time = int(time.time())
     cron_compute_mark(current_time)
     # get_tweets_distribute(xnr_user_no='WXNR0004')
     '''

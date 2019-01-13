@@ -455,8 +455,13 @@ def detect_by_keywords(keywords,datetime_list):
         flow_text_index_name_list.append(flow_text_index_name)
 
     nest_query_list = []
+
+
     #文本中可能存在英文或者繁体字，所以都匹配一下
-    en_keywords_list = trans(keywords_list, target_language='en')
+    #en_keywords_list = trans(keywords_list, target_language='en')
+    en_keywords_list = []
+
+
     for i in range(len(keywords_list)):
         keyword = keywords_list[i]
         traditional_keyword = simplified2traditional(keyword)
@@ -492,6 +497,7 @@ def detect_by_keywords(keywords,datetime_list):
             }
         }
     }
+    print query_body
     es_results = es_flow_text.search(index=flow_text_index_name_list,doc_type=flow_text_index_type,\
                 body=query_body,request_timeout=999999)['aggregations']['all_uids']['buckets']
 
@@ -1110,12 +1116,13 @@ if __name__ == '__main__':
     print 'start!'
     compute_domain_base()
     print 'total time used:', time.time() - start_ts
+
     # uid_list = ['1140849537', '443835769306299', '288733581614500']
-    # create_time = datetime2ts(S_DATE)
-    # datetime_list = get_flow_text_datetime_list(create_time)
+    #create_time = datetime2ts(S_DATE)
+    #datetime_list = get_flow_text_datetime_list(create_time)
     # # my_domain_classfiy(uid_list, datetime_list)
 
-    # print detect_by_keywords([u'中国', u'党'], datetime_list)
+    #print detect_by_keywords([u'中国', u'党'], datetime_list)
 
 
 

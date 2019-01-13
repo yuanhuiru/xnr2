@@ -41,8 +41,8 @@ from global_utils import weibo_xnr_save_like_index_name,weibo_xnr_save_like_inde
 from time_utils import ts2datetime,datetime2ts,get_flow_text_index_list,\
                             get_timeset_indexset_list, get_db_num
 from weibo_publish_func import publish_tweet_func,retweet_tweet_func,comment_tweet_func,private_tweet_func,\
-                                like_tweet_func,follow_tweet_func,unfollow_tweet_func,create_group_func,\
-                                reply_tweet_func #,at_tweet_func
+                                like_tweet_func,follow_tweet_func,unfollow_tweet_func,\
+                                reply_tweet_func #,at_tweet_func create_group_func,
 from parameter import DAILY_INTEREST_TOP_USER,DAILY_AT_RECOMMEND_USER_TOP,TOP_WEIBOS_LIMIT,\
                         HOT_AT_RECOMMEND_USER_TOP,HOT_EVENT_TOP_USER,BCI_USER_NUMBER,USER_POETRAIT_NUMBER,\
                         MAX_SEARCH_SIZE,domain_ch2en_dict,topic_en2ch_dict,topic_ch2en_dict,FRIEND_LIST,\
