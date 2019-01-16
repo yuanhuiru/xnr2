@@ -25,7 +25,8 @@ from xnr.global_utils import es_user_portrait,es_xnr,weibo_xnr_index_name,weibo_
                              weibo_date_remind_index_name,weibo_date_remind_index_type,\
                              weibo_feedback_follow_index_name,weibo_feedback_follow_index_type,\
                              weibo_feedback_fans_index_name,weibo_feedback_fans_index_type,\
-                             new_xnr_flow_text_index_name_pre,new_xnr_flow_text_index_type
+                             new_xnr_flow_text_index_name_pre,new_xnr_flow_text_index_type,\
+                             weibo_xnr_relations_index_name, weibo_xnr_relations_index_type
 from xnr.parameter import HOT_WEIBO_NUM,MAX_VALUE,MAX_SEARCH_SIZE,DAY,FLOW_TEXT_START_DATE,REMIND_DAY
 from xnr.data_utils import num2str
 from xnr.time_utils import get_xnr_feedback_index_listname,get_timeset_indexset_list,get_xnr_flow_text_index_listname,\
@@ -1376,6 +1377,41 @@ def set_intersection(str_A,list_B):
     return number
 
 def wxnr_list_concerns(user_id,order_type):
+    # 新方法 @hanmc 2019-1-16 19:05:28
+    results = []
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'bool':{
+                        'must':[
+                            {'term':{'xnr_no': user_id}},
+                        ]
+                    }
+                }
+            }
+        },
+        'size': MAX_VALUE,
+        'sort': {order_type: {"order": "desc"}},
+    }
+    search_results = es_xnr.search(index=weibo_xnr_relations_index_name, doc_type=weibo_xnr_relations_index_type, body=query_body)['hits']['hits']
+
+    for data in search_results:
+        data = data['_source']
+        r = {
+            'uid': data['uid'],
+            'nick_name': data['nickname'],
+            'topic_string': data['topic_string'],
+            'sensitive': data['sensitive'],
+            'follow_source': '',
+            'sex': data['sex'],
+            'photo_url': data['photo_url'],
+        }
+        results.append(r)
+    return results
+
+    """
+    # 旧方法，弃用
     print 'start!!',int(time.time())
     try:
         xnr_result=es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=user_id)['_source']
@@ -1400,11 +1436,11 @@ def wxnr_list_concerns(user_id,order_type):
         'size':MAX_VALUE
     }
     xnr_followers_result=[]
-    print 'compute!!!',int(time.time())
+    #print 'compute!!!',int(time.time())
     if xnr_uid:
-        print 'search!!!',int(time.time())
+        #print 'search!!!',int(time.time())
         followers_result=es_xnr.search(index=weibo_feedback_follow_index_name,doc_type=weibo_feedback_follow_index_type,body=query_body)['hits']['hits']
-        print 'for!!!',int(time.time())
+        #print 'for!!!',int(time.time())
         for item in followers_result:
             user_dict=dict()
             follower_uid=item['_source']['uid']
@@ -1413,20 +1449,20 @@ def wxnr_list_concerns(user_id,order_type):
             if set_mark > 0:
                 user_dict['uid']=follower_uid
                 #计算影响力
-                print 'influence!!!!',int(time.time())
+                #print 'influence!!!!',int(time.time())
                 user_dict['influence']=0
-               # user_dict['influence']=count_weibouser_influence(follower_uid)
+                # user_dict['influence']=count_weibouser_influence(follower_uid)
                 #敏感度查询,话题领域
-                print 'sensitive!!!',int(time.time())
-               # try:
-               #     temp_user_result=es_user_portrait.get(index=portrait_index_name,doc_type=portrait_index_type,id=follower_uid)['_source']
-               #     user_dict['sensitive']=temp_user_result['sensitive']
-               #     user_dict['topic_string']=temp_user_result['topic_string']
-               # except:
+                #print 'sensitive!!!',int(time.time())
+                # try:
+                #     temp_user_result=es_user_portrait.get(index=portrait_index_name,doc_type=portrait_index_type,id=follower_uid)['_source']
+                #     user_dict['sensitive']=temp_user_result['sensitive']
+                #     user_dict['topic_string']=temp_user_result['topic_string']
+                # except:
                 user_dict['sensitive']=0
                 user_dict['topic_string']=''
-                print user_dict['sensitive']
-                print 'sensitive!!!_final!!!',int(time.time())
+                #print user_dict['sensitive']
+                #print 'sensitive!!!_final!!!',int(time.time())
                 user_dict['photo_url']=item['_source']['photo_url']            
                 user_dict['nick_name']=item['_source']['nick_name']
                 user_dict['sex']=item['_source']['sex']
@@ -1439,11 +1475,11 @@ def wxnr_list_concerns(user_id,order_type):
                 pass
     else:
     	xnr_followers_result=[]
-    print 'final!!!',int(time.time())
+    #print 'final!!!',int(time.time())
     #对结果按要求排序
     xnr_followers_result.sort(key=lambda k:(k.get(order_type,0)),reverse=True)
     return xnr_followers_result
-
+    """
 
 
 
