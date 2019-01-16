@@ -112,7 +112,7 @@ def influence_cal_fb(current_time):
     flow_text_index_name = facebook_flow_text_index_name_pre + current_date
     count_index_name = facebook_count_index_name_pre + current_date
     fb_bci_index_name = fb_bci_index_name_pre + current_date
-
+    print fb_bci_index_name
     fb_bci_mappings(fb_bci_index_name)
 
     uid_fid_dict = {}

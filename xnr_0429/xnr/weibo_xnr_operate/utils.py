@@ -744,6 +744,8 @@ def get_show_comment(task_detail):
     #index_name = get_timeset_indexset_list(index_name_pre,start_ts,end_ts)
     #print 'index_name...',index_name
     #print 'es..',es
+    print 'es ----------------------====================--------------------name'
+    print index_name
     es_results = es.search(index=index_name,doc_type=weibo_feedback_comment_index_type,\
                             body=query_body)['hits']['hits']
 
@@ -954,7 +956,6 @@ def get_show_at(task_detail):
         'sort':[{sort_item:{'order':'desc'}},{'timestamp':{'order':'desc'}}],
         'size':MAX_SEARCH_SIZE
     }
-        
     if start_ts < datetime2ts(SYSTEM_START_DATE):
         start_ts = datetime2ts(SYSTEM_START_DATE)
 

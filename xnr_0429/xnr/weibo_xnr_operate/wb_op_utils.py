@@ -736,18 +736,14 @@ def get_reply_comment(task_detail):
         account_name = weibo_phone_account
     else:
         return False
-
     # 发布微博
-
     mark = comment_tweet_func(account_name,password,text,r_mid,tweet_type,xnr_user_no)
-
     # 保存微博
     # try:
     #     save_mark = save_to_xnr_flow_text(tweet_type,xnr_user_no,text)
     # except:
     #     print '保存微博过程遇到错误！'
     #     save_mark = False
-
     return mark
 
 def get_show_retweet(task_detail):

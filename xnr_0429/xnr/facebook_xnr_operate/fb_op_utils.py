@@ -46,7 +46,7 @@ def get_submit_tweet_fb(task_detail):
 		es_xnr_result = es.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=xnr_user_no)['_source']
 	except Exception as e:
 		print e
-	print es_xnr_result
+	# print es_xnr_result
 	fb_mail_account = es_xnr_result['fb_mail_account']
 	fb_phone_account = es_xnr_result['fb_phone_account'].strip()
 	password = str(es_xnr_result['password'].strip())

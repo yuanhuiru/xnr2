@@ -15,7 +15,8 @@ from utils import get_weibohistory_retweet,get_weibohistory_comment,get_weibohis
                   show_comment_dialog,cancel_follow_user,attach_fans_follow,lookup_detail_weibouser,\
                   delete_history_count,create_history_count,lookup_xnr_assess_info,\
                   get_xnr_detail,new_show_history_posting,\
-                  create_xnr_flow_text,update_weibo_count,create_send_like,delete_weibo_count,delete_receive_like,delete_xnr_flow_text
+                  create_xnr_flow_text,update_weibo_count,create_send_like,delete_weibo_count,delete_receive_like,delete_xnr_flow_text,\
+                  get_account_info, update_account_info
 from xnr.time_utils import datetime2ts
 
 mod = Blueprint('weibo_xnr_manage', __name__, url_prefix='/weibo_xnr_manage')
@@ -41,6 +42,7 @@ def ajax_get_xnr_detail():
 	xnr_user_no=request.args.get('xnr_user_no','')
 	results=get_xnr_detail(xnr_user_no)
 	return json.dumps(results)
+
 
 #未完成虚拟人
 #test:http://219.224.134.213:9209/weibo_xnr_manage/show_uncompleted_weiboxnr/?account_no=admin@qq.com
@@ -468,3 +470,27 @@ def ajax_create_send_like():
 def ajax_delete_receive_like():
 	results=delete_receive_like()
 	return json.dumps(results)
+
+
+# by kn xuan 验证当前xnr账户或密码是否正确
+#http://219.224.134.213:9209/weibo_xnr_manage/verify_xnr_account/?xnr_user_no=WXNR0003
+@mod.route('/verify_xnr_account/')
+def verify_xnr_account():
+    # 有返回数据的话 则 当前xnr社交帐号或密码有误 去查找xnr用户 
+	xnr_user_no=request.args.get('xnr_user_no','')
+	results=get_account_info(xnr_user_no)
+	return json.dumps(results)
+
+
+# by kn xuan 修改当前xnr账户或密码是否正确
+#http://219.224.134.213:9209/weibo_xnr_manage/verify_xnr_account/?xnr_user_no=WXNR0003
+@mod.route('/modify_xnr_account/')
+def modify_xnr_account():
+    # 有返回数据的话 则 当前xnr社交帐号或密码有误 去查找xnr用户 
+    task_detail = dict()
+    task_detail['xnr_user_no']=request.args.get('xnr_user_no','')
+    task_detail['weibo_mail_account'] = request.args.get('weibo_mail_account','') # 邮箱
+    task_detail['weibo_phone_account'] = request.args.get('weibo_phone_account','') # 手机号
+    task_detail['password'] = request.args.get('password','') # 密码
+    results=update_account_info(task_detail)
+    return json.dumps(results)

@@ -68,6 +68,8 @@ def compute_influence_num(xnr_user_no,current_time_old):
     # new_datetime = datetime[0:4]+datetime[5:7]+datetime[8:10]
     index_name = facebook_bci_index_name_pre + datetime
 
+    print 'compute_influence_num: ', index_name
+
     try:
         bci_xnr = es.get(index=index_name,doc_type=facebook_bci_index_type,id=uid)['_source']['influence']
         bci_max = es.search(index=index_name,doc_type=facebook_bci_index_type,body=\
@@ -86,14 +88,14 @@ def compute_influence_num(xnr_user_no,current_time_old):
 
 # 渗透力分数
 def compute_penetration_num(xnr_user_no,current_time_old):
-
+    print 'compute_penetration_num'
     # if S_TYPE == 'test':
     #     current_time = datetime2ts(S_DATE) - DAY
     # else:
     current_time = current_time_old
     
     current_date = ts2datetime(current_time)
-    timestamp = datetime2ts(current_date)
+    timestamp = datetime2ts(current_date) + DAY
 
     # 找出top 敏感用户
     query_body = {
@@ -134,12 +136,14 @@ def compute_penetration_num(xnr_user_no,current_time_old):
     }
     # if S_TYPE == 'test':
     index_name = get_flow_text_index_list(timestamp)
+
     # else:
     #     index_name = flow_text_index_name_pre + current_date
 
     es_sensitive_result = es.search(index=index_name,doc_type=flow_text_index_type,\
         body=query_body_count)['aggregations']
     sensitive_value_top_avg = es_sensitive_result['avg_sensitive']['value']
+    print current_date, index_name, sensitive_value_top_avg
 
     # if S_TYPE == 'test':
     if not sensitive_value_top_avg:
@@ -520,6 +524,7 @@ def uid2nick_name_photo(uid):
 
 #统计信息表
 def create_xnr_history_info_count(xnr_user_no,current_date):
+    print 'create_xnr_history_info_count'
     facebook_xnr_flow_text_name=xnr_flow_text_index_name_pre+current_date
     query_body={
         'query':{
@@ -548,6 +553,7 @@ def create_xnr_history_info_count(xnr_user_no,current_date):
         xnr_result = []
         #print e
 
+    print facebook_xnr_flow_text_name, xnr_flow_text_index_type, es, query_body, xnr_result
     if xnr_result:
         #今日总粉丝数
         for item in xnr_result['hits']['hits']:
@@ -611,7 +617,8 @@ def create_xnr_history_info_count(xnr_user_no,current_date):
 
 ## 影响力评估各指标
 def get_influence_total_trend(xnr_user_no,current_time):
-    
+    print 'get_influence_total_trend'
+
     fans_dict = get_influ_fans_num(xnr_user_no,current_time)
     retweet_dict = get_influ_retweeted_num(xnr_user_no,current_time)
     comment_dict = get_influ_commented_num(xnr_user_no,current_time)
@@ -646,6 +653,7 @@ def get_influence_total_trend(xnr_user_no,current_time):
     total_dict['growth_rate']['at'] = at_dict['growth_rate']
     total_dict['growth_rate']['private'] = private_dict['growth_rate']
 
+    print total_dict
     return total_dict
 
 # 影响力粉丝数
@@ -1285,6 +1293,7 @@ def get_pene_feedback_sensitive(xnr_user_no,sort_item,current_time_old):
     return feedback_sensitive_dict
 
 def get_pene_warning_report_sensitive(xnr_user_no,current_time_old):
+    print 'get_pene_warning_report_sensitive'
     sensitive_report_dict = {}
 
     report_type_list = [u'人物',u'事件',u'言论']
@@ -1292,7 +1301,7 @@ def get_pene_warning_report_sensitive(xnr_user_no,current_time_old):
     # if S_TYPE == 'test':
     #     current_time = datetime2ts(S_DATE)
     # else:
-    current_time = current_time_old
+    current_time = current_time_old + DAY
     current_date = ts2datetime(current_time)
     current_time_new = datetime2ts(current_date)
 
@@ -1367,7 +1376,10 @@ def get_pene_warning_report_sensitive(xnr_user_no,current_time_old):
     # if S_TYPE == 'test':
     #     current_time = datetime2ts(S_DATE)
 
+
     index_name_list = get_flow_text_index_list(current_time)
+    print 'index_name_list', index_name_list
+    print 'current_time', current_time
 
     es_result_event = es.search(index=index_name_list,doc_type=flow_text_index_type,\
         body=query_body_event)['aggregations']
@@ -1450,6 +1462,13 @@ def cron_compute_mark(current_time):
     
     if S_TYPE == 'test':
         xnr_results = [{'_source':{'xnr_user_no':'FXNR0005'}}, {'_source':{'xnr_user_no':'FXNR0003'}}]
+
+
+
+    xnr_results = [{'_source': {'xnr_user_no': 'FXNR0010'}}]
+
+
+
     start_time = int(time.time())
     for result in xnr_results:
         xnr_user_no = result['_source']['xnr_user_no']
@@ -1460,8 +1479,11 @@ def cron_compute_mark(current_time):
 
         print 'start assessment....'
         influence = compute_influence_num(xnr_user_no,current_time)
+        print 'influence', influence
         penetration = compute_penetration_num(xnr_user_no,current_time)
+        print 'penetration', penetration
         safe = compute_safe_num(xnr_user_no,current_time)
+        print 'safe', safe
 
         _id = xnr_user_no + '_' + current_date
 
@@ -1539,7 +1561,8 @@ if __name__ == '__main__':
     if S_TYPE == 'test':
         current_time = datetime2ts(S_DATE)
     else:
-        current_time = int(time.time()-0*DAY)
+        current_time = int(time.time()-1*DAY)
+    print current_time
     cron_compute_mark(current_time)
 
 #     #2017-10-15  2017-10-30
@@ -1548,6 +1571,7 @@ if __name__ == '__main__':
 #         print 'date', date
 #         current_time = datetime2ts(date)
 #         cron_compute_mark(current_time) 
+
 
 
 

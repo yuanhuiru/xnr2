@@ -570,7 +570,7 @@ def show_condition_history_count(xnr_user_no,start_time,end_time):
         'sort':{'timestamp':{'order':'asc'}} ,
         'size':MAX_SEARCH_SIZE
     }
-    
+    print es_xnr, facebook_xnr_count_info_index_name, facebook_xnr_count_info_index_type, query_body 
     try:
         xnr_count_result=es_xnr.search(index=facebook_xnr_count_info_index_name,doc_type=facebook_xnr_count_info_index_type,body=query_body)['hits']['hits']
         xnr_date_info=[]

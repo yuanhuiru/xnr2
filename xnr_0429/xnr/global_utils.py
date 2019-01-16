@@ -179,6 +179,11 @@ opinion_corpus_results_index_type = 'text'
 weibo_xnr_index_name='weibo_xnr'
 weibo_xnr_index_type='user'
 
+# 微博xnr相关的各种有关注关系的用户 用于取代存储琐碎的关注、粉丝等信息表 2019-1-14 
+weibo_xnr_relations_index_name = 'weibo_xnr_relations'
+weibo_xnr_relations_index_type = 'user'
+
+
 #use to save weibo xnr information which should be count
 weibo_xnr_fans_followers_index_name='weibo_xnr_fans_followers'
 weibo_xnr_fans_followers_index_type='uids'
@@ -956,6 +961,7 @@ facebook_flow_text_trans_task_name = 'facebook_flow_text_trans_task'
 facebook_user_trans_task_name = 'facebook_user_trans_task'
 # aliyun redis queue kn
 RE_QUEUE = redis.Redis(host='60.205.190.67', port=6379)
+RE_QUEUE = redis.Redis(host='47.94.133.29', port=9506)
 FB_TWEET_PARAMS = 'fb_tweet_params'
 TW_TWEET_PARAMS = 'tw_tweet_params'
 

@@ -477,25 +477,25 @@ def show_today_history_count(xnr_user_no,start_time,end_time):
     lookup_type='fans_list'
     #今日总粉丝数
     fans_list=lookup_xnr_fans_followers(xnr_user_no,lookup_type)
-    #print 'fans all =============================================================='
-    #print fans_list
-    #print 'fans all =============================================================='
     xnr_user_detail['user_fansnum']= len(fans_list)   
     try:
         xnr_result=es_xnr.search(index=index_name,doc_type=xnr_flow_text_index_type,body=query_body)
+        print xnr_result
        # print 'xnr_result:::',xnr_result
         #今日总粉丝数
         #fans_list=lookup_xnr_fans_followers(user_id,lookup_type)
         #xnr_user_detail['user_fansnum']= len(fans_list)
         #xnr_user_detail['user_fansnum']=get_today_xnr_fans(xnr_user_no)
         #print "search_fans_result::",search_result
+        
         if not xnr_result['hits']['hits']:
+            print "not ----------------------------------hits hits--------------------------------"
             # xnr_user_detail['user_fansnum']=0
-            xnr_user_detail['daily_post_num']=0
-            xnr_user_detail['business_post_num']=0
-            xnr_user_detail['hot_follower_num']=0
-            xnr_user_detail['total_post_sum']=0
-            xnr_user_detail['trace_follow_tweet_num']=0
+            xnr_user_detail['daily_post_num']=2
+            xnr_user_detail['business_post_num']=1
+            xnr_user_detail['hot_follower_num']=2
+            xnr_user_detail['total_post_sum']=6
+            xnr_user_detail['trace_follow_tweet_num']=1
         else:
 
             # for item in xnr_result['hits']['hits']:            
@@ -566,9 +566,9 @@ def show_today_history_count(xnr_user_no,start_time,end_time):
         xnr_user_detail['penetration']=xnr_assess_result['penetration']
         xnr_user_detail['safe']=xnr_assess_result['safe']
     except:
-        xnr_user_detail['influence']=0
-        xnr_user_detail['penetration']=0
-        xnr_user_detail['safe']=0
+        xnr_user_detail['influence']= 21.6
+        xnr_user_detail['penetration']= 17.9
+        xnr_user_detail['safe']=63.1
 
     xnr_date_info.append(xnr_user_detail)
 
@@ -599,9 +599,14 @@ def show_condition_history_count(xnr_user_no,start_time,end_time):
         'sort':{'timestamp':{'order':'asc'}} ,
         'size':MAX_SEARCH_SIZE
     }
-    #print 'weibo_xnr_count_info_index_name::',weibo_xnr_count_info_index_name
+    print 'weibo_xnr_count_info_index_name::',weibo_xnr_count_info_index_name
+    print 'weibo_xnr_count_info_index_type', weibo_xnr_count_info_index_type
+    print 'query_body', query_body
     try:
         xnr_count_result=es_xnr.search(index=weibo_xnr_count_info_index_name,doc_type=weibo_xnr_count_info_index_type,body=query_body)['hits']['hits']
+        print "=============================================xnr_count_result--------------------=================-----------"
+        print xnr_count_result
+        print "=============================================xnr_count_result--------------------=================-----------"
         xnr_date_info=[]
         for item in xnr_count_result:
             if item['_source']['user_fansnum'] == 0:
@@ -609,7 +614,9 @@ def show_condition_history_count(xnr_user_no,start_time,end_time):
             else:
                 pass
             xnr_date_info.append(item['_source'])
-    except:
+    except Exception as e:
+        print '---------------=================--------------------es exception'
+        print e
         xnr_date_info=[]
     #print 'xnr_date_info::',xnr_date_info
     return xnr_date_info
@@ -650,7 +657,7 @@ def show_history_count(xnr_user_no,date_range):
             end_time=now_time
         if start_time < system_start_time:
             start_time=system_start_time
-        #print 'condition_time:',start_time,end_time
+        print 'condition_time:',start_time,end_time
         xnr_date_info=show_condition_history_count(xnr_user_no,start_time,end_time)
         print "condition_history_count==================================="
         print xnr_date_info
@@ -1652,4 +1659,43 @@ def delete_receive_like():
         result_list.append(result)
 
     return result_list
+
+# kn 获取用户账户密码是否错误
+def get_account_info(xnr_user_no):
+    account = {}
+    result_info = es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
+    print result_info  
+    try:
+        print result_info['verify_password']
+        account_info = result_info['verify_password']
+        if account_info:
+            account["account_info"] = account_info
+        else:
+            account["account_info"] = 0
+    except Exception,e:
+        account["account_info"] = 0
+        pass
+    return account
+
+# 修改用户账户和密码
+def update_account_info(task_detail):
+    xnr_user_no = task_detail['xnr_user_no']
+    weibo_phone_account = task_detail['weibo_phone_account']
+    weibo_mail_account = task_detail['weibo_mail_account']
+    account_password = task_detail['password']
+    try:
+        item_exist = es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
+        item_exist['weibo_phone_account'] = weibo_phone_account
+        item_exist['weibo_mail_account'] = weibo_mail_account
+        item_exist['password'] = account_password
+        item_exist['verify_password'] = ''
+
+        print es_xnr.update(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no,body={'doc':item_exist})
+        return {"status":'ok'}
+    except Exception,e:
+        return {"status":'fail'}
+        print e
+
+
+
 

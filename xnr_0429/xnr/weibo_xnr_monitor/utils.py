@@ -191,18 +191,24 @@ def lookup_today_keywords(from_ts,to_ts,xnr_user_no):
 def lookup_hot_posts(start_time,end_time,weiboxnr_id,classify_id,order_id):
 
 #weiboxnr_id,classify_id暂时不用
-
+    print "weiboxnr_id------------------------------------------------------------"
+    print weiboxnr_id
     print 'post request start!!!!!'
     weibo_sensitive_post_index_name_list = []
     days_num = int((end_time - start_time)/DAY) + 1
+    print 'days_num = int((end_time - start_time)/DAY) + 1-=-=-='
+    print end_time, start_time, DAY
+    print days_num
     for i in range(0,days_num):
         date_ts = end_time - i*DAY
+        print 'date_ts, end_time, i, DAY-=-=-=-=-=-=-=-=-=-=-'
+        print date_ts, end_time, i, DAY
         index_name = weibo_sensitive_post_index_name_pre + ts2datetime(date_ts)
+        print index_name
         if es_xnr.indices.exists(index=index_name):
             weibo_sensitive_post_index_name_list.append(index_name)
-
-
-
+            print 'has append -----------0000000000000000000000000000'
+        print 'has not  append -----------0000000000000000000000000000'
     sort_condition_list = []
     if order_id==1:         #按时间排序
         sort_condition_list=[{'timestamp':{'order':'desc'}}] 
