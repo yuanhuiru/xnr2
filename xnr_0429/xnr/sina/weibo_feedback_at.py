@@ -1,129 +1,99 @@
-# -*-coding: utf-8-*-
-
+# -*- coding: utf-8 -*-
 import json
-import urllib2
+import sys
 
-from tools.ElasticsearchJson import executeES
-from tools.HtmlExtractor import extractForHTML
+import re
+import time
+import traceback
+
 from tools.Launcher import SinaLauncher
-from tools.Pattern import getMatchList, getMatch
-from tools.TimeChange import getTimeStamp
-from tools.URLTools import getUrlToPattern
+from tools.ElasticsearchJson import executeES
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 class FeedbackAt:
-    def __init__(self, uid, current_ts, fans, follow, groups, lastTime):
-        self.uid = uid
-        self.follow = follow
-        self.fans = fans
-        self.groups = groups
-        self.update_time = current_ts
-        self.lasttime = lastTime
+    def __init__(self, username, password):
+        self.launcher = SinaLauncher(username, password)
+        self.launcher.login()
+        self.uid = self.launcher.uid
+        self.session = self.launcher.session
 
-        self._headers = {
-            "Headers": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2;"
-                       " .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0;"
-                       " .NET4.0C; .NET4.0E; InfoPath.3)",
-            "Referer": "http://weibo.com/u/%s/home?topnav=1&wvr=6" % self.uid
-        }
+    @staticmethod
+    def read_datetime(raw_datatime):
+        datetime_splited_list = raw_datatime.split(' ')
+        month = str(datetime_splited_list[1])
+        month = [i.values()[0] for i in
+                 [{'Jan': '01'}, {'Feb': '02'}, {'Mar': '03'}, {'Apr': '04'}, {'May': '05'}, {'Jun': '06'},
+                  {'Jul': '07'}, {'Aug': '08'}, {'Sep': '09'}, {'Oct': '10'}, {'Nov': '11'}, {'Dec': '12'}] if
+                 month == i.keys()[0]][0]
+        day = datetime_splited_list[2]
+        time = datetime_splited_list[3]
+        year = datetime_splited_list[5]
+        datetime = year + '-' + month + '-' + day + ' ' + time
+        return datetime
 
     def atMeComments(self):
-        cr_url = 'http://weibo.com/at/comment?filter_by_author=&nofilter=1&page=1&pids=Pl_Content_MyAtCommentList'
         json_list = []
         tags = False
-
-        comment_url = cr_url
+        page = 1
         while True:
-            print comment_url
-            while True:
-                try:
-                    request = urllib2.Request(comment_url, headers=self._headers)
-                    response = urllib2.urlopen(request, timeout=60)
-                    html = response.read().decode('string_escape').replace('\\/', '/')
-                    break
-                except Exception, e:
-                    print "Network Exception!!! ", e
-                    continue
-            #finally:
-            datas = getMatchList(html, '<div class="WB_feed_detail clearfix">.*?<!--/主评论-->')
-                # print len(datas)
-
-            for data in datas:
-                photo_url = "http:" + getMatch(data, '<img.*?src="(*)"')
-                uid = getMatch(data, 'usercard="id=(*)"')
-                nickname = getMatch(data, 'page_frame" title="(*)"')
-                mid = getMatch(data, '&cid=(*)&')
-                timestamp = getMatch(data, '<div class="WB_from S_txt2">(*)  来自')
-                if timestamp:
-                    timestamp = long(getTimeStamp(timestamp))
-                else:
-                    timestamp = 0
-        
-                if timestamp <= self.lasttime:
-                    tags = True
-                    break
-
-                text = getMatch(data, '<div class="WB_text">(*)</div>')
-                if text:
-                    text = extractForHTML(text)
-                else:
-                    text = ''
-                r_mid = getMatch(data, 'mid=(*)&')
-                r_uid = self.uid
-
+            at_url = 'https://m.weibo.cn/message/mentionsCmt?page={}'.format(page)
+            #at_url = 'https://m.weibo.cn/message/mentionsAt?page={}'.format(page)
+            print at_url
+            resp = self.session.get(at_url)
+            if page == 2:
+                print '++++++++++++++++++++++++++', resp.json()['data']
+            try:
+                resp.json()['data']
+            except:
+                break
+            if resp.json()['data'] is False:
+                break
+            else:
+                pass
+            data_list = resp.json()['data']
+            for data in data_list:
+                photo_url = data['user']['profile_image_url']
+                uid = data['user']['id']
+                nickname = data['user']['screen_name']
+                mid = data['mid']
+                timestamp = int(time.mktime(time.strptime(self.read_datetime(data['status']['created_at']), '%Y-%m-%d %H:%M:%S')))
+                text = re.sub(r'<.*?>', r'', data['status']['text'])
+                print text
+                root_mid = data['status']['mid']
+                root_uid = data['status']['user']['id']
                 _type = 'stranger'
-                type1 = ''
-                type2 = ''
-                for fljson in self.follow:
-                    fjson = json.loads(fljson)
-                    if fjson['uid'] == uid:
-                        type1 = 'follow'
-                        break
-                for fljson in self.fans:
-                    fjson = json.loads(fljson)
-                    if fjson['uid'] == uid:
-                        type2 = 'followed'
-                        break
-                if type1 and type2:
-                    _type = 'friend'
-                elif type1:
-                    _type = type1
-                elif type2:
-                    _type = type2
-                if uid == r_uid:
-                    _type = 'self'
-
-                wb_item = {
+                type1 = 'followed' if data['user']['following'] is True else ''
+                type2 = 'follow' if data['user']['follow_me'] is True else ''
+                weibo_type = 'friend' if type1 and type2 else _type
+                update_time = int(time.time())
+                item = {
                     'photo_url': photo_url,
                     'uid': uid,
                     'nick_name': nickname,
                     'mid': mid,
                     'timestamp': timestamp,
                     'text': text,
-                    'root_mid': r_mid,
-                    'root_uid': r_uid,
-                    'weibo_type': _type,
-                    'update_time': self.update_time
+                    'root_mid': root_mid,
+                    'root_uid': self.uid,
+                    'weibo_type': weibo_type,
+                    'update_time': update_time
                 }
-
-                wb_json = json.dumps(wb_item)
-                json_list.append(wb_json)
-
-            # 分页
-            next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
-            # print next_pageUrl
-            if next_pageUrl:
-                comment_url = next_pageUrl[0]
-            elif not next_pageUrl or tags:
-                break
+                print json.dumps(item, ensure_ascii=False)
+                json_list.append(json.dumps(item, ensure_ascii=False))
+            page += 1
         return json_list
 
     def execute(self):
         comments = self.atMeComments()
-        executeES('weibo_feedback_at', 'text', comments)
-
+        #print 111
+        #executeES('weibo_feedback_at', 'text', comments)
+        #print 222
 
 if __name__ == '__main__':
-    xnr = SinaLauncher('', '')
-    xnr.login()
-    FeedbackAt(xnr.uid).execute()
+
+    feedback_at = FeedbackAt('18737028295', 'xuanhui99999')
+    # print feedback_at.atMeComments()
+    feedback_at.execute()

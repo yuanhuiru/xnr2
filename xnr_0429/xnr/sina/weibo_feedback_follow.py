@@ -1,305 +1,184 @@
-# -*-coding: utf-8-*-
+# -*- coding: utf-8 -*-
 import json
-import urllib2
-
+import sys
+sys.path.append('/home/xnr1/xnr_0429/xnr/')
+import re
 import time
-
-from tools.ElasticsearchJson import executeES
+import traceback
+from utils import uid2xnr_user_no
 from tools.Launcher import SinaLauncher
-from tools.Pattern import getMatchList, getMatch
-from tools.URLTools import getUrlToPattern
-from userinfo import SinaOperateAPI
+from tools.ElasticsearchJson import executeES
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 class FeedbackFollow:
-    def __init__(self, uid, current_ts):
-        self.uid = uid
-        self.update_time = current_ts
+    def __init__(self, username, password):
+        self.launcher = SinaLauncher(username, password)
+        self.launcher.login()
+        self.uid = self.launcher.uid
+        self.session = self.launcher.session
 
-        self._headers = {
-            "Headers": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2;"
-                       " .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0;"
-                       " .NET4.0C; .NET4.0E; InfoPath.3)",
-            "Referer": "http://weibo.com/u/%s/home?topnav=1&wvr=6" % self.uid
-        }
+    @staticmethod
+    def read_datetime(raw_datatime):
+        datetime_splited_list = raw_datatime.split(' ')
+        month = str(datetime_splited_list[1])
+        month = [i.values()[0] for i in
+                 [{'Jan': '01'}, {'Feb': '02'}, {'Mar': '03'}, {'Apr': '04'}, {'May': '05'}, {'Jun': '06'},
+                  {'Jul': '07'}, {'Aug': '08'}, {'Sep': '09'}, {'Oct': '10'}, {'Nov': '11'}, {'Dec': '12'}] if
+                month == i.keys()[0]][0]
+        day = datetime_splited_list[2]
+        time = datetime_splited_list[3]
+        year = datetime_splited_list[5]
+        datetime = year + '-' + month + '-' + day + ' ' + time
+        return datetime
 
     def follow(self):
-        cr_url = 'http://weibo.com/p/100505%s/myfollow?t=1&pids=Pl_Official_RelationMyfollow__93' \
-                 '&cfs=&Pl_Official_RelationMyfollow__93_page=1#Pl_Official_RelationMyfollow__93'
         json_list = []
-
-        comment_url = cr_url % self.uid
-        list_data = []
+        page = 1
         while True:
-            print "comment_url**comment_url**comment_url**comment_url**", comment_url
-            while True:
-                try:
-                    request = urllib2.Request(comment_url, headers=self._headers)
-                    print 1111111111111111
-                    response = urllib2.urlopen(request, timeout=60)
-                    print 2222222222222222
-                    html = response.read().decode('string_escape').replace('\\/', '/')
-                    print 3333333333333333
-                    break
-                except Exception, e:
-                    print "Network Exception!!! ", e
-                    continue
-            #finally:
-            datas = getMatchList(html, '<li class="member_li S_bg1".*?</li>')
-                # print len(datas)
-                # r_datas = datas.reverse()
-            list_data.append(datas)
-
-                # 分页
-            next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
-            print "next_pageUrl**next_pageUrl**next_pageUrl**next_pageUrl**",next_pageUrl
-            if next_pageUrl:
-                comment_url = next_pageUrl[0]
-            else:
+            follow_url = 'https://m.weibo.cn/api/container/getIndex?containerid=231093_-_selffollowed&page={}'.format(page)
+            resp = self.session.get(follow_url)
+            if resp.json().has_key('msg'):
                 break
-
-            r_list_data = reversed(list_data)
-            for l_datas in r_list_data:
-                r_datas = reversed(l_datas)
-                for data in r_datas:
-                    #print 'data::',data
-                    photo_url = getMatch(data, 'profile_image_url=(*)&')
-                    uid = getMatch(data, 'usercard="id=(*)"')
-                    nickname = getMatch(data, '<img.*?alt="(*)"')
-                    timestamp = int(round(time.time()))
-                    time.sleep(1)
-
-                    sex = getMatch(data, '&sex=(*)"')
-                    if not sex:
-                        sex = ''
-                    elif sex == 'f':
-                        sex = 'female'
-                    elif sex == 'm':
-                        sex = 'male'
-
-                    follow_source = getMatch(data, 'class="S_link2" >(*)</a>')
-                    if not follow_source:
-                        follow_source = ''
-
-                    description = getMatch(data, 'W_autocut S_txt2">(*)</div>')
-                    if not description:
-                        description = ''
-
-                    gid = getMatch(data, '&gid=(*)&')
-                    if not gid:
-                        gid = '0'
-                    gname = getMatch(data, '&gname=(*)&')
-                    if not gname:
-                        gname = ''
-
-                    r_uid = self.uid
-                    _type = 'follow'
-
-                    #获得关注人的详细信息
-                    #user = SinaOperateAPI().getUserShow(uid=uid)
-
-                    wb_item = {
-                        'photo_url': photo_url,
-                        'uid': uid,
-                        'mid': uid,
-                        'nick_name': nickname,
-                        'timestamp': timestamp,
-                        'sex': sex,
-                        'description': description,
-                        'follow_source': follow_source,
-                        'gid': gid,
-                        'gname': gname,
-                        'root_uid': r_uid,
-                        'weibo_type': _type,
-                        'update_time': self.update_time
-                    }
-                    if wb_item['mid'] == None:
-                        wb_item['mid'] = ''
-                    print "follow, mid", wb_item['mid']
-                    print "follow, root_uid", wb_item['root_uid']
-                    wb_json = json.dumps(wb_item)
-                    # print wb_json
-                    json_list.append(wb_json)
-
+            if page == 1:
+                cards = resp.json()['data']['cards']
+                for card in cards:
+                    try:
+                        if card['title'].decode('utf-8') == '全部关注':
+                            data_list = card['card_group']
+                    except:
+                        continue
+            else:
+                cards = resp.json()['data']['cards'][0]
+                data_list = cards['card_group']
+            for data in data_list:
+                photo_url = data['user']['profile_image_url']
+                uid = data['user']['id']
+                nickname = data['user']['screen_name']
+                if not nickname:
+                    nickname = ''
+                #print nickname
+                mid = uid
+                sex = data['user']['gender']
+                if not sex:
+                    sex = 'unknown'
+                elif sex == 0:
+                    sex = 'female'
+                elif sex == 1:
+                    sex = 'male'
+                description = data['user']['description']
+                if not description:
+                    description = ''
+                root_uid = uid
+                update_time = int(time.time())
+                item = {
+                    'photo_url': photo_url,
+                    'uid': str(uid),
+                    'mid': str(uid),
+                    'nick_name': nickname,
+                    'timestamp': 0,
+                    'sex': sex,
+                    'description': description,
+                    'follow_source': '',
+                    'gid': '0',
+                    'gname': '',
+                    'root_uid': self.uid,
+                    'weibo_type': 'follow',
+                    'update_time': update_time
+                }
+                json_list.append(json.dumps(item, ensure_ascii=False))
+            page += 1
         return json_list
 
     def fans(self):
-        cr_url = 'http://weibo.com/p/100505%s/myfollow?pids=Pl_Official_RelationFans__88&cfs=600' \
-                 '&relate=fans&t=1&f=1&type=&Pl_Official_RelationFans__88_page=1#Pl_Official_RelationFans__88'
         json_list = []
-
-        comment_url = cr_url % self.uid
-        list_data = []
+        page = 1
         while True:
-            print comment_url
-            while True:
-                try:
-                    request = urllib2.Request(comment_url, headers=self._headers)
-                    response = urllib2.urlopen(request, timeout=60)
-                    html = response.read().decode('string_escape').replace('\\/', '/')
-                    break
-                except Exception, e:
-                    print "Network Exception!!! ", e
-                    continue
-            #finally:
-            datas = getMatchList(html, '<dl class="clearfix">.*?</dl>')
-                # print len(datas)
-                # r_datas = datas.reverse()
-            list_data.append(datas)
-
-                # 分页
-            next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
-                # print next_pageUrl
-            if next_pageUrl:
-                comment_url = next_pageUrl[0]
-            else:
+            fans_url = 'https://m.weibo.cn/api/container/getIndex?containerid=231016_-_selffans&page={}'.format(page)
+            resp = self.session.get(fans_url)
+            #print resp.text
+            if resp.json().has_key('msg'):
                 break
-
-        r_list_data = reversed(list_data)
-        for l_datas in r_list_data:
-            r_datas = reversed(l_datas)
-            for data in r_datas:
-                photo_url = "http:" + getMatch(data, '<img.*?src="(*)"')
-                uid = getMatch(data, 'usercard="id=(*)&')
-                nickname = getMatch(data, '<img.*?alt="(*)"')
-                timestamp = int(round(time.time()))
-                time.sleep(1)
-
-                sex = getMatch(data, '<i class="W_icon icon_(*)"')
+            if page == 1:
+                cards = resp.json()['data']['cards']
+                for card in cards:
+                    try:
+                        if card['title'].decode('utf-8') == '全部粉丝':
+                            data_list = card['card_group']
+                    except:
+                        continue
+            else:
+                cards = resp.json()['data']['cards'][0]
+                data_list = cards['card_group']
+            
+            for data in data_list:
+                photo_url = data['user']['profile_image_url']
+                uid = data['user']['id']
+                nickname = data['user']['screen_name']
+                if not nickname:
+                    nickname = ''
+                #print nickname
+                mid = uid
+                sex = data['user']['gender']
                 if not sex:
-                    sex = ''
-                follower = getMatch(data, 'follow" >(*)</a>')
-                if follower and follower.isdigit():
-                    follower = long(follower)
+                    sex = 'unknown'
+                elif sex == 0:
+                    sex = 'female'
+                elif sex == 1:
+                    sex = 'male'
                 else:
+                    sex = 'unknown'
+                follower = data['user']['follow_count']
+                if not follower:
                     follower = 0
-                geo = getMatch(data, '>地址</em>(*)</div>')
-                if not geo:
-                    geo = ''
-                fan_source = getMatch(data, 'class="S_link2">(*)</a>')
-                if not fan_source:
-                    fan_source = ''
-                fans = getMatch(data, 'current=fans" >(*)</a>')
-                if fans and fans.isdigit():
-                    fans = long(fans)
-                else:
+                fans = data['user']['followers_count']
+                if not fans:
                     fans = 0
-                description = getMatch(data, '<div class="info_intro"><span>(*)</span>')
+                description = data['user']['description']
                 if not description:
                     description = ''
-                weibos = getMatch(data, '/u/' + uid + '" >(*)</a>')
-                if weibos and weibos.isdigit():
-                    weibos = long(weibos)
-                else:
-                    weibos = 0
-
-                r_uid = self.uid
-                _type = 'followed'
-
-                wb_item = {
+                root_uid = uid
+                update_time = int(time.time())
+                item = {
                     'photo_url': photo_url,
-                    'uid': uid,
-                    'mid': uid,
+                    'uid': str(uid),
+                    'mid': str(uid),
                     'nick_name': nickname,
-                    'timestamp': timestamp,
+                    'timestamp': 0,
                     'sex': sex,
-                    'follower': follower,
-                    'geo': geo,
-                    'fan_source': fan_source,
-                    'fans': fans,
+                    'follower': str(follower),
+                    'fan_source': '',
+                    'fans': str(fans),
+                    'geo': '',
                     'description': description,
-                    'weibos': weibos,
-                    'root_uid': r_uid,
-                    'weibo_type': _type,
-                    'update_time': self.update_time
+                    'weibos': '',
+                    'root_uid': str(self.uid),
+                    'weibo_type': 'followed',
+                    'update_time': update_time
                 }
-                print 'fans, root_uid', wb_item['root_uid']
-                print 'fans, mid', wb_item['mid']
-                if wb_item['mid'] == None:
-                    wb_item['mid'] = ''
-                wb_json = json.dumps(wb_item)
-                
-                json_list.append(wb_json)
-
-        return json_list
-
-    def groups(self):
-        cr_url = 'http://weibo.com/p/100505%s/myfollow?pids=Pl_Official_RelationGroupList__96&relate=group' \
-                 '&Pl_Official_RelationGroupList__96_page=1#Pl_Official_RelationGroupList__96'
-        json_list = []
-
-        comment_url = cr_url % self.uid
-        list_data = []
-        while True:
-            print comment_url
-            while True:
-                try:
-                    request = urllib2.Request(comment_url, headers=self._headers)
-                    response = urllib2.urlopen(request, timeout=60)
-                    html = response.read().decode('string_escape').replace('\\/', '/')
-                    break
-                except Exception, e:
-                #html = ''
-                    print "Network Exception!!! ", e
-                    continue
-            #finally:
-            datas = getMatchList(html, '<div class="mod_info">.*?</p>')
-                # print len(datas)
-                # r_datas = datas.reverse()
-            list_data.append(datas)
-
-                # 分页
-            next_pageUrl = getUrlToPattern(html, comment_url, pattern='page', text_pattern='下一页')
-                # print next_pageUrl
-            if next_pageUrl:
-                comment_url = next_pageUrl[0]
-            else:
-                break
-
-        r_list_data = reversed(list_data)
-        for l_datas in r_list_data:
-            r_datas = reversed(l_datas)
-            for data in r_datas:
-                gid = getMatch(data, '/p/230491(*)"')
-                gname = getMatch(data, 'relation_center">(*)</a></div>')
-                timestamp = int(round(time.time()))
-                time.sleep(1)
-
-                wb_item = {
-                    'uid': self.uid,
-                    'mid': gid,
-                    'gid': gid,
-                    'gname': gname,
-                    'timestamp': timestamp,
-                    'update_time': self.update_time
-                }
-                print 'groups, mid', wb_item['mid']
-                wb_json = json.dumps(wb_item)
-                #wb_json = wb_item
-                # print wb_json
-                json_list.append(wb_json)
-
+                json_list.append(json.dumps(item, ensure_ascii=False))
+            page += 1
         return json_list
 
     def execute(self):
-        fans = self.fans()
-        
-        executeES('weibo_feedback_fans', 'text', fans)
-        
-        print "follow start!follow start!follow start!follow start!"
-        print "\n"
+
         follow = self.follow()
-        print "\n"
-        print "follow end!follow end!follow end!follow end!follow end!"
+        # fans = self.fans()
+        groups = ''
+        print 'follow', follow
+        # print 'fans', fans
+        print '+++++++++++++++++++++++++++++++++++++'
         executeES('weibo_feedback_follow', 'text', follow)
-
-        groups = self.groups()
-        executeES('weibo_feedback_group', 'text', groups)
-
-        return fans, follow, groups
-
+        print '-------------------------------------'
+        #executeES('weibo_feedback_fans', 'text', fans)
+        print '+++++++++++++++++++++++++++++++++++++'
+        #return fans, follow, groups
+        
 
 if __name__ == '__main__':
-    current_ts = int(time.time())
-    xnr = SinaLauncher('13718641914', 'hua198912180')
-    xnr.login()
-    FeedbackFollow(xnr.uid, current_ts).execute()
+    #weibo_feedback_follow = FeedbackFollow('sosisuki@163.com', '2012hlwxxc')
+    weibo_feedback_follow = FeedbackFollow('18737028295', 'xuanhui99999')
+    # print weibo_feedback_follow.follow()
+    #print weibo_feedback_follow.fans()
+    weibo_feedback_follow.execute()

@@ -155,12 +155,12 @@ if __name__ == '__main__':
     #定义变量
     #username = 'magnificenthill@sina.com' #输入你的用户名
     #password = 'yunzhonghaihai92' #输入你的密码
-    username = '18737028295' #输入你的用户名
-    password = 'xuanhui99999' #输入你的密码
+    username = '18348831412' #输入你的用户名
+    password = 'Z16051605' #输入你的密码
 
     #username = '13269704912'
     #password = 'murcielagolp640'
-    text = '测试oook'.decode('utf-8')
+    text = '测试成功！！'.decode('utf-8')
 
     #file = '/home/xnr1/xnr_0429/xnr/static/images/icon.png'
     weibo_publish_main(username,password,text)

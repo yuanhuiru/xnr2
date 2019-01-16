@@ -55,10 +55,20 @@ class SinaOperateAPI:
         else:
             return False, '失败', resp.status_code
 
-    def receive(self, uid, content=''):
+    #def receive(self, uid, content=''):
+    #    st = re.search(r"st: '(.*?)',", self.session.get('https://m.weibo.cn').text).group(1)
+    #    url = 'https://m.weibo.cn/api/chat/send'
+    #    post_data = {'uid': uid, 'content': content, 'st': st}
+    #    resp = self.session.post(url, data=post_data, headers=self._headers)
+    #    if str(resp.status_code) == '200':
+    #        return True, '成功'
+    #    else:
+    #        return False, '失败', resp.status_code
+
+    def receive(self, r_mid, mid, content=''):
         st = re.search(r"st: '(.*?)',", self.session.get('https://m.weibo.cn').text).group(1)
-        url = 'https://m.weibo.cn/api/chat/send'
-        post_data = {'uid': uid, 'content': content, 'st': st}
+        url = 'https://m.weibo.cn/api/comments/reply'
+        post_data = {'id': str(r_mid), 'reply': str(mid), 'content': content, 'withReply':'1', 'mid': str(r_mid), 'cid': str(mid), 'st': st}
         resp = self.session.post(url, data=post_data, headers=self._headers)
         if str(resp.status_code) == '200':
             return True, '成功'
@@ -129,10 +139,10 @@ def weibo_publish_main(username, password, text='', file=''):
 if __name__ == '__main__':
 
     sina_operate_api = SinaOperateAPI('13269704912', 'murcielagolp640')
-    print sina_operate_api.publish(content='hhhh')
+    # print sina_operate_api.publish(content='hhhh')
     # print sina_operate_api.retweet(mid='', content='')
-    # print sina_operate_api.receive(uid='', content='')
-    # print sina_operate_api.comment(mid='', content='')
+    print sina_operate_api.receive(mid='4305918151652871', r_mid='4301849861467864',  content='hhhhh')
+    # print sina_operate_api.comment(mid='4301849861467864', content='测试')
     # print sina_operate_api.like(mid='')
     # print sina_operate_api.followed(uid='')
     # print sina_operate_api.unfollowed(uid='')

@@ -26,9 +26,9 @@ def get_present_time():
     second = int(present_time.split(" ")[1].split(":")[2])
     return year, month, day, hour, minute, second
 
-def execute(uname, upasswd):
+def execute(uname, upasswd, account_type):
 
-    xnr = SinaLauncher(uname, upasswd)
+    xnr = SinaLauncher(uname, upasswd, account_type)
     print xnr.login()
     print 'uname::',uname
     uid = xnr.uid
@@ -36,51 +36,53 @@ def execute(uname, upasswd):
 
     timestamp_retweet, timestamp_like, timestamp_at, timestamp_private, \
     timestamp_comment_receive, timestamp_comment_make = newest_time_func(xnr.uid)
-
+    print '-----------------------------------------------------------------------'
     print timestamp_retweet, timestamp_like, timestamp_at, \
        timestamp_private, timestamp_comment_receive, timestamp_comment_make
+    print '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
 
-    #try:
-    print 'start run weibo_feedback_follow.py ...'
-    fans, follow, groups = FeedbackFollow(xnr.uid, current_ts).execute()
-    print 'run weibo_feedback_follow.py done!'
-    # except:
-    #     print 'Except Abort'
+    try:
+        print 'start run weibo_feedback_follow.py ...'
+        FeedbackFollow(uname, upasswd).execute()
+        print 'run weibo_feedback_follow.py done!'
+    except:
+        print uname, upasswd
+        print 'Except Abort'
    
     #try:
-    print 'start run weibo_feedback_at.py ...'
-    FeedbackAt(xnr.uid, current_ts, fans, follow, groups, timestamp_at).execute()
-    print 'run weibo_feedback_at.py done!'
+    #print 'start run weibo_feedback_at.py ...'
+    #FeedbackAt(uname, upasswd).execute()
+    #print 'run weibo_feedback_at.py done!'
     # except:
     #     print 'Except Abort'
 
     #try:
-    print 'start run weibo_feedback_comment.py ...'
-    FeedbackComment(xnr.uid, current_ts, fans, follow, groups, timestamp_comment_make, timestamp_comment_receive).execute()
-    print 'run weibo_feedback_comment.py done!'
+    #print 'start run weibo_feedback_comment.py ...'
+    #FeedbackComment(uname, upasswd).execute()
+    #print 'run weibo_feedback_comment.py done!'
     # except:
     #     print 'Except Abort'
 
     # try:
-    print 'start run weibo_feedback_like.py ...'
-    FeedbackLike(xnr.uid, current_ts, fans, follow, groups, timestamp_like).execute()
-    print 'run weibo_feedback_like.py done!'
+    #print 'start run weibo_feedback_like.py ...'
+    #FeedbackLike(uname, upasswd).execute()
+    #print 'run weibo_feedback_like.py done!'
     # except:
     #     print 'Except Abort'
 
     # try:
-    print 'start run weibo_feedback_private.py ...'
+    #print 'start run weibo_feedback_private.py ...'
     # print 'timestamp_private:::',timestamp_private
     # print 'current_ts::::::',current_ts
-    FeedbackPrivate(xnr.uid, current_ts, fans, follow, groups, timestamp_private).execute()
-    print 'run weibo_feedback_private.py done!'
+    #FeedbackPrivate(uname, upasswd).execute()
+    #print 'run weibo_feedback_private.py done!'
     # except:
     #     print 'Except Abort'
 
     #try:
-    print 'start run weibo_feedback_retweet.py ...'
-    FeedbackRetweet(xnr.uid, current_ts, fans, follow, groups, timestamp_retweet).execute()
-    print 'run weibo_feedback_retweet.py done!'
+    #print 'start run weibo_feedback_retweet.py ...'
+    #FeedbackRetweet(uname, upasswd).execute()
+    #print 'run weibo_feedback_retweet.py done!'
     # except:
         #print 'Except Abort'
 
@@ -99,14 +101,19 @@ def all_weibo_xnr_crawler():
 			phone_account = result['weibo_phone_account']
 			pwd = result['password']
 			if mail_account:
+            	#  加入账户类型,为了区别是邮箱或者手机账号
 				account_name = mail_account
+				account_type = 'mail'
 			elif phone_account:
 				account_name = phone_account
+				account_type = 'phone'
 			else:
 				account_name = False
-
+				account_type = ' '
+			print account_name, pwd
 			if account_name:
-				execute(account_name,pwd)
+				execute(account_name,pwd,account_type)
+            
 
 if __name__ == '__main__':
     try:
@@ -119,7 +126,7 @@ if __name__ == '__main__':
             all_weibo_xnr_crawler()
             end_ts = int(time.time())
             print 'cost..',end_ts-start_ts
-            all_weibo_xnr_crawler()
+        all_weibo_xnr_crawler()
     except Exception, e:
-        print e
-        sendqqmail(traceback.format_exc(e), 'sina/weibo_crawler crashed!!!!')
+        traceback.print_exc(e)
+        #sendqqmail(traceback.format_exc(e), 'sina/weibo_crawler crashed!!!!')

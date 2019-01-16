@@ -1406,9 +1406,17 @@ def get_related_recommendation_from_es(task_detail):
     current_date = ts2datetime(time.time())
     index_name = active_social_index_name_pre + current_date
     _id = xnr_user_no +'_'+ sort_item
+    print _id
+
     
     try:
         result = json.loads(es.get(index=index_name, doc_type=active_social_index_type,id=_id)['_source']['result'])
+
+        print 'result包含什么~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
+        print result[:2]
+
+        print 'result包含什么~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
     except:
         result = []
     return result

@@ -5,7 +5,6 @@ from elasticsearch import Elasticsearch
 from global_utils import es_xnr as es,\
     weibo_xnr_relations_index_name, weibo_xnr_relations_index_type
 
-
 def weibo_xnr_relations_mappings():
     index_info = {
         'settings':{
@@ -23,7 +22,7 @@ def weibo_xnr_relations_mappings():
         "mappings": {
           weibo_xnr_relations_index_type: {
             "properties": {
-              "platform": {                 # 社交平台
+              "platform": {                 # 社交平台 weibo || facebook || twitter
                 "type": "string",
                 "index": "not_analyzed"
               },
@@ -58,7 +57,7 @@ def weibo_xnr_relations_mappings():
               "pingtaiguanzhu": {           # 1=是，0=否 。 xnr在社交平台上关注的用户
                 "type": "integer",
               },
-              "pingtaifensi": {           # 1=是，0=否 。 在社交平台上关注xnr的用户
+              "pingtaifensi": {             # 1=是，0=否 。 在社交平台上关注xnr的用户
                 "type": "integer",
               },
               "influence": {
@@ -79,15 +78,29 @@ def weibo_xnr_relations_mappings():
                 "type": "string",
                 "analyzer": "my_analyzer"
               },
+              "fensi_num": {                # 用户的粉丝数
+                "type": "integer",
+              },
+              "guanzhu_num": {              # 用户的关注数
+                "type": "integer",
+              },
+              "geo": {                      # 位置
+                "type": "string",
+                "index": "not_analyzed"
+              }
             }
           }
         }
     }
     exist_indice=es.indices.exists(index=weibo_xnr_relations_index_name)
     if not exist_indice:
-        es.indices.create(index=weibo_xnr_relations_index_name,body=index_info,ignore=400)
+        print es.indices.create(index=weibo_xnr_relations_index_name,body=index_info,ignore=400)
 
-'''
+def delete_mappings():
+    print es.indices.delete(index=weibo_xnr_relations_index_name, ignore=400)
+
+
+"""
 def update_mappings():
     mappings = {
             'text':{
@@ -110,7 +123,9 @@ def update_mappings():
             }
         }
     print es.indices.put_mapping(index='test_mappings', doc_type='text', body=mappings)
-'''
+"""
 
 if __name__=='__main__':
     weibo_xnr_relations_mappings()
+    #delete_mappings()
+

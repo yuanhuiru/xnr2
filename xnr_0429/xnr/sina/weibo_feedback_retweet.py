@@ -1,169 +1,97 @@
-# -*-coding: utf-8-*-
-
+# -*- coding: utf-8 -*-
 import json
-import urllib2
+import sys
 
+import re
 import time
-
-#from sina.weibo_feedback_follow import FeedbackFollow
-from weibo_feedback_follow import FeedbackFollow
-from tools.ElasticsearchJson import executeES
+import traceback
 
 from tools.Launcher import SinaLauncher
-from tools.HtmlExtractor import extractForHTML
-from tools.Pattern import getMatchList, getMatch
+from tools.ElasticsearchJson import executeES
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 class FeedbackRetweet:
-    def __init__(self, uid, current_ts, fans, follow, groups, lastTime):
-        self.uid = uid
-        self.follow = follow
-        self.fans = fans
-        self.groups = groups
-        self.update_time = current_ts
-        self.lasttime = lastTime
+    def __init__(self, username, password):
+        self.launcher = SinaLauncher(username, password)
+        self.launcher.login()
+        self.uid = self.launcher.uid
+        self.session = self.launcher.session
 
-        self._headers = {
-            "Headers": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2;"
-                       " .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0;"
-                       " .NET4.0C; .NET4.0E; InfoPath.3)",
-            "Referer": "http://weibo.com/u/%s/home?topnav=1&wvr=6" % self.uid
-        }
+    @staticmethod
+    def read_datetime(raw_datatime):
+        datetime_splited_list = raw_datatime.split(' ')
+        month = str(datetime_splited_list[1])
+        month = [i.values()[0] for i in
+                 [{'Jan': '01'}, {'Feb': '02'}, {'Mar': '03'}, {'Apr': '04'}, {'May': '05'}, {'Jun': '06'},
+                  {'Jul': '07'}, {'Aug': '08'}, {'Sep': '09'}, {'Oct': '10'}, {'Nov': '11'}, {'Dec': '12'}] if
+                 month == i.keys()[0]][0]
+        day = datetime_splited_list[2]
+        time = datetime_splited_list[3]
+        year = datetime_splited_list[5]
+        datetime = year + '-' + month + '-' + day + ' ' + time
+        return datetime
 
     def atMeMicroBlog(self):
-        pre_page = 0
-        page = 1
-        pagebar = 0
-        # max_page = 100
-        at_MBurl = 'http://weibo.com/aj/at/mblog/list?ajwvr=6&pre_page=%s&page=%s' \
-                   '&filter_by_author=0&filter_by_type=0&is_adv=0&pagebar=%s'
-        print at_MBurl
         json_list = []
-        tags = False
-
+        page = 1
         while True:
-            wbUrl = at_MBurl % (pre_page, page, pagebar)
-            print "current url: ", wbUrl
-            while True:
-                try:
-                    request = urllib2.Request(wbUrl, headers=self._headers)
-                    response = urllib2.urlopen(request, timeout=60)
-                    mb_content = json.loads(response.read())
-                    break
-                except Exception, e:
-                    print "Network Exception!!! ", e
-                    continue
-            # finally:
-            html = mb_content["data"]
-            print "html****html****html****html****html****", html
-                # 分页
-            print "html_replace***html_replace***html_replace***", html.replace('\n', '').replace(' ', '')
-            print len(html.replace('\n', '').replace(' ', ''))
-            print tags
-            if html.replace('\n', '').replace(' ', '') == '' or tags:
+            at_me_microblog_url = 'https://m.weibo.cn/message/mentionsAt?page={}'.format(page)
+            resp = self.session.get(at_me_microblog_url)
+            data_list = resp.json()['data']
+            if not data_list:
                 break
-                # if page > max_page:
-                #     break
-            elif pre_page < page:
-                pre_page += 1
-            elif pre_page == page and pagebar == 0:
-                pagebar = 1
-            elif pagebar == 1:
-                pre_page = page
-                page += 1
-                pagebar = 0
-
-            datas = getMatchList(html, '<div class="WB_face W_fl">(*)<div node-type="feed_list_repeat')
-
-            for data in datas:
-                photo_url = "http:" + getMatch(data, '<img.*?src="(*)"')
-                uid = getMatch(data, 'usercard="id=(*)&')
-                nickname = getMatch(data, 'nick-name="(*)"')
-                mid = getMatch(data, 'pubuser_nick:(*)"')
-                timestamp = getMatch(data, '<div class="WB_from S_txt2">.*?date="(*)"')[0:-3]
-                if timestamp and timestamp.isdigit():
-                    timestamp = long(timestamp)
-                else:
-                    timestamp = 0
-                    
-                if timestamp <= self.lasttime:
-                    tags = True
-                    break
-
-                text = getMatch(data, 'feed_list_content" >(*)</div>').strip()
-                if text:
-                    text = extractForHTML(text.strip())
-                else:
-                    text = ''
-
-                retweet = getMatch(data, 'forward_btn_text">.*?<em>(*)</em>').replace('转发', '')
-                if retweet and retweet.isdigit():
-                    retweet = long(retweet)
-                else:
-                    retweet = 0
-
-                comment = getMatch(data, 'comment_btn_text">.*?<em>(*)</em>').replace('评论', '')
-                if comment and comment.isdigit():
-                    comment = long(comment)
-                else:
-                    comment = 0
-
-                like = getMatch(data, 'UI_ani_praised".*?<em>(*)</em>')
-                if like and like.isdigit():
-                    like = long(like)
-                else:
-                    like = 0
-                r_mid = getMatch(data, 'rootmid=(*)&')
-                r_uid = self.uid
-
-                _type = 'stranger'
-                type1 = ''
-                type2 = ''
-                for fljson in self.follow:
-                    fjson = json.loads(fljson)
-                    if fjson['uid'] == uid:
-                        type1 = 'follow'
-                        break
-                for fljson in self.fans:
-                    fjson = json.loads(fljson)
-                    if fjson['uid'] == uid:
-                        type2 = 'followed'
-                        break
-                if type1 and type2:
-                    _type = 'friend'
-                elif type1:
-                    _type = type1
-                elif type2:
-                    _type = type2
-                if uid == r_uid:
-                   _type = 'self'
-
-                wb_item = {
-                    'photo_url': photo_url,
-                    'uid': uid,
-                    'nick_name': nickname,
-                    'mid': mid,
-                    'timestamp': timestamp,
-                    'text': text,
-                    'retweet': retweet,
-                    'comment': comment,
-                    'like': like,
-                    'root_mid': r_mid,
-                    'root_uid': r_uid,
-                    'weibo_type': _type,
-                    'update_time': self.update_time
-                }
-
-                wb_json = json.dumps(wb_item)
-                json_list.append(wb_json)
+            else:
+                pass
+            for data in data_list:
+                if data.has_key('retweeted_status'):
+                    try:
+                        data['retweeted_status']['user']['id']
+                    except:
+                        continue
+                    if int(data['retweeted_status']['user']['id']) == int(self.uid):
+                        _type = 'stranger'
+                        type1 = 'followed' if data['user']['following'] is True else ''
+                        type2 = 'follow' if data['user']['follow_me'] is True else ''
+                        photo_url = data['user']['profile_image_url']
+                        uid = data['user']['id']
+                        nick_name = data['user']['screen_name']
+                        mid = data['mid']
+                        timestamp = int(time.mktime(time.strptime(self.read_datetime(data['created_at']), '%Y-%m-%d %H:%M:%S')))
+                        text = re.sub(r'<.*?>', r'', data['text'])
+                        retweet = data['retweeted_status']['reposts_count']
+                        comment = data['comments_count']
+                        root_mid = data['retweeted_status']['mid']
+                        root_uid = self.uid
+                        weibo_type = 'friend' if type1 and type2 else _type
+                        update_time = int(time.time())
+                        item = {
+                            'photo_url': photo_url,
+                            'uid': str(uid),
+                            'nick_name': nick_name,
+                            'mid': str(mid),
+                            'timestamp': timestamp,
+                            'text': text,
+                            'retweet': retweet,
+                            'comment': comment,
+                            'root_mid': str(root_mid),
+                            'root_uid': str(root_uid),
+                            'weibo_type': weibo_type,
+                            'update_time': update_time
+                        }
+                        json_list.append(json.dumps(item, ensure_ascii=False))
+            page += 1
         return json_list
 
-    def execute(self):
+    def excute(self):
         retweet = self.atMeMicroBlog()
         executeES('weibo_feedback_retweet', 'text', retweet)
 
 
 if __name__ == '__main__':
-    xnr = SinaLauncher('', '')
-    xnr.login()
-    FeedbackRetweet(xnr.uid).execute()
+    #weibo_feedback_retweet = FeedbackRetweet('13269704912', 'murcielagolp640')
+    weibo_feedback_retweet = FeedbackRetweet('18737028295', 'xuanhui99999')
+    # print weibo_feedback_retweet.atMeMicroBlog()
+    weibo_feedback_retweet.excute()
+

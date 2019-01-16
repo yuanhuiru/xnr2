@@ -12,7 +12,9 @@ from global_utils import es_xnr_2 as es_fb_tw, es_user_portrait, es_flow_text,es
                         twitter_user_index_name, twitter_user_index_type,\
                         fb_bci_index_name_pre, fb_bci_index_type,\
                         facebook_flow_text_index_name_pre, tw_bci_index_name_pre, tw_bci_index_type,\
-                        fb_index_sensing, fb_type_sensing,tw_index_sensing, tw_type_sensing
+                        fb_index_sensing, fb_type_sensing,tw_index_sensing, tw_type_sensing,\
+                        weibo_xnr_relations_index_name, weibo_xnr_relations_index_type,\
+                        portrait_index_name, portrait_index_type
 from global_utils import R_OPERATE_QUEUE as r_operate_queue, operate_queue_name                         
 from parameter import MAX_SEARCH_SIZE,DAY
 from global_config import S_TYPE,S_DATE_BCI, S_DATE_FB, S_DATE_TW
@@ -155,7 +157,6 @@ def uid2xnr_user_no(uid):
     return xnr_user_no
 
 # 保存至粉丝关注表
-
 def save_to_fans_follow_ES(xnr_user_no,uid,save_type,follow_type,trace_type='ordinary_follow'):
 
     if save_type == 'followers':
@@ -257,7 +258,7 @@ def save_to_fans_follow_ES(xnr_user_no,uid,save_type,follow_type,trace_type='ord
 
 ## 判断是否为敏感人物传感器
 def judge_sensing_sensor(xnr_user_no,uid):
-    print index_sensing, type_sensing, xnr_user_no
+    #print index_sensing, type_sensing, xnr_user_no
     exist_item = es_xnr.exists(index=index_sensing,doc_type=type_sensing,id=xnr_user_no)
 
     if not exist_item:
@@ -632,4 +633,5 @@ if __name__ == '__main__':
     #add_operate2redis(item_dict)
     print r_operate_queue.lrange(operate_queue_name,0,8)
     # print r_operate_queue.rpop(operate_queue_name)
+
 
