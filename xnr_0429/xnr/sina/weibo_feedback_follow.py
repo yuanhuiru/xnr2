@@ -164,14 +164,14 @@ class FeedbackFollow:
     def execute(self):
 
         follow = self.follow()
-        # fans = self.fans()
+        fans = self.fans()
         groups = ''
-        print 'follow', follow
-        # print 'fans', fans
+        print 'follow', follow, len(follow)
+        print 'fans', fans, len(fans)
         print '+++++++++++++++++++++++++++++++++++++'
         executeES('weibo_feedback_follow', 'text', follow)
         print '-------------------------------------'
-        #executeES('weibo_feedback_fans', 'text', fans)
+        executeES('weibo_feedback_fans', 'text', fans)
         print '+++++++++++++++++++++++++++++++++++++'
         #return fans, follow, groups
         

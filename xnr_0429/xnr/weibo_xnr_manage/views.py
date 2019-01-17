@@ -483,7 +483,7 @@ def verify_xnr_account():
 
 
 # by kn xuan 修改当前xnr账户或密码是否正确
-#http://219.224.134.213:9209/weibo_xnr_manage/verify_xnr_account/?xnr_user_no=WXNR0003
+#http://219.224.134.213:9209/weibo_xnr_manage/modify_xnr_account/?xnr_user_no=WXNR0003
 @mod.route('/modify_xnr_account/')
 def modify_xnr_account():
     # 有返回数据的话 则 当前xnr社交帐号或密码有误 去查找xnr用户 

@@ -1385,7 +1385,8 @@ def wxnr_list_concerns(user_id,order_type):
                 'filter':{
                     'bool':{
                         'must':[
-                            {'term':{'xnr_no': user_id}},
+                            {'term': {'xnr_no': user_id}},
+                            {'term': {'pingtaiguanzhu': 1}}
                         ]
                     }
                 }
@@ -1403,6 +1404,7 @@ def wxnr_list_concerns(user_id,order_type):
             'nick_name': data['nickname'],
             'topic_string': data['topic_string'],
             'sensitive': data['sensitive'],
+            'influence': data['influence'],
             'follow_source': '',
             'sex': data['sex'],
             'photo_url': data['photo_url'],
@@ -1410,7 +1412,8 @@ def wxnr_list_concerns(user_id,order_type):
         results.append(r)
     return results
 
-    """
+
+"""
     # 旧方法，弃用
     print 'start!!',int(time.time())
     try:
@@ -1479,7 +1482,7 @@ def wxnr_list_concerns(user_id,order_type):
     #对结果按要求排序
     xnr_followers_result.sort(key=lambda k:(k.get(order_type,0)),reverse=True)
     return xnr_followers_result
-    """
+"""
 
 
 
@@ -1512,93 +1515,132 @@ def count_weibouser_influence(uid):
 
 #step 4.5: list of fans  
 def wxnr_list_fans(user_id,order_type):
-    try:
-        xnr_result=es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=user_id)['_source']
-        xnr_uid=xnr_result['uid']
-        #print '=======================================xnr_uid'
-        #print xnr_uid
-    except:
-        #print '=======================================not find anything about xnr_uid and some error occur'
-        xnr_uid=''
-    
-    lookup_type='fans_list'
-    fans_list=lookup_xnr_fans_followers(user_id,lookup_type)
-
-    query_body={
+    # 新方法 @hanmc 2019-1-17 12:21:44
+    results = []
+    query_body = {
         'query':{
             'filtered':{
                 'filter':{
                     'bool':{
-                       'must':{'term':{'root_uid':xnr_uid}}
+                        'must':[
+                            {'term': {'xnr_no': user_id}},
+                            {'term': {'pingtaifensi': 1}}
+                        ]
                     }
                 }
             }
         },
-        'size':MAX_VALUE
+        'size': MAX_VALUE,
+        'sort': {order_type: {"order": "desc"}},
     }
-    xnr_fans_result=[]
-    if xnr_uid:
-        fans_result=es_xnr.search(index=weibo_feedback_fans_index_name,doc_type=weibo_feedback_fans_index_type,body=query_body)['hits']['hits']
-        #print '===========================================,fans_result'
-        #print fans_result
-        for item in fans_result:
-            user_dict=dict()
-            fans_uid=item['_source']['uid']
-            set_mark =  set_intersection(fans_uid,fans_list)
-            #print '===========================================,set_mark'
-            #print set_mark 
-            #if fans_uid in fans_list:
-            if set_mark > 0:
-                user_dict['uid']=fans_uid
-                #计算影响力
-                user_dict['influence']=0
-               # user_dict['influence']=count_weibouser_influence(fans_uid)
-                #敏感度查询,话题领域
-                #try:
-                #    temp_user_result=es_user_profile.get(index=portrait_index_name,doc_type=portrait_index_type,id=fans_uid)['_source']
-                #    user_dict['sensitive']=temp_user_result['sensitive']
-                #    user_dict['topic_string']=temp_user_result['topic_string']
-                #except:
-                user_dict['sensitive']=0
-                user_dict['topic_string']=''
+    search_results = es_xnr.search(index=weibo_xnr_relations_index_name, doc_type=weibo_xnr_relations_index_type, body=query_body)['hits']['hits']
 
-                user_dict['photo_url']=item['_source']['photo_url']            
-                user_dict['nick_name']=item['_source']['nick_name']
-                user_dict['sex']=item['_source']['sex']
-                #user_dict['user_birth']=item['_source']['user_birth']
-                #user_dict['create_at']=item['_source']['create_at']
-                user_dict['fan_source']=item['_source']['fan_source']  #微博推荐
-                user_dict['user_location']=item['_source']['geo']
-                xnr_fans_result.append(user_dict)
-            else:
-                pass
-                # add xuanhui kn
-                #user_dict['uid']=fans_uid
-                #user_dict['influence']=0
-                #user_dict['sensitive']=0
-                #user_dict['topic_string']=''
-                #user_dict['photo_url']=item['_source']['photo_url']            
-                #user_dict['nick_name']=item['_source']['nick_name']
-                #user_dict['sex']=item['_source']['sex']
-                #user_dict['fan_source']=item['_source']['fan_source']  #微博推荐
-                #user_dict['user_location']=item['_source']['geo']
-                #xnr_fans_result.append(user_dict)
-    else:
+    for data in search_results:
+        data = data['_source']
+        r = {
+            'uid': data['uid'],
+            'nick_name': data['nickname'],
+            'user_location': data['geo'],
+            'topic_string': data['topic_string'],
+            'sensitive': data['sensitive'],
+            'influence': data['influence'],
+            'fans_source': '',
+            'sex': data['sex'],
+            'photo_url': data['photo_url'],
+        }
+        results.append(r)
+    return results
+
+
+"""
+        # 旧方法，弃用
+        try:
+            xnr_result=es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=user_id)['_source']
+            xnr_uid=xnr_result['uid']
+            #print '=======================================xnr_uid'
+            #print xnr_uid
+        except:
+            #print '=======================================not find anything about xnr_uid and some error occur'
+            xnr_uid=''
+        
+        lookup_type='fans_list'
+        fans_list=lookup_xnr_fans_followers(user_id,lookup_type)
+    
+        query_body={
+            'query':{
+                'filtered':{
+                    'filter':{
+                        'bool':{
+                           'must':{'term':{'root_uid':xnr_uid}}
+                        }
+                    }
+                }
+            },
+            'size':MAX_VALUE
+        }
         xnr_fans_result=[]
-
-    #对结果按要求排序
-    xnr_fans_result.sort(key=lambda k:(k.get(order_type,0)),reverse=True)
-    print "================================================xnr_fans_result"
-    print xnr_fans_result
-    return xnr_fans_result
-
+        if xnr_uid:
+            fans_result=es_xnr.search(index=weibo_feedback_fans_index_name,doc_type=weibo_feedback_fans_index_type,body=query_body)['hits']['hits']
+            #print '===========================================,fans_result'
+            #print fans_result
+            for item in fans_result:
+                user_dict=dict()
+                fans_uid=item['_source']['uid']
+                set_mark =  set_intersection(fans_uid,fans_list)
+                #print '===========================================,set_mark'
+                #print set_mark 
+                #if fans_uid in fans_list:
+                if set_mark > 0:
+                    user_dict['uid']=fans_uid
+                    #计算影响力
+                    user_dict['influence']=0
+                   # user_dict['influence']=count_weibouser_influence(fans_uid)
+                    #敏感度查询,话题领域
+                    #try:
+                    #    temp_user_result=es_user_profile.get(index=portrait_index_name,doc_type=portrait_index_type,id=fans_uid)['_source']
+                    #    user_dict['sensitive']=temp_user_result['sensitive']
+                    #    user_dict['topic_string']=temp_user_result['topic_string']
+                    #except:
+                    user_dict['sensitive']=0
+                    user_dict['topic_string']=''
+    
+                    user_dict['photo_url']=item['_source']['photo_url']            
+                    user_dict['nick_name']=item['_source']['nick_name']
+                    user_dict['sex']=item['_source']['sex']
+                    #user_dict['user_birth']=item['_source']['user_birth']
+                    #user_dict['create_at']=item['_source']['create_at']
+                    user_dict['fan_source']=item['_source']['fan_source']  #微博推荐
+                    user_dict['user_location']=item['_source']['geo']
+                    xnr_fans_result.append(user_dict)
+                else:
+                    pass
+                    # add xuanhui kn
+                    #user_dict['uid']=fans_uid
+                    #user_dict['influence']=0
+                    #user_dict['sensitive']=0
+                    #user_dict['topic_string']=''
+                    #user_dict['photo_url']=item['_source']['photo_url']            
+                    #user_dict['nick_name']=item['_source']['nick_name']
+                    #user_dict['sex']=item['_source']['sex']
+                    #user_dict['fan_source']=item['_source']['fan_source']  #微博推荐
+                    #user_dict['user_location']=item['_source']['geo']
+                    #xnr_fans_result.append(user_dict)
+        else:
+            xnr_fans_result=[]
+    
+        #对结果按要求排序
+        xnr_fans_result.sort(key=lambda k:(k.get(order_type,0)),reverse=True)
+        print "================================================xnr_fans_result"
+        print xnr_fans_result
+        return xnr_fans_result
+"""
 
 #########################################################
 #	step 5：change    and   continue                    #
 #########################################################
 def change_continue_xnrinfo(xnr_user_no):
-	result=es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
-	return result
+    result=es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
+    return result
 
 
 ###############################
@@ -1731,6 +1773,7 @@ def update_account_info(task_detail):
     except Exception,e:
         return {"status":'fail'}
         print e
+
 
 
 

@@ -545,8 +545,14 @@ def ajax_related_recommendation():
     task_detail['sort_item'] = request.args.get('sort_item','influence')
     
     results = get_related_recommendation_from_es(task_detail)
-
-    return json.dumps(results)
+    random_results = random.sample(results, 20)
+    for random_result in random_results:
+        pass
+        #print random_result['nick_name']
+    print type(results)
+    #return json.dumps(results)
+    # from 50 suiji 20
+    return json.dumps(random_results)
 
 # 显示粉丝
 @mod.route('/create_group_show_fans/')

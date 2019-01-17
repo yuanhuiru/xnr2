@@ -162,29 +162,63 @@ def executeES(indexName, typeName, listData):
 
                     'pingtaiguanzhu': 1,
                     }
-                update_result = update_weibo_xnr_relations(root_uid, uid, user_data)          
+                update_result = update_weibo_xnr_relations(root_uid, uid, user_data, update_portrait_info=True)          
 
 
+            # 新的粉丝关系存储方式
             elif indexName == 'weibo_feedback_fans':
-                _id = data["root_uid"]+'_'+data["mid"]
-                xnr_user_no = uid2xnr_user_no(data["root_uid"])
-                save_type = 'fans'
-                follow_type = 'follow'
-                
-                if xnr_user_no:
-                    save_to_fans_follow_ES(xnr_user_no,data["uid"],save_type,follow_type)
-                    save_to_redis_fans_follow(xnr_user_no,data["uid"],save_type)
-                    
-                    # sensor_mark = judge_sensing_sensor(xnr_user_no,data['uid'])
-                    # data['sensor_mark'] = sensor_mark
+                root_uid = data['root_uid']
+                uid = data['uid']
+                xnr_user_no = uid2xnr_user_no(root_uid)
 
-                    # trace_follow_mark = judge_trace_follow(xnr_user_no,data['uid'])
-                    # data['trace_follow_mark'] = trace_follow_mark
-                try:
-                    print 1111111
-                    es.get(index=indexName,doc_type=typeName,id=_id)
-                except:
-                    print 'save to es!!!!',es.index(index=indexName, doc_type=typeName, id=_id, body=data)
+                sex_info = data['sex']
+                if sex_info == 'male':
+                    sex = 1
+                elif sex_info == 'female':
+                    sex = 2
+                else:
+                    sex = 0
+
+                user_data = {
+                    'platform': 'weibo',
+                    'xnr_no': xnr_user_no,
+                    'xnr_uid': root_uid,
+
+                    'uid': uid,
+                    'nickname': data.get('nick_name', ''),
+                    'sex': sex,
+                    'geo': data.get('geo', ''),
+                    'fensi_num': data.get('fans', 0),
+                    'guanzhu_num': data.get('follower', 0),
+                    'photo_url': data.get('photo_url', ''),
+
+                    'pingtaifensi': 1,
+                    }
+                update_result = update_weibo_xnr_relations(root_uid, uid, user_data, update_portrait_info=True)
+
+                """
+                # 旧的关注关系存储方式，弃用。@hanmc 2019-1-17 11:47:08
+                elif indexName == 'weibo_feedback_fans':
+                    _id = data["root_uid"]+'_'+data["mid"]
+                    xnr_user_no = uid2xnr_user_no(data["root_uid"])
+                    save_type = 'fans'
+                    follow_type = 'follow'
+    
+                    if xnr_user_no:
+                        save_to_fans_follow_ES(xnr_user_no,data["uid"],save_type,follow_type)
+                        save_to_redis_fans_follow(xnr_user_no,data["uid"],save_type)
+    
+                        # sensor_mark = judge_sensing_sensor(xnr_user_no,data['uid'])
+                        # data['sensor_mark'] = sensor_mark
+    
+                        # trace_follow_mark = judge_trace_follow(xnr_user_no,data['uid'])
+                        # data['trace_follow_mark'] = trace_follow_mark
+                    try:
+                        print 1111111
+                        es.get(index=indexName,doc_type=typeName,id=_id)
+                    except:
+                        print 'save to es!!!!',es.index(index=indexName, doc_type=typeName, id=_id, body=data)
+                """
 
             # print 'indexName', indexName
             # print indexName == 'weibo_feedback_comment'
@@ -270,4 +304,5 @@ def executeES(indexName, typeName, listData):
 
 def ts2datetime(ts):
     return time.strftime('%Y-%m-%d', time.localtime(ts))
+
 

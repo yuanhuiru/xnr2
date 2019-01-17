@@ -1412,11 +1412,6 @@ def get_related_recommendation_from_es(task_detail):
     try:
         result = json.loads(es.get(index=index_name, doc_type=active_social_index_type,id=_id)['_source']['result'])
 
-        print 'result包含什么~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-
-        print result[:2]
-
-        print 'result包含什么~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
     except:
         result = []
     return result
