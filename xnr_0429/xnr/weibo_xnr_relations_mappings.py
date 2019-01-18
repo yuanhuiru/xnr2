@@ -42,7 +42,7 @@ def weibo_xnr_relations_mappings():
                 "type": "string",
                 "index": "not_analyzed"
               },
-              "sex": {                      # 1=男，2=女 
+              "sex": {                      # male female unknown
                 "type": "integer",
               },
               "richangguanzhu": {           # 1=是，0=否 
@@ -127,5 +127,6 @@ def update_mappings():
 
 if __name__=='__main__':
     weibo_xnr_relations_mappings()
-    #delete_mappings()
+    # delete_mappings()
+
 
