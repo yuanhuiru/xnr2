@@ -13,8 +13,8 @@ $('.title .perTime .demo-label input').on('click',function () {
         $('#content-1-word p').show();
         $('#hot_post p').show();
         $('#userList p').show();
-        public_ajax.call_request('get',word_url,wordCloud);
-        public_ajax.call_request('get',word_url2,wordCloud2);
+       // public_ajax.call_request('get',word_url,wordCloud);
+       // public_ajax.call_request('get',word_url2,wordCloud2);
         public_ajax.call_request('get',hotPost_url,hotPost);
         public_ajax.call_request('get',activePost_url,activeUser);
         $('.titTime').hide();
@@ -33,22 +33,22 @@ $('.timeSure').on('click',function () {
         $('#content-1-word p').show();
         $('#hot_post p').show();
         $('#userList p').show();
-        public_ajax.call_request('get',word_url,wordCloud);
-        public_ajax.call_request('get',word_url2,wordCloud2);
+        //public_ajax.call_request('get',word_url,wordCloud);
+       // public_ajax.call_request('get',word_url2,wordCloud2);
         public_ajax.call_request('get',hotPost_url,hotPost);
         public_ajax.call_request('get',activePost_url,activeUser);
     }
 });
 //----关键词云
 var word_url='/weibo_xnr_monitor/lookup_full_keywordstring/?weiboxnr_id='+ID_Num+'&from_ts='+from_ts+'&to_ts='+to_ts;
-public_ajax.call_request('get',word_url,wordCloud);
+//public_ajax.call_request('get',word_url,wordCloud);
 var word_url2='/weibo_xnr_monitor/lookup_weibo_keywordstring/?weiboxnr_id='+ID_Num+'&from_ts='+from_ts+'&to_ts='+to_ts;
-public_ajax.call_request('get',word_url2,wordCloud2);
-require.config({
-    paths: {
-        echarts: '/static/js/echarts-2/build/dist',
-    }
-});
+//public_ajax.call_request('get',word_url2,wordCloud2);
+//require.config({
+//    paths: {
+//        echarts: '/static/js/echarts-2/build/dist',
+//    }
+//});
 function wordCloud(data) {
     if (data.length==0||isEmptyObject(data)){
        $('#content-1-word').css({textAlign:"center",lineHeight:"300px",fontSize:'24px'}).text('暂无数据');
@@ -243,7 +243,7 @@ function hotPost(data) {
                         '   <div class="post_center-hot">'+
                         '       <img src="'+img+'" alt="" class="center_icon">'+
                         '       <div class="center_rel" style="text-align:left;">'+
-                        '           <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>&nbsp;'+
+                        '           <a class="center_1" onclick="jumpWeiboThis(this)" style="color: #f98077;">'+name+'</a>&nbsp;'+
                         '           <i class="mid" style="display: none;">'+row.mid+'</i>'+
                         '           <i class="uid" style="display: none;">'+row.uid+'</i>'+
                         '           <i class="timestamp" style="display: none;">'+row.timestamp+'</i>'+
@@ -259,6 +259,7 @@ function hotPost(data) {
                         '               <span class="cen3-4" onclick="focusThis(this)"><i class="icon icon-heart-empty"></i>&nbsp;&nbsp;关注该用户</span>'+
                         '               <span class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
                         '               <span class="cen3-5" onclick="joinlab(this)"><i class="icon icon-signin"></i>&nbsp;&nbsp;加入语料库</span>'+
+   						'               <span title="关注用户" onclick="focusUser(this)"><i class="icon icon-heart"></i>&nbsp;&nbsp;关注用户</span>'+
                         '           </div>'+
                         '           <div class="forwardingDown" style="width: 100%;display: none;">'+
                         '               <input type="text" class="forwardingIput" placeholder="转发内容"/>'+

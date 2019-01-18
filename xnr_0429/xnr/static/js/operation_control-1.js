@@ -1,3 +1,14 @@
+//检验密码是否正确
+/*var check_password_url='/weibo_xnr_manage/verify_xnr_account/?xnr_user_no='+ID_Num;
+public_ajax.call_request('get',check_password_url,checkPassword);
+function checkPassword(data){
+	if(data['account_info']==0){
+		$('.infoError').html('<span style="color:#03a9f4;">账户正常运行中。</span>');
+	}else {
+		$('.infoError').html('<span style="color:red;">账户异常，为保证虚拟人正常工作，请检查您的账户和密码是否正确，并及时更改。</span>');
+	}
+}
+*/
 var end_time=Date.parse(new Date())/1000;
 //=====历史统计====定时任务列表====历史消息===时间段选择===
 $('.choosetime .demo-label input').on('click',function () {

@@ -498,7 +498,8 @@
     var htmlUrl='';
 	var userCheck;//未选定虚拟人 禁止跳转部分模块，提示：请先选定要查看的虚拟人
     $('#personal').on('click',function () {
-        window.open('/personalCenter/individual/');
+        //window.open('/personalCenter/individual/');
+		window.location.href = '/personalCenter/individual/';
     });
     $('#control').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -508,7 +509,8 @@
 			$('#pormpt').modal('show');
 			return false;
 		}
-        window.open('/control/operationControl/');
+        //window.open('/control/operationControl/');
+		window.location.href = '/control/operationControl/';
     });
     $('#info').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -517,7 +519,8 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/inforDetection/inforChecking/');
+        //window.open('/inforDetection/inforChecking/');
+		window.location.href = '/inforDetection/inforChecking/';
     });
     $('#monitor').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -526,7 +529,8 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/monitor/characterBehavior/');
+        //window.open('/monitor/characterBehavior/');
+		window.location.href = '/monitor/characterBehavior/';
     });
     $('#reported').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -536,19 +540,24 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/behavioGauge/influeAssess/');
+        //window.open('/behavioGauge/influeAssess/');
+		window.location.href = '/behavioGauge/influeAssess/';
     });
     $('#knowledge').on('click',function () {
-        window.open('/registered/targetCustom/?flag=1&notNew=no')
+        //window.open('/registered/targetCustom/?flag=1&notNew=no')
+		window.location.href = '/registered/targetCustom/?flag=1&notNew=no';
     });
     $('#reportedmange').on('click',function () {
-        window.open('/reportManage/management/?flag=1');
+        //window.open('/reportManage/management/?flag=1');
+		window.location.href = '/reportManage/management/?flag=1';
     });
     $('#knowledgebase').on('click',function () {
-        window.open('/knowledge/domainLibrary/?flag=1');
+        //window.open('/knowledge/domainLibrary/?flag=1');
+		window.location.href = '/knowledge/domainLibrary/?flag=1';
     });
     $('#system').on('click',function () {
-        window.open('/systemManage/daily/?flag=1');
+        //window.open('/systemManage/daily/?flag=1');
+		window.location.href = '/systemManage/daily/?flag=1';
     });
 
     //选择虚拟人确定进入

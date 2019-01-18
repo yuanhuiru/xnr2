@@ -573,7 +573,7 @@ function mainWeibo(_data,idx) {
                         '       <i class="icon icon-warning-sign weiboFlag" style="'+sye_2+'"></i>'+
                         '   </div>'+
                         '   <img src="'+img+'" alt="" class="center_icon">'+
-                        '   <a class="center_1" href="https://weibo.com/u/'+row.uid+'"  style="color:#f98077;">'+name+'</a>'+
+                        '   <a class="center_1" onclick="jumpWeiboThis(this)" style="color:#f98077;">'+name+'</a>'+
                         '   <span class="cen3-1" style="color:#f6a38e;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+time+'</span>'+
                         '   <a class="mid" style="display: none;">'+row.mid+'</a>'+
                         '   <a class="uid" style="display: none;">'+row.uid+'</a>'+
@@ -588,6 +588,7 @@ function mainWeibo(_data,idx) {
                         '       <span class="cen3-3" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '       <span class="cen3-5" onclick="joinPolice(this)"><i class="icon icon-plus-sign"></i>&nbsp;&nbsp;加入预警库</span>'+
                         '       <span class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
+                        '       <span title="关注用户" onclick="focusUser(this)"><i class="icon icon-heart"></i>&nbsp;&nbsp;关注用户</span>'+
                         '    </div>'+
                         '    <div class="forwardingDown" style="width: 100%;display: none;">'+
                         '       <input type="text" class="forwardingIput" placeholder="转发内容"/>'+

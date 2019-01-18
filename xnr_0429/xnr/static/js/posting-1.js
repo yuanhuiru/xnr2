@@ -119,7 +119,11 @@ $('.sureTime').on('click',function () {
     }
 });
 function flow_faw(data) {
-    $('#follow_forward p').show();
+    if(data.length==0){
+		$('#follow_forward p').text('暂无数据').show();
+		return false;
+	}
+    $('#follow_forward p').text('正在加载中...').show();
     $('#follow_forward').bootstrapTable('load', data);
     $('#follow_forward').bootstrapTable({
         data:data,
@@ -214,7 +218,11 @@ function flow_faw(data) {
 }
 var mainUserUid=[];
 function focus_main(data) {
-    $('#focus_main p').show();
+	if(data.length==0){
+        $('#focus_main p').text('暂无数据').show();
+        return false;
+    }
+    $('#focus_main p').text('正在加载中...').show();
     $('#focus_main').bootstrapTable('load', data);
     $('#focus_main').bootstrapTable({
         data:data,
@@ -494,7 +502,7 @@ function postYES22(data) {
         $('#pormpt').modal('show');
         threeRoad=[],fb=0,tw=0;;
     },200);*/
-    if(data){f='发帖内容提交成功'}
+    if(data){f='发帖内容提交成功';$("#post-2-content").text('');}
     $('#pormpt p').text(f);
     $('#pormpt').modal('show');
 }
@@ -581,7 +589,12 @@ $('.everyday-2 .ed-2-2 .demo-radio').on('click',function () {
     public_ajax.call_request('get',TH_url,defalutWords)
 });
 function defalutWords(data) {
-    $('#defaultWeibo p').show();
+	if(data.length==0){
+        $('#defaultWeibo p').text('暂无数据').show();
+        return false;
+    }
+    $('#defaultWeibo p').text('正在加载中...').show();
+	var data = getRandomArrayElements(data,10);//随机顺序展示
     $('#defaultWeibo').bootstrapTable('load', data);
     $('#defaultWeibo').bootstrapTable({
         data:data,
@@ -638,7 +651,7 @@ function defalutWords(data) {
                         '   <div class="post_center-hot">'+
                         '       <img src="'+img+'" class="center_icon">'+
                         '       <div class="center_rel">'+
-                        '           <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>'+
+                        '           <a class="center_1" onclick="jumpWeiboThis(this)" style="color: #f98077;">'+name+'</a>'+
                         '           <span class="time" style="font-weight: 900;color:blanchedalmond;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span>  '+
                         '           <button data-all="0" style="display: '+all+'" type="button" class="btn btn-primary btn-xs allWord" onclick="allWord(this)">查看全文</button>'+
                         '   <p class="allall1" style="display:none;">'+txt+'</p>'+
@@ -649,11 +662,14 @@ function defalutWords(data) {
                         '           <i class="timestamp" style="display: none;">'+row.timestamp+'</i>'+
                         '           <div class="center_3">'+
                         '               <span class="cen3-5" onclick="copyPost(this)"><i class="icon icon-copy"></i>&nbsp;&nbsp;复制</span>'+
-                        '               <span class="cen3-1" onclick="retweet(this,\'日常发帖\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发（<b class="forwarding">'+row.retweeted+'</b>）</span>'+
-                        '               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论（<b class="comment">'+row.comment+'</b>）</span>'+
+                        //'               <span class="cen3-1" onclick="retweet(this,\'日常发帖\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发（<b class="forwarding">'+row.retweeted+'</b>）</span>'+
+						'               <span class="cen3-1" onclick="retweet(this,\'日常发帖\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发</span>'+
+                        //'               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论（<b class="comment">'+row.comment+'</b>）</span>'+
+						'               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论</span>'+
                         '               <span class="cen3-3" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '               <span class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
                         '               <span class="cen3-4" onclick="joinlab(this)"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+
+                        '               <span title="关注用户" onclick="focusUser(this)"><i class="icon icon-heart"></i>&nbsp;&nbsp;关注用户</span>'+
                         '           </div>'+
                         '           <div class="forwardingDown" style="width: 100%;display: none;">'+
                         '               <input type="text" class="forwardingIput" placeholder="转发内容"/>'+
@@ -677,7 +693,7 @@ function defalutWords(data) {
 //复制内容
 function copyPost(_this) {
     var txt = $(_this).parents('.post_perfect').find('.center_2').text();
-    $('#post-2-content').append(txt);
+    $('#post-2-content').text(txt);
 }
 // //评论
 // function showInput(_this) {
@@ -738,7 +754,12 @@ $('#theme-3 .demo-label input').on('click',function () {
 var hotWeiboUrl='/weibo_xnr_operate/hot_recommend_tweets/?topic_field=民生类_法律&sort_item=timestamp';
 // public_ajax.call_request('get',hotWeiboUrl,hotWeibo);
 function hotWeibo(data) {
-    $('#defaultWeibo2 p').show();
+	if(data.length==0){
+        $('#defaultWeibio2 p').text('暂无数据').show();
+        return false;
+    }
+    $('#defaultWeibo2 p').text('正在加载中...').show();
+	var data = getRandomArrayElements(data,10);////随机顺序展示
     $('#defaultWeibo2').bootstrapTable('load', data);
     $('#defaultWeibo2').bootstrapTable({
         data:data,
@@ -795,7 +816,7 @@ function hotWeibo(data) {
                         '   <div id="post_center-hot">'+
                         '       <img src="'+img+'" alt="" class="center_icon">'+
                         '       <div class="center_rel">'+
-                        '           <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>'+
+                        '           <a class="center_1" onclick="jumpWeiboThis(this)" style="color: #f98077;">'+name+'</a>'+
                         '           <span class="time" style="font-weight: 900;color: blanchedalmond;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span>  '+
                         '           <button data-all="0" style="display: '+all+'" type="button" class="btn btn-primary btn-xs allWord" onclick="allWord(this)">查看全文</button>'+
                         '   <p class="allall1" style="display:none;">'+txt+'</p>'+
@@ -807,11 +828,14 @@ function hotWeibo(data) {
                                                '           <div class="center_3">'+
                        // '               <span title="事件子观点及相关微博" onclick="related(this)"><i class="icon icon-stethoscope"></i>&nbsp;&nbsp;事件子观点及相关微博</span>'+
                         '               <span title="复制" onclick="copyPost(this)"><i class="icon icon-copy"></i>&nbsp;&nbsp;复制</span>'+
-                        '               <span title="转发数" onclick="retweet(this,\'热点跟随\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发&nbsp;（<b class="forwarding">'+row.retweeted+'</b>）</span>'+
-                        '               <span title="评论数" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论&nbsp;（<b class="comment">'+row.comment+'</b>）</span>'+
+                        '               <span title="转发数" onclick="retweet(this,\'热点跟随\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发</span>'+
+/*&nbsp;（<b class="forwarding">'+row.retweeted+'</b>）</span>'+*/
+                        '               <span title="评论数" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论</span>'+
+/*&nbsp;（<b class="comment">'+row.comment+'</b>）</span>'+*/
                         '               <span title="赞" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '               <span title="机器人回复" class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
                         '               <span title="加入语料库" onclick="joinlab(this)"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+
+                        '               <span title="关注用户" onclick="focusUser(this)"><i class="icon icon-heart"></i>&nbsp;&nbsp;关注用户</span>'+
                         '           </div>'+
                         '           <div class="forwardingDown" style="width: 100%;display: none;">'+
                         '               <input type="text" class="forwardingIput" placeholder="转发内容"/>'+
@@ -837,6 +861,12 @@ function hotWeibo(data) {
     $('#defaultWeibo2 p').slideUp(700);
     $('.defaultWeibo2 .search .form-control').attr('placeholder','输入关键词快速搜索相关微博（回车搜索）');
 }
+//关注用户
+function focusUser(_this){
+    var uid=$(_this).parents('.center_rel').find('.uid').text();
+	var foc_url='/weibo_xnr_operate/follow_operate/?xnr_user_no='+xnrUser+'&uid='+uid;
+    public_ajax.call_request('get',foc_url,postYES);
+}
 //大V
 //=========热点跟随===========
 $('#bigtheme-2 .demo-label input').on('click',function () {
@@ -854,7 +884,12 @@ $('#bigtheme-3 .demo-label input').on('click',function () {
 var bigVipWeiboUrl='/weibo_xnr_operate/V_recommend_tweets/?topic_field=民生类_法律&sort_item=timestamp';
 // public_ajax.call_request('get',bigVipWeiboUrl,bigVipWeibo);
 function bigVipWeibo(data) {
-    $('#vipArticle p').show();
+    if(data.length==0){
+        $('#vipArticle p').text('暂无数据').show();
+        return false;
+    }
+    $('#vipArticle p').text('正在加载中...').show();
+	var data = getRandomArrayElements(data,10);//随机顺序展示
     $('#vipArticle').bootstrapTable('load', data);
     $('#vipArticle').bootstrapTable({
         data:data,
@@ -911,8 +946,8 @@ function bigVipWeibo(data) {
                         '   <div id="post_center-hot">'+
                         '       <img src="'+img+'" alt="" class="center_icon">'+
                         '       <div class="center_rel">'+
-                        '           <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>'+
-                        '           <span class="time" style="font-weight: 900;color: blanchedalmond;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span>  '+
+                        '           <a class="center_1" onclick="jumpWeiboThis(this)" style="color: #f98077;">'+name+'</a>'+
+                        '           <span class="time" style="f/ont-weight: 900;color: blanchedalmond;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span>  '+
                         '           <button data-all="0" style="display: '+all+'" type="button" class="btn btn-primary btn-xs allWord" onclick="allWord(this)">查看全文</button>'+
                         '   <p class="allall1" style="display:none;">'+txt+'</p>'+
                                 '   <p class="allall2" style="display:none;">'+txt2+'</p>'+
@@ -923,11 +958,12 @@ function bigVipWeibo(data) {
                                                '           <div class="center_3">'+
                        // '               <span title="事件子观点及相关微博" onclick="related(this)"><i class="icon icon-stethoscope"></i>&nbsp;&nbsp;事件子观点及相关微博</span>'+
                         '               <span title="复制" onclick="copyPost(this)"><i class="icon icon-copy"></i>&nbsp;&nbsp;复制</span>'+
-                        '               <span title="转发数" onclick="retweet(this,\'热点跟随\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发&nbsp;</span>'+
-                        '               <span title="评论数" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论&nbsp;</span>'+
+                        '               <span title="转发" onclick="retweet(this,\'热点跟随\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发&nbsp;</span>'+
+                        '               <span title="评论" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论&nbsp;</span>'+
                         '               <span title="赞" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '               <span title="机器人回复" class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
                         '               <span title="加入语料库" onclick="joinlab(this)"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+
+  						'               <span title="关注用户" onclick="focusUser(this)"><i class="icon icon-heart"></i>&nbsp;&nbsp;关注用户</span>'+
                         '           </div>'+
                         '           <div class="forwardingDown" style="width: 100%;display: none;">'+
                         '               <input type="text" class="forwardingIput" placeholder="转发内容"/>'+
@@ -1206,7 +1242,12 @@ $('#theme-4 .demo-label input').on('click',function () {
 var busWeiboUrl='/weibo_xnr_operate/bussiness_recomment_tweets/?xnr_user_no='+xnrUser+'&sort_item=timestamp';
 // public_ajax.call_request('get',busWeiboUrl,businessWeibo);
 function businessWeibo(data) {
-    $('#defaultWeibo3 p').show();
+	if(data.length==0){
+        $('#defaultWeibo3 p').text('暂无数据').show();
+        return false;
+    }
+    $('#defaultWeibo3 p').text('正在加载中...').show();	
+	var data = getRandomArrayElements(data,10);//随机顺序展示
     $('#defaultWeibo3').bootstrapTable('load', data);
     $('#defaultWeibo3').bootstrapTable({
         data:data,
@@ -1263,7 +1304,7 @@ function businessWeibo(data) {
                         '   <div class="post_center-business">'+
                         '       <img src="'+img+'" class="center_icon">'+
                         '       <div class="center_rel">'+
-                        '           <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>：'+
+                        '           <a class="center_1" onclick="jumpWeiboThis(this)" style="color: #f98077;">'+name+'</a>：'+
                         '           <span class="time" style="font-weight: 900;color:blanchedalmond;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span>  '+
                         '           <button data-all="0" style="display: '+all+'" type="button" class="btn btn-primary btn-xs allWord" onclick="allWord(this)">查看全文</button>'+
                         '   <p class="allall1" style="display:none;">'+txt+'</p>'+
@@ -1274,11 +1315,14 @@ function businessWeibo(data) {
                         '           <i class="timestamp" style="display: none;">'+row.timestamp+'</i>'+
                         '           <div class="center_3">'+
                         '               <span class="cen3-5" onclick="copyPost(this)"><i class="icon icon-copy"></i>&nbsp;&nbsp;复制</span>'+
-                        '               <span class="cen3-1" onclick="retweet(this,\'业务发帖\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发（<b class="forwarding">'+row.retweeted+'</b>）</span>'+
-                        '               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论（<b class="comment">'+row.comment+'</b>）</span>'+
+                        //'               <span class="cen3-1" onclick="retweet(this,\'业务发帖\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发（<b class="forwarding">'+row.retweeted+'</b>）</span>'+
+						'               <span class="cen3-1" onclick="retweet(this,\'业务发帖\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发</span>'+
+                        //'               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论（<b class="comment">'+row.comment+'</b>）</span>'+
+						'               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论</span>'+
                         '               <span class="cen3-3" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '               <span class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
                         '               <span class="cen3-4" onclick="joinlab(this)"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+
+                        '               <span title="关注用户" onclick="focusUser(this)"><i class="icon icon-heart"></i>&nbsp;&nbsp;关注用户</span>'+
                         '           </div>'+
                         '           <div class="forwardingDown" style="width: 100%;display: none;">'+
                         '               <input type="text" class="forwardingIput" placeholder="转发内容"/>'+

@@ -528,7 +528,7 @@ function weiboData(data) {
                         '   <div class="post_center-hot">'+
                         '       <img src="'+img+'" class="center_icon">'+
                         '       <div class="center_rel">'+
-                        '           <a class="center_1" href="https://weibo.com/u/'+row.uid+'" style="color: #f98077;">'+name+'</a>'+
+                        '           <a class="center_1" onclick="jumpWeiboThis(this)" style="color: #f98077;">'+name+'</a>'+
                         '           <span class="time" style="font-weight:700;color:#f6a38e;display: inline-block;margin-left:5px;"><i class="icon icon-time"></i>&nbsp;&nbsp;'+getLocalTime(row.timestamp)+'</span> '+
                         // '           <span class="location" style="font-weight:700;color:blanchedalmond;display: inline-block;margin-left:5px;"><i class="icon icon-screenshot"></i>&nbsp;&nbsp;'+location+'</span>  '+
                         '           <i class="mid" style="display: none;">'+row.mid+'</i>'+
@@ -544,7 +544,8 @@ function weiboData(data) {
                         '               <span class="cen3-3" onclick="thumbs(this)" title="赞"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '               <span class="cen3-9" onclick="robot(this)" title="机器人回复"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
                         '               <span class="cen3-4" onclick="joinlab(this)" title="加入语料库"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+
-                        '           </div>'+
+                        '       <span title="关注用户" onclick="focusUser(this)"><i class="icon icon-heart"></i>&nbsp;&nbsp;关注用户</span>'+
+						'           </div>'+
                         '           <div class="forwardingDown" style="width: 100%;display: none;">'+
                         '               <input type="text" class="forwardingIput" placeholder="转发内容"/>'+
                         '               <span class="sureFor" onclick="forwardingBtn()">转发</span>'+

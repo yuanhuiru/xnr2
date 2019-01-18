@@ -146,8 +146,8 @@ body {
 }
 #container #content #everyday .post_perfect .center_3 span {
     display: inline-block;
-    width: 15%;
-    padding: 3px 7px;
+    /*width: 15%;*/
+    padding: 3px 15px;
     color: white;
     cursor: pointer;
     text-align: center;
@@ -159,6 +159,7 @@ body {
     border-right:1px solid slategrey;
 }
 #container #content #everyday .post_perfect .center_3 span:nth-child(6) {
+border-right:1px solid slategrey;
     border-left:1px solid slategrey;
 }
 #container #content #everyday .post_perfect .center_3 span:hover {
@@ -274,8 +275,8 @@ body {
 }
 #container #content #business .post_perfect .center_3 span {
     display: inline-block;
-    width: 16%;
-    padding: 3px 7px;
+    width: 13%;
+    padding: 3px 15px;
     color: white;
     cursor: pointer;
     text-align: center;
@@ -288,6 +289,7 @@ body {
 }
 #container #content #business .post_perfect .center_3 span:nth-child(6){
     border-left:1px solid slategrey;
+    border-right:1px solid slategrey;
 }
 #container #content #business .post_perfect .center_3 span:hover {
     color:#eb7350;
@@ -313,7 +315,7 @@ body {
 #container #content #hot .post_perfect .center_3_top span {
     display: inline-block;
     /*width: 16%;*/
-    width: 85px;
+    min-width: 80px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow:ellipsis ;

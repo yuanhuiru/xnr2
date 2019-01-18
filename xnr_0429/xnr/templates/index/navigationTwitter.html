@@ -488,7 +488,7 @@
     //页面跳转
 	var userCheck;//未选定虚拟人 禁止跳转部分模块，提示：请先选定要查看的虚拟人
     $('#personal').on('click',function () {
-        window.open('/personalCenter/individualTwitter/');
+        window.location.href = '/personalCenter/individualTwitter/';
     });
     $('#control').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -497,7 +497,7 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/control/operationTwitter/');
+        window.location.href = '/control/operationTwitter/';
     });
     $('#info').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -506,7 +506,7 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/inforDetection/inforCheckingTwitter/');
+        window.location.href = '/inforDetection/inforCheckingTwitter/';
     });
     $('#monitor').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -515,7 +515,7 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/monitor/characterBehaviorTwitter/');
+        window.location.href = '/monitor/characterBehaviorTwitter/';
     });
     $('#reported').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -524,19 +524,19 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/behavioGauge/influeAssessTwitter/');
+        window.location.href = '/behavioGauge/influeAssessTwitter/';
     });
     $('#knowledge').on('click',function () {
-        window.open('/registered/targetCustom/?flag=5')
+        window.location.href = '/registered/targetCustom/?flag=5';
     });
     $('#reportedmange').on('click',function () {
-        window.open('/reportManage/management/?flag=5');
+        window.location.href = '/reportManage/management/?flag=5';
     });
     $('#knowledgebase').on('click',function () {
-        window.open('/knowledge/domainLibrary/?flag=5');
+        window.location.href = '/knowledge/domainLibrary/?flag=5';
     });
     $('#system').on('click',function () {
-        window.open('/systemManage/daily/?flag=5');
+        window.location.href = '/systemManage/daily/?flag=5';
     });
 
     //选择虚拟人确定进入

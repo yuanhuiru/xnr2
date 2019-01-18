@@ -116,8 +116,12 @@ body {
     border-left:1px solid slategrey;
     border-right:1px solid slategrey;
 }
+#container .everySpeak .speak_center .center_3 span:nth-child(5) {
+    border-left:1px solid slategrey;
+}
 #container .everySpeak .speak_center .center_3 span:nth-child(6) {
     border-left:1px solid slategrey;
+    border-right:1px solid slategrey;
 }
 #container .everySpeak .speak_center .center_3 span:hover {
     color:#eb7350;

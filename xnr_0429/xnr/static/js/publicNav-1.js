@@ -71,22 +71,28 @@ setTimeout(function(){
         //页面跳转
         var htmlUrl='';
         $('#control').on('click',function () {
-            window.open('/personalCenter/individualQQ/');
+            //window.open('/personalCenter/individualQQ/');
+			window.location.href = '/personalCenter/individualQQ/';
         });
         $('#warning').on('click',function () {
-            window.open('/inforDetection/inforCheckingQQ/');
+            //window.open('/inforDetection/inforCheckingQQ/');
+			window.location.href = '/inforDetection/inforCheckingQQ/';
         });
         $('#evaluation').on('click',function () {
-            window.open('/behavioGauge/behaviorQQ/')
+            //window.open('/behavioGauge/behaviorQQ/')
+			window.location.href = '/behavioGauge/behaviorQQ/';
         });
         $('#reportedmange').on('click',function () {
-            window.open('/reportManage/management/?flag=2');
+            //window.open('/reportManage/management/?flag=2');
+			window.location.href = '/reportManage/management/?flag=2';
         });
         $('#knowledgebase').on('click',function () {
-            window.open('/knowledge/domainLibrary/?flag=2');
+            //window.open('/knowledge/domainLibrary/?flag=2');
+			window.location.href = '/knowledge/domainLibrary/?flag=2';
         });
         $('#system').on('click',function () {
-            window.open('/systemManage/daily?flag=2');
+            //window.open('/systemManage/daily?flag=2');
+			window.location.href = '/systemManage/daily?flag=2';
         });
     }else if (loadingType=='weibo'){
         InloginName('微博虚拟人');
@@ -100,31 +106,40 @@ setTimeout(function(){
         });
         //页面跳转
         $('#personal').on('click',function () {
-            window.open('/personalCenter/individual/');
+            //window.open('/personalCenter/individual/');
+			window.location.href = '/personalCenter/individual/';
         });
         $('#control').on('click',function () {
-            window.open('/control/operationControl/');
+            //window.open('/control/operationControl/');
+			window.location.href = '/control/operationControl/';
         });
         $('#info').on('click',function () {
-            window.open('/inforDetection/inforChecking/');
+            //window.open('/inforDetection/inforChecking/');
+			window.location.href = '/inforDetection/inforChecking/';
         });
         $('#monitor').on('click',function () {
-            window.open('/monitor/characterBehavior/');
+            //window.open('/monitor/characterBehavior/');
+			window.location.href = '/monitor/characterBehavior/';
         });
         $('#reported').on('click',function () {
-            window.open('/behavioGauge/influeAssess/');
+            //window.open('/behavioGauge/influeAssess/');
+			window.location.href = '/behavioGauge/influeAssess/';
         });
         $('#knowledge').on('click',function () {
-            window.open('/registered/targetCustom/?flag=1')
+            //window.open('/registered/targetCustom/?flag=1')
+			window.location.href = '/registered/targetCustom/?flag=1';	
         });
         $('#reportedmange').on('click',function () {
-            window.open('/reportManage/management/?flag=1');
+            //window.open('/reportManage/management/?flag=1');
+			window.location.href = '/reportManage/management/?flag=1';
         });
         $('#knowledgebase').on('click',function () {
-            window.open('/knowledge/domainLibrary/?flag=1');
+            //window.open('/knowledge/domainLibrary/?flag=1');
+			window.location.href = '/knowledge/domainLibrary/?flag=1';
         });
         $('#system').on('click',function () {
-            window.open('/systemManage/daily/?flag=1');
+            //window.open('/systemManage/daily/?flag=1');
+			window.location.href = '/systemManage/daily/?flag=1';
         });
     }else if (loadingType=='WX'){
         InloginName('微信虚拟人');
@@ -149,25 +164,31 @@ setTimeout(function(){
         var htmlUrl='';
         // 操作控制
         $('#control').on('click',function () {
-            window.open('/personalCenter/individualWX/');
+            //window.open('/personalCenter/individualWX/');
+			window.location.href = '/personalCenter/individualWX/';
         });
         // 预警监控
         $('#warning').on('click',function () {
-            window.open('/inforDetection/inforCheckingWX/');
+            //window.open('/inforDetection/inforCheckingWX/');
+			window.location.href = '/inforDetection/inforCheckingWX/';
         });
         // 行为评估
         $('#evaluation').on('click',function () {
-            window.open('/behavioGauge/behaviorWX/');
+            //window.open('/behavioGauge/behaviorWX/');
+			window.location.href = '/behavioGauge/behaviorWX/';
         });
 
         $('#reportedmange').on('click',function () {
-            window.open('/reportManage/management/?flag=3');
+            //window.open('/reportManage/management/?flag=3');
+			window.location.href = '/reportManage/management/?flag=3';
         });
         $('#knowledgebase').on('click',function () {
-            window.open('/knowledge/domainLibrary/?flag=3');
+            //window.open('/knowledge/domainLibrary/?flag=3');
+			window.location.href = '/knowledge/domainLibrary/?flag=3';
         });
         $('#system').on('click',function () {
-            window.open('/systemManage/daily/?flag=3');
+            //window.open('/systemManage/daily/?flag=3');
+			window.location.href = '/systemManage/daily/?flag=3';
         });
     }else if(loadingType=='twitter'){
         InloginName('Twitter虚拟人');
@@ -191,31 +212,40 @@ setTimeout(function(){
             $(this).find("#LL").stop().slideUp(200);
         });
         $('#personal').on('click',function () {
-            window.open('/personalCenter/individualTwitter/');
+            //window.open('/personalCenter/individualTwitter/');
+			window.location.href = '/personalCenter/individualTwitter/';
         });
         $('#control').on('click',function () {
-            window.open('/control/operationTwitter/');
+            //window.open('/control/operationTwitter/');
+			window.location.href = '/control/operationTwitter/';
         });
         $('#info').on('click',function () {
-            window.open('/inforDetection/inforCheckingTwitter/');
+            //window.open('/inforDetection/inforCheckingTwitter/');
+			window.location.href = '/inforDetection/inforCheckingTwitter/';
         });
         $('#monitor').on('click',function () {
-            window.open('/monitor/characterBehaviorTwitter/');
+            //window.open('/monitor/characterBehaviorTwitter/');
+			window.location.href = '/monitor/characterBehaviorTwitter/';
         });
         $('#reported').on('click',function () {
-            window.open('/behavioGauge/influeAssessTwitter/');
+            //window.open('/behavioGauge/influeAssessTwitter/');
+			window.location.href = '/behavioGauge/influeAssessTwitter/';
         });
         $('#knowledge').on('click',function () {
-            window.open('/registered/targetCustom/?flag=5')
+            //window.open('/registered/targetCustom/?flag=5')
+			window.location.href = '/registered/targetCustom/?flag=5';
         });
         $('#reportedmange').on('click',function () {
-            window.open('/reportManage/management/?flag=5');
+            //window.open('/reportManage/management/?flag=5');
+			window.location.href = '/reportManage/management/?flag=5';
         });
         $('#knowledgebase').on('click',function () {
-            window.open('/knowledge/domainLibrary/?flag=5');
+            //window.open('/knowledge/domainLibrary/?flag=5');
+			window.location.href = '/knowledge/domainLibrary/?flag=5';
         });
         $('#system').on('click',function () {
-            window.open('/systemManage/daily/?flag=5');
+            //window.open('/systemManage/daily/?flag=5');
+			window.location.href = '/systemManage/daily/?flag=5';
         });
     }else if(loadingType=='faceBook') {
         InloginName('FaceBook虚拟人');
@@ -239,31 +269,40 @@ setTimeout(function(){
             $(this).find("#LL").stop().slideUp(200);
         });
         $('#personal').on('click',function () {
-            window.open('/personalCenter/individualFaceBook/');
+            //window.open('/personalCenter/individualFaceBook/');
+			window.location.href = '/personalCenter/individualFaceBook/';
         });
         $('#control').on('click',function () {
-            window.open('/control/operationFaceBook/');
+            //window.open('/control/operationFaceBook/');
+			window.location.href = '/control/operationFaceBook/';
         });
         $('#info').on('click',function () {
-            window.open('/inforDetection/inforCheckingFaceBook/');
+            //window.open('/inforDetection/inforCheckingFaceBook/');
+			window.location.href = '/inforDetection/inforCheckingFaceBook/';
         });
         $('#monitor').on('click',function () {
-            window.open('/monitor/characterBehaviorFaceBook/');
+            //window.open('/monitor/characterBehaviorFaceBook/');
+			window.location.href = '/monitor/characterBehaviorFaceBook/';
         });
         $('#reported').on('click',function () {
-            window.open('/behavioGauge/influeAssessFaceBook/');
+            //window.open('/behavioGauge/influeAssessFaceBook/');
+			window.location.href = '/behavioGauge/influeAssessFaceBook/';
         });
         $('#knowledge').on('click',function () {
-            window.open('/registered/targetCustom/?flag=4')
+            //window.open('/registered/targetCustom/?flag=4')
+			window.location.href = '/registered/targetCustom/?flag=4';
         });
         $('#reportedmange').on('click',function () {
-            window.open('/reportManage/management/?flag=4');
+            //window.open('/reportManage/management/?flag=4');
+			window.location.href = '/reportManage/management/?flag=4';
         });
         $('#knowledgebase').on('click',function () {
-            window.open('/knowledge/domainLibrary/?flag=4');
+            //window.open('/knowledge/domainLibrary/?flag=4');
+			window.location.href = '/knowledge/domainLibrary/?flag=4';
         });
         $('#system').on('click',function () {
-            window.open('/systemManage/daily/?flag=4');
+            //window.open('/systemManage/daily/?flag=4');
+			window.location.href = '/systemManage/daily/?flag=4';
         });
     }
 },500);
@@ -476,27 +515,27 @@ function Change(){
     if (txt=='微博虚拟人'){
         same_xnr('weibo')
         setTimeout(function () {
-            window.open('/index/navigation/');
+            window.location.href = '/index/navigation/';
         },1000);
     }else if(txt=='QQ群虚拟人') {
         same_xnr('qq');
         setTimeout(function () {
-            window.open('/index/navigationQQ/');
+            window.location.href ='/index/navigationQQ/';
         },1000)
     }else if(txt=='微信虚拟人'){
         same_xnr('weixin');
         setTimeout(function () {
-            window.open('/index/navigationWX/');
+            window.location.href ='/index/navigationWX/';
         },1000);
     }else if(txt=='FaceBook虚拟人'){
         same_xnr('facebook');
         setTimeout(function () {
-            window.open('/index/navigationFaceBook/');
+            window.location.href ='/index/navigationFaceBook/';
         },1000);
     }else if(txt=='Twitter虚拟人'){
         same_xnr('twitter');
         setTimeout(function () {
-            window.open('/index/navigationTwitter/');
+            window.location.href ='/index/navigationTwitter/';
         },1000);
     }
     $('#errorInfor h4').text('跳转提示');
@@ -966,3 +1005,17 @@ function judgmentTwitter(typeNum) {
     };
     $('.behind').html(afterEle);
 };
+//随机效果函数
+function randomsort(a, b) {
+	return Math.random()>.5 ? -1 : 1; //通过随机产生0到1的数，然后判断是否大于0.5从而影响排序，产生随机性的效果。
+}
+function getRandomArrayElements(arr, count) {
+	var shuffled = arr.slice(0), i = arr.length, min = i - count, temp, index;
+	while (i-- > min) {
+		index = Math.floor((i + 1) * Math.random());
+		temp = shuffled[index];
+		shuffled[index] = shuffled[i];
+		shuffled[i] = temp;
+	}
+	return shuffled.slice(min);
+}

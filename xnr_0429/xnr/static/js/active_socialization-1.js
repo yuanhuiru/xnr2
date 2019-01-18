@@ -32,7 +32,8 @@ function related(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return index+1;
+					var chk=fs_uid_list.indexOf(row.uid)==-1?'':'checked';
+                    return '<input type="checkbox" name="'+idBox+'" '+chk+'  onclick="joinFS(\''+row.uid+'\')" style="position:relative;top:2px;right:5px;"/>&nbsp;'+ (index+1);
                 }
             },
             {
@@ -86,19 +87,31 @@ function related(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    var fol='';
+                    var fol='',_isEmpty='';
                     if (row.weibo_type=='follow'){
-                        fol='已关注，点击取消关注';
+                        fol='已关注，点击取消关注';_isEmpty='';
                     }else if (row.weibo_type=='friends'){
-                        fol='相互关注，点击取消对他关注';
+                        fol='相互关注，点击取消对他关注';_isEmpty='';
                     }else {//if (row.weibo_type=='stranger'||row.weibo_type=='followed')
-                        fol='未关注，点击直接关注';
+                        fol='未关注，点击直接关注';_isEmpty='-empty';
                     }
                     return '<span style="cursor: pointer;" onclick="lookDetails(\''+row.uid+'\')" title="查看详情"><i class="icon icon-file-alt"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+
-                        '<span style="cursor: pointer;" onclick="driectFocus(\''+row.uid+'\',this)" title="'+fol+'"><i class="icon icon-star-empty"></i></span>';
+                        '<span style="cursor: pointer;" onclick="driectFocus(\''+row.uid+'\',this)" title="'+fol+'"><i class="jiaStar icon icon-star'+_isEmpty+'"></i></span>';
                 },
             },
         ],
+		/*onPostBody:function(){
+			var trList= $('#'+idBox+' tbody tr');
+			for(var a=0;a<trList.length;a++){
+				let td_2=$(trList[a]).find('td').eq(1).text();
+				let b=onceFocusObj[td_2];
+				if(b==1){
+					$(trList[a]).find('.jiaStar').removeClass('icon-star-empty').addClass('icon-star');
+				}else {
+					$(trList[a]).find('.jiaStar').removeClass('icon-star').addClass('icon-star-empty');
+				}
+            }
+		},*/
     });
     $('#'+idBoxZONG+' p').slideUp(700);
     $('.'+idBox).show();
@@ -112,7 +125,8 @@ function showHide(_tp$) {
     }
 };
 $('#myTabs li').on('click',function () {
-    var ty=$(this).attr('num'),urlREL;
+    fs_uid_list=[];
+	var ty=$(this).attr('num'),urlREL;
     //idNAME=ty;
 	if(ty==1){
 		idBox='influence',idBoxZONG='influe';
@@ -130,7 +144,26 @@ $('#myTabs li').on('click',function () {
     public_ajax.call_request('get',urlREL,related);
  
 })
-
+//批量关注
+var fs_uid_list=[];
+function joinFS(uid){
+	var _i=fs_uid_list.indexOf(uid);
+	if(_i == (-1) ){
+		fs_uid_list.push(uid);
+	}else {
+		fs_uid_list.splice(_i,1);
+	}
+}
+$("#allFoucs").on('click',function(){
+	if(fs_uid_list.length==0){
+		$('#pormpt p').text('请选择要关注的人。');
+        $('#pormpt').modal('show');
+		return false;
+	}
+	var focus_list_url='/weibo_xnr_operate//?xnr_user_no='+ID_Num+'&uid='+fs_uid_list.join(',');
+    public_ajax.call_request('get',focus_list_url,sucFai);
+	
+})
 $('#inputList label input').on('click',function () {
     var ty=$(this).attr('tp');
     //idNAME=ty;
@@ -227,17 +260,27 @@ function lookDetails(puid) {
     $('#details').modal('show');
 }
 //直接关注
+var onceFocusObj={};
 function driectFocus(uid,_this) {
     var foc_url,mid='';
     if (!uid){uid=$(_this).prev().text()}
-    var f=$(_this).find('b').text()||$(_this).text();
+    var f=$(_this).attr('title');
     if (f=='未关注，点击直接关注'){
         mid='follow_operate';
     }else {
         mid='unfollow_operate';
     }
     foc_url='/weibo_xnr_operate/'+mid+'/?xnr_user_no='+ID_Num+'&uid='+uid;
-    public_ajax.call_request('get',foc_url,sucFai)
+    public_ajax.call_request('get',foc_url,sucFai);
+	setTimeout(function(){
+		if(uid in onceFocusObj){
+     		onceFocusObj[uid]=0;
+       	 	$(_this).find('i').removeClass('icon-star').addClass('icon-star-empty');
+    	}else{
+        	$(_this).find('i').removeClass('icon-star-empty').addClass('icon-star');
+        	onceFocusObj[uid]=1;
+    	}
+	},444);
 }
 //提示
 function sucFai(data) {
@@ -249,6 +292,20 @@ function sucFai(data) {
     }
     $('#pormpt p').text(m);
     $('#pormpt').modal('show');
+	/*$('#pormpt').on('hidden.bs.modal', function (e) {
+		var table_url = '';
+  		if($('#myTabs li').eq(0).hasClass('active')){
+			$('#influence').bootstrapTable('destroy');
+			$('#influe p').show();
+			var ytl=$('#inputList input:radio[name="xnr123"]:checked').attr('tp');
+			//table_url = '/weibo_xnr_operate/related_recommendation/?xnr_user_no='+ID_Num+'&sort_item='+ytl;	
+		}else if($('#myTabs li').eq(1).hasClass('active')){
+			$('#influence2').bootstrapTable('destroy');
+			$('#influe2 p').show();
+			//table_url = '/weibo_xnr_operate/daily_recomment_tweets/?xnr_user_no='+ID_Num+'&sort_item=user_index';
+		}
+		//public_ajax.call_request('get',table_url,related);
+	})*/
 }
 
 

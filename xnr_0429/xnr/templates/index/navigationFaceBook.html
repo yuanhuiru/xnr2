@@ -162,8 +162,8 @@
         <img src="/static/images/weiboload.png" title="微博登录" class="weibo">
         <img src="/static/images/QQload.png" title="QQ登录" class="qq">
         <img src="/static/images/WXload.png" title="微信登录" class="wx">
-        <img src="/static/images/facebookclick.png" title="faceBook登录" class="facebook">
-        <img src="/static/images/twitterload.png" title="正在使用twitter登录中" class="twitter">
+        <img src="/static/images/facebookclick.png" title="正在使用faceBook登录中" class="facebook">
+        <img src="/static/images/twitterload.png" title="twitter登录" class="twitter">
     </div>
     <p class="p11" style="font-size: 16px;text-align: center;">
         虚拟人指挥管理系统通过微博、QQ群、微信群、facebook、twitter五个渠道，以虚拟人定制培养、统一管理、实时控制和联合指挥为目标，
@@ -488,7 +488,7 @@
     //页面跳转
 	var userCheck;//未选定虚拟人 禁止跳转部分模块，提示：请先选定要查看的虚拟人
     $('#personal').on('click',function () {
-        window.open('/personalCenter/individualFaceBook/');
+        window.location.href = '/personalCenter/individualFaceBook/';
     });
     $('#control').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -498,7 +498,7 @@
 			$('#pormpt').modal('show');
 			return false;
 		}
-        window.open('/control/operationFaceBook/');
+        window.location.href = '/control/operationFaceBook/';
     });
     $('#info').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -507,7 +507,7 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/inforDetection/inforCheckingFaceBook/');
+        window.location.href = '/inforDetection/inforCheckingFaceBook/';
     });
     $('#monitor').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -516,7 +516,7 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/monitor/characterBehaviorFaceBook/');
+        window.location.href = '/monitor/characterBehaviorFaceBook/';
     });
     $('#reported').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -525,19 +525,19 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/behavioGauge/influeAssessFaceBook/');
+        window.location.href = '/behavioGauge/influeAssessFaceBook/';
     });
     $('#knowledge').on('click',function () {
-        window.open('/registered/targetCustom/?flag=4')
+        window.location.href = '/registered/targetCustom/?flag=4';
     });
     $('#reportedmange').on('click',function () {
-        window.open('/reportManage/management/?flag=4');
+        window.location.href = '/reportManage/management/?flag=4';
     });
     $('#knowledgebase').on('click',function () {
-        window.open('/knowledge/domainLibrary/?flag=4');
+        window.location.href = '/knowledge/domainLibrary/?flag=4';
     });
     $('#system').on('click',function () {
-        window.open('/systemManage/daily/?flag=4');
+        window.location.href = '/systemManage/daily/?flag=4';
     });
 
     //选择虚拟人确定进入

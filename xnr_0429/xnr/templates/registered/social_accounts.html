@@ -9,6 +9,18 @@
         .demo-radioInput{cursor:pointer;background-color:#eee;border-radius:100%;display:inline-block;height:16px;vertical-align:middle;width:16px!important;line-height:1;margin-top:-3px;}
         .demo-radio:checked + .demo-radioInput:after{background-color:#57ad68;border-radius:100%;content:"";display:inline-block;height:12px;margin:2px;width:12px}
         .demo-checkbox.demo-radioInput,.demo-radio:checked + .demo-checkbox.demo-radioInput:after{border-radius:0}
+
+		.hidden-input{
+ 			position: relative;
+			width: 0;
+		    height: 0;
+			overflow: hidden;
+		}
+		/*让input看不见，而不是直接display: none，如果直接display: none，则不生效*/
+		.hidden-input .form-control{
+  			position: absolute;
+  			left: -9999px;
+		}
     </style>
 {% endblock %}
 {% block main %}
@@ -53,7 +65,15 @@
                 <input type="text" id="username1" placeholder="邮箱地址（邮箱与手机选一或全填）"/>
                 <input type="text" id="username2" placeholder="手机号码（邮箱与手机选一或全填）"/>
                 <input type="text" id="username3" placeholder="用户昵称（此项必填）"/>
+				<div class="hidden-input">
+					<!--让浏览器自动填充到这个input-->
+					<input type="text" class="form-control">
+				</div>
 			    <input type="text" id="username4" placeholder="用户UID（此项必填）"/>
+				<div class="hidden-input">
+					<!--让浏览器自动填充到这个input-->
+					<input type="password" class="form-control">
+				</div>
                 <input type="password" id="passwords" placeholder="Password"/>
                 <span id="go_bind">去绑定</span>
             </div>

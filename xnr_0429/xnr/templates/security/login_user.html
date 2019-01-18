@@ -89,7 +89,7 @@
 		// $("#remember").css('marginLeft','5px');
 		$("#remember").css({'float':'left','margin-right':'5px'});
 		// $("#remember").parent().css({paddingLeft:'55px',fontSize:'12px',})
-		$('#remember').parent().append('<span class="demo-radioInput" id="remember-demo-radioInput"></span><a href="/create_account" style="color:white;float: right;">注册</a>')
+		$('#remember').parent().append('<span class="demo-radioInput" id="remember-demo-radioInput"></span><a href="/create_account" style="color:white;float: right;display:none;">注册</a>')
 		$('#remember-demo-radioInput').on('click',function(){
 			if($('#remember').prop('checked') == true){
 				$('#remember').prop('checked',false);

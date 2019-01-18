@@ -117,7 +117,8 @@ if __name__ == '__main__':
 	# [2017-08-22 10:51:30] [ERROR] 无法和腾讯服务器建立私密连接， 5 秒后将尝试使用非私密连接和腾讯服务器 通讯。若您不希望使用非私密连接，请按 Ctrl+C 退出本程序。
     # update_group_name() 
     # groups = getgroup()	
-    qq_xnr = 'QXNR0023'
+    #qq_xnr = 'QXNR0023'
+    qq_xnr = 'QXNR0056'
     groups = getgroup_v2(qq_xnr)
     for group in groups:
         group_name = group.name

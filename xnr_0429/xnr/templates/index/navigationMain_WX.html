@@ -461,7 +461,7 @@
 	var userCheck;//未选定虚拟人 禁止跳转部分模块，提示：请先选定要查看的虚拟人
     // 操作控制
     $('#control').on('click',function () {
-        window.open('/personalCenter/individualWX/');
+        window.location.href = '/personalCenter/individualWX/';
     });
     // 10-26--修改
     // 预警监控
@@ -473,7 +473,7 @@
 			$('#pormpt').modal('show');
 			return false;
 		}
-        window.open('/inforDetection/inforCheckingWX/');
+        window.location.href = '/inforDetection/inforCheckingWX/';
     });
     // 行为评估
     $('#evaluation').on('click',function () {
@@ -483,17 +483,17 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/behavioGauge/behaviorWX/');
+        window.location.href = '/behavioGauge/behaviorWX/';
     });
     $('#reportedmange').on('click',function () {
-        window.open('/reportManage/management/?flag=3');
+        window.location.href = '/reportManage/management/?flag=3';
     });
     $('#knowledgebase').on('click',function () {
 		return false;//QQ 微信去掉知识库管理
-        //window.open('/knowledge/domainLibrary/?flag=3');
+        //window.location.href = '/knowledge/domainLibrary/?flag=3';
     });
     $('#system').on('click',function () {
-        window.open('/systemManage/daily/?flag=3');
+        window.location.href = '/systemManage/daily/?flag=3';
     });
 
     //虚拟人列表--更改为微信

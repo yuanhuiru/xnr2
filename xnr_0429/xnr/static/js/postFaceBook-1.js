@@ -130,7 +130,11 @@ $('.sureTime').on('click',function () {
     }
 });
 function flow_faw(data) {
-    $('#follow_forward p').show();
+	if(data.length==0){
+        $('#follow_forward p').text('暂无数据').show();
+        return false;
+    }
+    $('#follow_forward p').text('正在加载中...').show();   
     $('#follow_forward').bootstrapTable('load', data);
     $('#follow_forward').bootstrapTable({
         data:data,
@@ -213,7 +217,11 @@ function flow_faw(data) {
 }
 var mainUserUid=[];
 function focus_main(data) {
-    $('#focus_main p').show();
+     if(data.length==0){
+        $('#focus_main p').text('暂无数据').show();
+        return false;
+    }
+    $('#focus_main p').text('正在加载中...').show();
     $('#focus_main').bootstrapTable('load', data);
     $('#focus_main').bootstrapTable({
         data:data,
@@ -546,7 +554,7 @@ function postYES22(data) {
         $('#pormpt').modal('show');
         threeRoad=[],wb=0,tw=0;
     },200);*/
-    if(data){f='发帖内容提交成功'}
+    if(data){f='发帖内容提交成功';$("#post-2-content").text('');}
     $('#pormpt p').text(f);
     $('#pormpt').modal('show');
 }
@@ -628,6 +636,11 @@ $('.everyday-2 .ed-2-2 .demo-radio').on('click',function () {
     public_ajax.call_request('get',TH_url,defalutWords)
 });
 function defalutWords(data) {
+    if(data.length==0){
+        $('#defaultWeibo p').text('暂无数据').show();
+        return false;
+    }
+    $('#defaultWeibo p').text('正在加载中...').show();
     $('#defaultWeibo').bootstrapTable('load', data);
     $('#defaultWeibo').bootstrapTable({
         data:data,
@@ -720,7 +733,7 @@ function defalutWords(data) {
 //复制内容
 function copyPost(_this) {
     var txt = $(_this).parent().prev().text();
-    $('#post-2-content').append(txt);
+    $('#post-2-content').text(txt);
 }
 //操作返回结果
 function postYES(data) {
@@ -750,7 +763,11 @@ $('#theme-3 .demo-label input').on('click',function () {
 var hotWeiboUrl='/facebook_xnr_operate/hot_recommend_tweets/?topic_field=民生类_法律&sort_item=timestamp';
 // public_ajax.call_request('get',hotWeiboUrl,hotWeibo);
 function hotWeibo(data) {
-    $('#defaultWeibo2 p').show();
+     if(data.length==0){
+        $('#defaultWeibo2 p').text('暂无数据').show();
+        return false;
+    }
+    $('#defaultWeibo2 p').text('正在加载中...').show();
     $('#defaultWeibo2').bootstrapTable('load', data);
     $('#defaultWeibo2').bootstrapTable({
         data:data,
@@ -1084,7 +1101,11 @@ $('#theme-4 .demo-label input').on('click',function () {
 var busWeiboUrl='/facebook_xnr_operate/bussiness_recomment_tweets/?xnr_user_no='+xnrUser+'&sort_item=timestamp';
 // public_ajax.call_request('get',busWeiboUrl,businessWeibo);
 function businessWeibo(data) {
-    $('#defaultWeibo3 p').show();
+	 if(data.length==0){
+        $('#defaultWeibo3 p').text('暂无数据').show();
+        return false;
+    }
+    $('#defaultWeibo3 p').text('正在加载中...').show();
     $('#defaultWeibo3').bootstrapTable('load', data);
     $('#defaultWeibo3').bootstrapTable({
         data:data,

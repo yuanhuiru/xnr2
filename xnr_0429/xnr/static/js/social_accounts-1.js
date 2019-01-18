@@ -21,10 +21,20 @@ function bindSF(data) {
             txt='账户名或密码输入错误，请检查后输入！！';
         }
         else {
-            txt='绑定成功';
+            txt='绑定成功，2秒后跳转到我的虚拟人';
 			$('#letGo h4').text('绑定提示');
 			$('#letGo p').text(txt);
     		$('#letGo').modal('show');
+			//绑定成功后跳转虚拟人列表页面
+			var individual_url = '/personalCenter/individual/';
+			if (flag==1){individual_url = '/personalCenter/individual/';}else if(flag==4){individual_url = '/personalCenter/individualFaceBook/'}else if(flag==5){
+				individual_url = '/personalCenter/individualTwitter/'
+			}
+			setTimeout(function(){
+				$('#letGo').modal('hide');
+				window.location.href = individual_url;
+			},2000)
+			
            /* 暂时取消推荐关注的人 
 			var listURL=WFT_url+'/recommend_follows/?monitor_keywords='+(basicData_1.monitorKeywords||basicData_1.monitor_keywords).replace(/,/g,'，');
             if (flag==1){listURL+='&daily_interests='+basicData_1.daily}

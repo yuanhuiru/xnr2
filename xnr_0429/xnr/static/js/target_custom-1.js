@@ -76,9 +76,13 @@ function inModalData(data) {
         $(".field input[type='radio'][value='"+tt+"']").attr("checked",true);
     },500);
     var creat_url=WFT_url+'/domain2role/?domain_name='+(data.domains||data.domain_name);
-    public_ajax.call_request('get',creat_url,creat_1);
+    //public_ajax.call_request('get',creat_url,creat_1);
     var creat_url_2=WFT_url+'/role2feature_info/?domain_name='+(data.domains||data.domain_name)+'&role_name='+(data.role_name||data.roleName);
-    public_ajax.call_request('get',creat_url_2,creat_2);
+    //public_ajax.call_request('get',creat_url_2,creat_2);
+    setTimeout(function () {
+        public_ajax.call_request('get',creat_url,creat_1);
+        public_ajax.call_request('get',creat_url_2,creat_2);
+    },1000);
     $$political_side=data.political_side;
     try {
         if(data.psy_feature.indexOf('&')>=0){

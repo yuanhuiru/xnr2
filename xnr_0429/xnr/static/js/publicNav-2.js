@@ -80,6 +80,66 @@ Array.prototype.removeByValue = function(val) {
         }
     }
 };
+//跳转到指定发帖微博  onclick="jumpWeiboThis(this)"
+function jumpWeiboThis(_this){
+	var uid= $(_this).parents('.center_rel').find('.uid').text();
+	var mid= $(_this).parents('.center_rel').find('.mid').text();
+	var weibo_post_url='/index/url_trans/?uid='+uid+'&mid='+mid;
+    public_ajax.call_request('get',weibo_post_url,goWeioPost);
+}
+function goWeioPost(data){
+	$('#pormpt p').text('如果无法跳转,请将浏览器拦截窗口的权限清除，右上方查看。');
+    $('#pormpt').modal('show');
+	setTimeout(function(){window.open(data)},200);
+}
+//判断邮箱
+function checkEmail(str){
+			var re=/^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/
+    		if(re.test(str)){
+    			return true;
+        		//console.log("邮箱正确");
+    		}else{
+    			return false;
+        		//console.log("邮箱错误");
+	}
+}
+//检验密码是否正确
+//var check_password_url='/weibo_xnr_manage/verify_xnr_account/?xnr_user_no='+ID_Num;
+setTimeout(function(){
+	var check_password_url='/weibo_xnr_manage/verify_xnr_account/?xnr_user_no='+ID_Num;
+	public_ajax.call_request('get',check_password_url,checkPassword);
+},1500);
+function checkPassword(data){
+    if(data['account_info']==0){
+        $('.infoError').html('<span style="color:#03a9f4;">账户正常运行中。</span>');
+    }else {
+        $('.infoError').html('<span style="color:red;">账户异常，为保证虚拟人正常工作，请检查您的账户和密码是否正确，并及时更改。</span>');
+    }
+}
+
+//更改XNR密码
+$("#changePaaword").on('click',function(){
+	$('#changePaawordOpt').modal('show');
+});
+$("#sureChangePaaword").on('click',function(){
+    var email=$('.passval1').val();
+	var phone=$('.passval2').val();
+	var newPW=$('.passval3').val();
+	if(email==''||checkEmail(email)== false||phone==''||newPW==''){
+		$('#pormpt p').text('请检查您要输入的邮箱和手机号码是否正确，并且不能为空。');
+	    $('#pormpt').modal('show');
+	}else {
+		var change_password_url='/weibo_xnr_manage/modify_xnr_account/?xnr_user_no='+ID_Num+'&weibo_mail_account='+email+
+		'&weibo_phone_account='+phone+'&Password='+newPW;
+	    public_ajax.call_request('get',change_password_url,changePWinfor);
+	}
+});
+function changePWinfor(data){
+	var _in=data['status'];
+	var txt= _in=='ok'?'密码更改成功':'密码更改失败';
+	$('#pormpt p').text(txt);
+    $('#pormpt').modal('show');
+}
 //跳转微博首页
 function jumpWeibo(uid){
 	window.open('https://weibo.com/u/'+uid);
@@ -156,7 +216,7 @@ function retweet(_this,type) {
 }
 function forwardingBtn() {
     var txt = $(for_this).parents('.center_rel').find('.forwardingIput').val();
-    if (txt!=''){
+    //if (txt!=''){
         var MFT = $(for_this).parents('.center_rel').find('.'+mft_id).text();
         var forPost_url='/'+urlFirst_zpd+'/'+reply_retweet+'/?tweet_type='+for_type+'&xnr_user_no='+ID_Num+
             '&text='+txt+'&'+mft_id+'='+MFT;
@@ -165,13 +225,15 @@ function forwardingBtn() {
             forPost_url+='&uid='+uid;
         }
         public_ajax.call_request('get',forPost_url,operatSuccess);
-    }else {
-        $('#pormpt p').text('转发内容不能为空。');
-        $('#pormpt').modal('show');
-    }
+    //}else {
+    //    $('#pormpt p').text('转发内容不能为空。');
+    //    $('#pormpt').modal('show');
+    //}
 }
 //评论
+var for_this_pinglun;
 function showInput(_this) {
+   for_this_pinglun = _this;
     $(_this).parents('.center_rel').find('.commentDown').show();
 };
 function comMent(_this,type){
@@ -189,6 +251,22 @@ function comMent(_this,type){
         $('#pormpt p').text('评论内容不能为空。');
         $('#pormpt').modal('show');
     }
+}
+//关注用户
+function focusUser(_this){
+    var uid=$(_this).parents('.center_rel').find('.uid').text();
+    var foc_url='/weibo_xnr_operate/follow_operate/?xnr_user_no='+ID_Num+'&uid='+uid;
+    public_ajax.call_request('get',foc_url,focusYes);
+}
+function focusYes(data) {
+    var f='';
+    if (data[0]||data){
+        f='操作成功';
+    }else {
+        f='操作失败';
+    }
+    $('#pormpt p').text(f);
+    $('#pormpt').modal('show');
 }
 //点赞  喜欢
 function thumbs(_this) {
@@ -238,7 +316,7 @@ function robotTxt1(data) {
     }catch (e){
         robotType=$(robotThis).parents('.center_rel').find('.commentDown').find('span').eq(1).attr('onclick').replace(/\(|\)|\'/g,'').split(',')[1];
     }
-    var str='<div class="robotQuestion">';
+    /*var str='<div class="robotQuestion">';
     var problem=data["own"][0]||'没有相关问题';
     var robot1='<p style="font-weight: 900;color:#f6a38e;"><i class="icon icon-lightbulb"></i>&nbsp;相关问题</p>' +
         '<p style="text-indent:30px;margin:5px 0;">'+problem+'</p>';
@@ -254,7 +332,7 @@ function robotTxt1(data) {
     }
     robot2+=robot3+'</div>';
     str+=robot1+robot2+'</div>';
-    $(robotThis).parents('.center_rel').find('.commentDown').after(str);
+    $(robotThis).parents('.center_rel').find('.commentDown').after(str);*/
 	$(robotThis).parents('.center_rel').find('.commentDown').show();
 }
 //加入预警库
@@ -361,7 +439,10 @@ function oneUP(_this,type) {
 //操作返回结果
 function operatSuccess(data) {
     var f='';
-    if (data[0]||data){f='操作成功'}else {f='操作失败'};
+    if (data[0]||data){f='操作成功';
+	    $(for_this).parents('.center_rel').find('.forwardingIput').val('');
+	    $(for_this_pinglun).parents('.center_rel').find('.comtnt').val('');
+    }else {f='操作失败'};
     $('#pormpt p').text(f);
     $('#pormpt').modal('show');
 }

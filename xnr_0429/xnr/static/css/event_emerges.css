@@ -128,9 +128,9 @@ body {
     border-left:1px solid slategrey;
     border-right:1px solid slategrey;
 }
-/*#container .everyEvent .event_center .center_3 span:nth-child(4) {
+#container .everyEvent .event_center .center_3 span:last-child {
     border-left:1px solid slategrey;
-}*/
+}
 #container .everyEvent .event_center .center_3 span:hover {
     color:#eb7350;
 }

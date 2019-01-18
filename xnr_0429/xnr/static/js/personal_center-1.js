@@ -296,7 +296,9 @@ function sureDelXnr() {
 //继续创建未完成的虚拟人
 function go_on(id,flag,taskID) {
     localStorage.setItem('go_mod_user',id);
-    window.open('/registered/virtualCreated/?continueUser='+flag+'&flag=1&taskID='+taskID);
+    //window.open('/registered/virtualCreated/?continueUser='+flag+'&flag=1&taskID='+taskID);
+	window.location.href = '/registered/virtualCreated/?continueUser='+flag+'&flag=1&taskID='+taskID;	
+
     // var go_url = '/weibo_xnr_manage/change_continue_xnrinfo/?xnr_user_no='+id;
     // public_ajax.call_request('GET',go_url,success_fail);
 }
@@ -317,7 +319,8 @@ $('#choosePerson_3 .sure_in').on('click',function () {
         }
         localStorage.setItem('user',comingID);
         localStorage.setItem('userName',id_or_name);
-        window.open('/control/operationControl/');
+        //window.open('/control/operationControl/');
+		window.location.href = '/control/operationControl/';
     }else {
         $('#succee_fail #words').text('请选择登录方式');
         $('#succee_fail').modal('show');

@@ -14,8 +14,8 @@ $('.title .perTime .demo-label input').on('click',function () {
         $('#content-1-word p').show();
         $('#hot_post p').show();
         $('#userList p').show();
-        public_ajax.call_request('get',word_url,wordCloud);
-        public_ajax.call_request('get',word_url2,wordCloud2);
+//        public_ajax.call_request('get',word_url,wordCloud);
+  //      public_ajax.call_request('get',word_url2,wordCloud2);
 		public_ajax.call_request('get',hotPost_url,hotPost);
         public_ajax.call_request('get',activePost_url,activeUser);
         $('.titTime').hide();
@@ -34,22 +34,22 @@ $('.timeSure').on('click',function () {
         $('#pormpt p').text('请检查选择的时间（不能为空）');
         $('#pormpt').modal('show');
     }else {
-        public_ajax.call_request('get',word_url,wordCloud);
-        public_ajax.call_request('get',word_url2,wordCloud2);
+   //     public_ajax.call_request('get',word_url,wordCloud);
+     //   public_ajax.call_request('get',word_url2,wordCloud2);
         public_ajax.call_request('get',hotPost_url,hotPost);
         public_ajax.call_request('get',activePost_url,activeUser);
     }
 });
 //----关键词云
 var word_url='/twitter_xnr_monitor/lookup_full_keywordstring/?xnr_no='+ID_Num+'&from_ts='+from_ts+'&to_ts='+to_ts;
-public_ajax.call_request('get',word_url,wordCloud);
+//public_ajax.call_request('get',word_url,wordCloud);
 var word_url2='/twitter_xnr_monitor/lookup_weibo_keywordstring/?from_ts='+from_ts+'&to_ts='+to_ts+'&xnr_no='+ID_Num;
-public_ajax.call_request('get',word_url2,wordCloud2);
-require.config({
-    paths: {
-        echarts: '/static/js/echarts-2/build/dist',
-    }
-});
+//public_ajax.call_request('get',word_url2,wordCloud2);
+//require.config({
+//    paths: {
+//        echarts: '/static/js/echarts-2/build/dist',
+//    }
+//});
 function wordCloud(data) {
     $('#content-1-word p').show();
     if (data.length==0||isEmptyObject(data)){

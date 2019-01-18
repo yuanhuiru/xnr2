@@ -467,7 +467,7 @@
     //页面跳转
 	var userCheck;//未选定虚拟人 禁止跳转部分模块，提示：请先选定要查看的虚拟人
     $('#control').on('click',function () {
-        window.open('/personalCenter/individualQQ/');
+        window.location.href = '/personalCenter/individualQQ/';
     });
     $('#warning').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -477,7 +477,7 @@
 			$('#pormpt').modal('show');
 			return false;
 		}
-        window.open('/inforDetection/inforCheckingQQ/');
+        window.location.href = '/inforDetection/inforCheckingQQ/';
     });
     $('#evaluation').on('click',function () {
 		userCheck = $('input:radio[name="ID"]:checked').attr('valueID');
@@ -486,17 +486,17 @@
             $('#pormpt').modal('show');
             return false;
         }
-        window.open('/behavioGauge/behaviorQQ/');
+        window.location.href = '/behavioGauge/behaviorQQ/';
     });
     $('#reportedmange').on('click',function () {
-        window.open('/reportManage/management/?flag=2');
+        window.location.href = '/reportManage/management/?flag=2';
     });
     $('#knowledgebase').on('click',function () {
 		return false;//QQ 微信通道去掉 知识库管理。
         //window.open('/knowledge/domainLibrary/?flag=2');
     });
     $('#system').on('click',function () {
-        window.open('/systemManage/daily/?flag=2');
+        window.location.href = '/systemManage/daily/?flag=2';
     });
 
     //虚拟人列表

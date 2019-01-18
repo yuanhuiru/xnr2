@@ -103,6 +103,8 @@ def onQQMessage(bot, contact, member, content):
             
             nowDate = datetime.datetime.now().strftime('%Y-%m-%d')
             index_name = group_message_index_name_pre+ str(nowDate)
+            print 'INDEX NAME-=-------------=-=-'
+            print index_name
             #index_id = bot.conf.qq + '_' + contact.qq + '_' + str(member.last_speak_time) + '_' + conMD5
             # 让系统随机分配 _id
             if not es.indices.exists(index=index_name):
@@ -140,6 +142,8 @@ def execute_v2(qqbot_port, qqbot_num, qqbot_mailauth):
 if __name__ == '__main__':
     #execute()
     opts, args = getopt.getopt(sys.argv[1:], 'hi:o:m:')
+    print "opts,args,opts,args,opts,args,opts,args,opts,args,opts,args"
+    print opts, args 
     for op, value in opts:
         if op == '-i':
             qqbot_port = value
