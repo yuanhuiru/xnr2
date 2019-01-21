@@ -29,8 +29,10 @@ def utils_login(wxbot_id):
 def utils_check_status(wxbot_id):
     return check_status(wxbot_id)
 
-def utils_show_wxxnr():
-    return show_wx_xnr()
+def utils_show_wxxnr(submitter):
+    if submitter:
+        return show_wx_xnr(submitter)
+    return []
 
 def utils_delete(wxbot_id):
     return delete_wx_xnr(wxbot_id)

@@ -9,7 +9,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 class SinaLauncher():
-    def __init__(self, username, password, account_type='mail'):
+    def __init__(self, username, password, account_type):
         self.password = password
         self.username = username
         self.account_type = account_type
@@ -70,10 +70,13 @@ class SinaLauncher():
             if r.status_code != 200:
                 print "Login error!"
                 # 在此如果出错的话，则写入错误帐号到weibo_xnr表中的verify_password字段。  
+                print '# 在此如果出错的话，则写入错误帐号到weibo_xnr表中的verify_password字段。'  
                 save_error_es(self.username, self.account_type)
                 print "hhhhhhhhhhhhhhhhhhhhhhhhhhhhahahahahhhhhhhhhhhhhhhhhha"
                 return False
             else:
+                a = 'ok'
+                save_error_es(self.username,a)
                 print "Login success!"
                 return True
         except Exception, e:
@@ -84,7 +87,8 @@ class SinaLauncher():
             return False
 
 if __name__ == '__main__':
-    test = SinaLauncher('13269704912','murcielagolp640')
+    #test = SinaLauncher('13269704912','murcielagolp640', 'phone')
+    test = SinaLauncher('18737028295','xuanhui99999', 'phone')
     test.login()
     print test.uid
 

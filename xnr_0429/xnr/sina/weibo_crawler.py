@@ -100,13 +100,13 @@ def all_weibo_xnr_crawler():
 			mail_account = result['weibo_mail_account']
 			phone_account = result['weibo_phone_account']
 			pwd = result['password']
-			if mail_account:
-            	#  加入账户类型,为了区别是邮箱或者手机账号
-				account_name = mail_account
-				account_type = 'mail'
-			elif phone_account:
+			if phone_account:
+            	# 加入账户类型,为了区别是邮箱或者手机账号
 				account_name = phone_account
 				account_type = 'phone'
+			elif mail_account:
+				account_name = mail_account
+				account_type = 'mail'
 			else:
 				account_name = False
 				account_type = ' '

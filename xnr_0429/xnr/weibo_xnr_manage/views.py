@@ -491,6 +491,6 @@ def modify_xnr_account():
     task_detail['xnr_user_no']=request.args.get('xnr_user_no','')
     task_detail['weibo_mail_account'] = request.args.get('weibo_mail_account','') # 邮箱
     task_detail['weibo_phone_account'] = request.args.get('weibo_phone_account','') # 手机号
-    task_detail['password'] = request.args.get('password','') # 密码
+    task_detail['password'] = request.args.get('Password','') # 密码
     results=update_account_info(task_detail)
     return json.dumps(results)

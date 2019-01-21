@@ -358,9 +358,15 @@ def check_status(wxbot_id):
             print e
     return 0
 
-def show_wx_xnr():
+def show_wx_xnr(submitter):
     wx_xnr_mappings()   #创建wx_xnr表
-    query_body={'query':{'match_all':{}},'size':MAX_VALUE}
+    query_body = {
+        'query': {
+            'term': {'submitter': submitter}
+        },
+        'size': MAX_VALUE
+    }
+
     res = []
     res = es_xnr.search(index=wx_xnr_index_name, doc_type=wx_xnr_index_type, body=query_body)['hits']['hits']
     wx_xnr_list = []
@@ -465,6 +471,7 @@ def send_qrcode2mail(wxbot_id, qr_path):
     except Exception,e:
         print 'send_qrcode2mail Exception: ', str(e)
         return 0
+
 
 
 

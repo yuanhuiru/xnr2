@@ -73,7 +73,8 @@ def set_groups():
 
 @mod.route('/show/')
 def show_wxxnr():
-    res = utils_show_wxxnr()
+    submitter = request.args.get('submitter', '')
+    res = utils_show_wxxnr(submitter)
     if res:
         return json.dumps(res)
     return json.dumps({}) 

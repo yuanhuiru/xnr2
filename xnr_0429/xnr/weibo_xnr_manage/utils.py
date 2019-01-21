@@ -1761,6 +1761,7 @@ def update_account_info(task_detail):
     weibo_phone_account = task_detail['weibo_phone_account']
     weibo_mail_account = task_detail['weibo_mail_account']
     account_password = task_detail['password']
+    print account_password
     try:
         item_exist = es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
         item_exist['weibo_phone_account'] = weibo_phone_account

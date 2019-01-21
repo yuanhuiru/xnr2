@@ -9,6 +9,7 @@ import re
 
 #reload(sys)
 #sys.path.append('../../')
+from xnr_relations_utils import update_weibo_xnr_relations
 from xnr.global_config import S_DATE,S_TYPE,S_DATE_BCI,SYSTEM_START_DATE
 from xnr.global_utils import es_xnr as es
 from xnr.global_utils import weibo_hot_keyword_task_index_name,weibo_hot_keyword_task_index_type,\
@@ -22,7 +23,8 @@ from xnr.global_utils import weibo_hot_keyword_task_index_name,weibo_hot_keyword
                             weibo_bci_index_name_pre,weibo_bci_index_type,portrait_index_name,portrait_index_type,\
                             es_user_portrait,es_user_profile,active_social_index_name_pre,active_social_index_type,\
                             weibo_business_tweets_index_name_pre, weibo_business_tweets_index_type,\
-                            social_V_sensing_index_name, social_V_sensing_index_type
+                            social_V_sensing_index_name, social_V_sensing_index_type, \
+                            weibo_xnr_relations_index_name, weibo_xnr_relations_index_type
 from xnr.global_utils import weibo_feedback_comment_index_name,weibo_feedback_comment_index_type,\
                             weibo_feedback_retweet_index_name,weibo_feedback_retweet_index_type,\
                             weibo_feedback_private_index_name,weibo_feedback_private_index_type,\
@@ -1784,7 +1786,15 @@ def get_delete_sensor_user(xnr_user_no,sensor_uid_list):
     return mark
 
 def get_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
+    root_uid = xnr_user_no2uid(xnr_user_no)
+    uid_list = uid_string.encode('utf-8').split('，')
+    for uid in uid_list:
+        if not update_weibo_xnr_relations(root_uid, uid, {'gensuiguanzhu': 1}):
+            return False
+    return True
 
+
+"""
     mark = False
     fail_nick_name_list = []
     if uid_string:
@@ -1835,10 +1845,10 @@ def get_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
         followers_list = list(set(followers_list)|set(uid_list))
 
         es.update(index=weibo_xnr_fans_followers_index_name,doc_type=weibo_xnr_fans_followers_index_type,\
-                    id=xnr_user_no,body={'doc':{'trace_follow_list':trace_follow_list,'followers_list':followers_list}})
+                        id = xnr_user_no, body = {'doc': {'trace_follow_list': trace_follow_list, 'followers_list': followers_list}})
 
-        mark = True
-    
+    mark = True
+
     except:
 
         item_exists = {}
@@ -1853,6 +1863,7 @@ def get_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
         mark = True
 
     return [mark,fail_nick_name_list]
+"""
 
 def get_un_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
 
@@ -1976,6 +1987,40 @@ def get_show_retweet_timing_list_future(xnr_user_no):
     return result_all
 
 def get_show_trace_followers(xnr_user_no):
+    results = []
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'bool':{
+                        'must':[
+                            {'term': {'xnr_no': xnr_user_no}},
+                            {'term': {'gensuiguanzhu': 1}}
+                        ]
+                    }
+                }
+            }
+        },
+        'size': MAX_SEARCH_SIZE,
+    }
+    search_results = es.search(index=weibo_xnr_relations_index_name, doc_type=weibo_xnr_relations_index_type, body=query_body)['hits']['hits']
+    print search_results
+    for data in search_results:
+        data = data['_source']
+        r = {
+            'uid': data.get('uid', ''),
+            'nick_name': data.get('nickname', ''),
+            'fansnum': data.get('fensi_num', 0),
+            'follownum': data.get('guanzhu_num', 0),
+            'sex': data.get('sex', 'unknown'),
+            'photo_url': data.get('photo_url', ''),
+            'statusnum': 0,
+            'user_location': data.get('geo', ''),
+        }
+        results.append(r)
+    return results
+
+"""
     #print '=='
     weibo_user_info = []
     #print '=='
@@ -2028,6 +2073,7 @@ def get_show_trace_followers(xnr_user_no):
         weibo_user_info
         
     return weibo_user_info
+"""
 
 def get_add_private_white_uid(xnr_user_no,white_uid_string):
 
@@ -2162,6 +2208,7 @@ def save_oprate_like(task_detail):
 
 
         
+
 
 
 
