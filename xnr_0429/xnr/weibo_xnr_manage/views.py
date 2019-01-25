@@ -16,7 +16,7 @@ from utils import get_weibohistory_retweet,get_weibohistory_comment,get_weibohis
                   delete_history_count,create_history_count,lookup_xnr_assess_info,\
                   get_xnr_detail,new_show_history_posting,\
                   create_xnr_flow_text,update_weibo_count,create_send_like,delete_weibo_count,delete_receive_like,delete_xnr_flow_text,\
-                  get_account_info, update_account_info
+                  get_account_info, update_account_info, get_xnr_monitor_words, modify_xnr_monitor_words
 from xnr.time_utils import datetime2ts
 
 mod = Blueprint('weibo_xnr_manage', __name__, url_prefix='/weibo_xnr_manage')
@@ -494,3 +494,28 @@ def modify_xnr_account():
     task_detail['password'] = request.args.get('Password','') # 密码
     results=update_account_info(task_detail)
     return json.dumps(results)
+
+
+# by kn xuan 查看当前xnr的监测关键词
+#http://219.224.134.213:9209/weibo_xnr_manage/show_xnr_monitor_words/?xnr_user_no=WXNR0003
+@mod.route('/show_xnr_monitor_words/')
+def show_xnr_monitor_words():
+    # 有返回数据的话 则 当前xnr社交帐号或密码有误 去查找xnr用户 
+    task_detail = dict()
+    task_detail['xnr_user_no']=request.args.get('xnr_user_no','')
+    monitor_keywords=get_xnr_monitor_words(task_detail)
+    results = {"monitor_keywords":monitor_keywords}
+    return json.dumps(results)
+
+
+# by kn xuan 修改当前xnr的监测关键词
+#http://219.224.134.213:9209/weibo_xnr_manage/show_xnr_monitor_words/?xnr_user_no=WXNR0003
+@mod.route('/update_xnr_monitor_words/')
+def update_xnr_monitor_words():
+    # 有返回数据的话 则 当前xnr社交帐号或密码有误 去查找xnr用户 
+    task_detail = dict()
+    task_detail['xnr_user_no']=request.args.get('xnr_user_no','')
+    task_detail['new_monitor_keywords'] = request.args.get('new_monitor_keywords','')  # 提交的关键词，以中文逗号分隔“，”
+    task_detail['old_monitor_keywords'] = request.args.get('old_monitor_keywords','')  # 提交的关键词，以中文逗号分隔“，”
+    result_info=modify_xnr_monitor_words(task_detail)
+    return json.dumps(result_info)

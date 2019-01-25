@@ -1401,13 +1401,14 @@ def wxnr_list_concerns(user_id,order_type):
         data = data['_source']
         r = {
             'uid': data['uid'],
-            'nick_name': data['nickname'],
-            'topic_string': data['topic_string'],
-            'sensitive': data['sensitive'],
-            'influence': data['influence'],
+            #'nick_name': data['nickname'],
+            'nick_name': data.get('nickname', ''),
+            'topic_string': data.get('topic_string', ''),
+            'sensitive': data.get('sensitive', 0),
+            'influence': data.get('influence', 0),
             'follow_source': '',
-            'sex': data['sex'],
-            'photo_url': data['photo_url'],
+            'sex': data.get('sex', ''),
+            'photo_url': data.get('photo_url', ''),
         }
         results.append(r)
     return results
@@ -1538,15 +1539,15 @@ def wxnr_list_fans(user_id,order_type):
     for data in search_results:
         data = data['_source']
         r = {
-            'uid': data['uid'],
-            'nick_name': data['nickname'],
-            'user_location': data['geo'],
-            'topic_string': data['topic_string'],
-            'sensitive': data['sensitive'],
-            'influence': data['influence'],
+            'uid': data.get('uid', ''),
+            'nick_name': data.get('nickname', ''),
+            'user_location': data.get('geo', ''),
+            'topic_string': data.get('topic_string', ''),
+            'sensitive': data.get('sensitive', 0),
+            'influence': data.get('influence', 0),
             'fans_source': '',
-            'sex': data['sex'],
-            'photo_url': data['photo_url'],
+            'sex': data.get('sex', ''),
+            'photo_url': data.get('photo_url', ''),
         }
         results.append(r)
     return results
@@ -1776,6 +1777,63 @@ def update_account_info(task_detail):
         print e
 
 
+# by kn xuan 查看当前xnr的监测关键词
+def get_xnr_monitor_words(task_detail):
+    xnr_user_no = task_detail['xnr_user_no']
+    try:
+        item_exist = es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
+        keywords_result = item_exist['monitor_keywords']
+    except Exception as e:
+        return ''
+    return keywords_result
 
+
+def modify_xnr_monitor_words(task_detail):
+    xnr_user_no = task_detail['xnr_user_no']
+    try:
+        item_exist = es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
+        item_exist['monitor_keywords'] = ','.join(task_detail['new_monitor_keywords'].encode('utf-8').split('，'))
+        print es_xnr.update(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no,body={'doc':item_exist})
+        
+        return {"status":"ok"}
+
+    except Exception as e:
+        print e
+        return {"status":"fail"}
+
+    '''
+    try:
+        item_exist = es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
+        old_keyword = task_detail['old_monitor_keywords']
+        new_keyword = task_detail['new_monitor_keywords']
+        old_monitor_keywords = (item_exist['monitor_keywords'].split(','))
+        print item_exist['monitor_keywords'] 
+        print old_monitor_keywords
+        new_str_list = list()
+        new_str = str()
+        for old in old_monitor_keywords:
+            if old == old_keyword:
+                new_str_list.append(new_keyword)
+                #new_str = new_str + new_keyword + ','
+            else:
+                new_str_list.append(old_keyword)
+                #new_str = new_str + old + ','
+        ['你好','我好','他好']
+        print new_str_list
+        for new in new_str_list:
+            new_str = new_str + new + ','
+        #new_str= '你好'
+        new_str = new_str[:-1]
+        end_str = ','.join(new_str.encode('utf-8').split('，'))
+        item_exist['monitor_keywords'] = new_str.encode('utf-8')
+        print es_xnr.update(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no,body={'doc':item_exist})
+        print new_str[:-1]
+        return {"status":"ok"}
+    except Exception as e:
+        print e
+        return {"status":"fail"}
+
+    print 'util-=-=-=-+_+_+_+_+__++_+++++++++++++++++++++++++++++++________________________________--'
+    '''
 
 
