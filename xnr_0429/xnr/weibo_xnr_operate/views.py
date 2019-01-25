@@ -23,7 +23,7 @@ from utils import push_keywords_task,get_submit_tweet,save_to_tweet_timing_list,
                 get_show_retweet_timing_list_future,get_related_recommendation_from_es,get_bussiness_recomment_tweets_from_es,\
                 get_daily_recomment_tweets_from_es, get_network_buzzwords,get_root_weibo,\
                 get_V_recommend_tweets
-from utils import save_oprate_like
+from utils import save_oprate_like,save_weibo_follow_operate,get_weibo_comment
 from xnr.utils import add_operate2redis
 
 import traceback
@@ -269,7 +269,15 @@ def ajax_daily_recomment_tweets():
     xnr_user_no = request.args.get('xnr_user_no','')
     sort_item = request.args.get('sort_item','user_index') 
     tweets = get_daily_recomment_tweets_from_es(xnr_user_no,sort_item)
-    return json.dumps(tweets)
+    #return json.dumps(tweets)
+
+    try:
+        tweets_results = random.sample(tweets, 20)
+        for tweet_result in tweets_results:
+            pass
+        return json.dumps(tweets_results)
+    except Exception as e:
+        return json.dumps(tweets)
 
 
 '''
@@ -467,6 +475,14 @@ def ajax_show_follow():
 @mod.route('/follow_operate/')
 def ajax_reply_follow():
     task_detail = dict()
+    xnr_user_no = request.args.get('xnr_user_no','')
+    uid_string = request.args.get('uid','')    # 不同uid之间用中文逗号“，”隔开
+    follow_type_string = request.args.get('follow_type','')  # 日常 daily 业务business
+    results = save_weibo_follow_operate(xnr_user_no,uid_string,follow_type_string)
+    return json.dumps(results)  
+
+    '''
+    task_detail = dict()
     task_detail['xnr_user_no'] = request.args.get('xnr_user_no','')
     task_detail['uid'] = request.args.get('uid','')
     task_detail['trace_type'] = request.args.get('trace_type','')  # 跟随关注 -trace_follow，普通关注-ordinary_follow
@@ -480,7 +496,7 @@ def ajax_reply_follow():
     mark = add_operate2redis(queue_dict)
 
     return json.dumps(mark)
-
+   '''
 @mod.route('/unfollow_operate/')
 def ajax_unfollow_operate():
     task_detail = dict()
@@ -545,14 +561,15 @@ def ajax_related_recommendation():
     task_detail['sort_item'] = request.args.get('sort_item','influence')
     
     results = get_related_recommendation_from_es(task_detail)
-    random_results = random.sample(results, 20)
-    for random_result in random_results:
-        pass
+    try:
+        random_results = random.sample(results, 20)
+        for random_result in random_results:
+            pass
+        # from 50 suiji 20
+        return json.dumps(random_results)
+    except Exception as e:
         #print random_result['nick_name']
-    print type(results)
-    #return json.dumps(results)
-    # from 50 suiji 20
-    return json.dumps(random_results)
+        return json.dumps(results)
 
 # 显示粉丝
 @mod.route('/create_group_show_fans/')
@@ -626,6 +643,18 @@ def ajax_un_trace_follow_operate():
     results = get_un_trace_follow_operate(xnr_user_no,uid_string,nick_name_string)
 
     return json.dumps(results)  # [mark,fail_uids,fail_nick_name_list]  fail_uids - 取消失败的uid  fail_nick_name_list -- 原因同上
+
+
+# 查看微博评论
+@mod.route('/select_weibo_comment/')
+def select_weibo_comment():
+    # 根据mid每次发请求查看单个微博的评论
+    mid = request.args.get('mid','')
+    print mid
+    current_time = request.args.get('current_time','')
+    print current_time
+    results = get_weibo_comment(mid, current_time)
+    return json.dumps(results)
 
 
 

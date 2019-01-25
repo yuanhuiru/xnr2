@@ -1,4 +1,4 @@
-#-*- coding:utf-8 -*-
+#coding:utf-8
 import os
 import time
 import json
@@ -2201,8 +2201,52 @@ def save_oprate_like(task_detail):
     return mark
 
 
+# 关注用户
+def save_weibo_follow_operate(xnr_user_no,uid_string,follow_type_string):
+
+    root_uid = xnr_user_no2uid(xnr_user_no)
+    uid_list = uid_string.encode('utf-8').split('，')
+    follow_type_list = follow_type_string.encode('utf-8').split('，')
+    follow_data = {}
+    if len(follow_type_list) == 2:
+        follow_data={"richangguanzhu":1, "yewuguanzhu":1, "pingtaiguanzhu":1}
+    elif follow_type_list[0] == 'daily':
+        follow_data={"richangguanzhu":1,"pingtaiguanzhu":1}
+    elif follow_type_list[0] == 'business':
+        follow_data={"yewuguanzhu":1,"pingtaiguanzhu":1}
+    else:
+        follow_data={"richangguanzhu":0, "yewuguanzhu":0,"pingtaiguanzhu":1}
+    print follow_data
+
+    for uid in uid_list:
+        if not update_weibo_xnr_relations(root_uid, uid, follow_data):
+            return {'status':'fail'}
+    return {'status':'ok'}
 
 
+def get_weibo_comment(mid, current_time):
+    # 传过来当前帖子的时间 data
+    # 获取当前时间
+    current_time = current_time
+    print current_time
+    index_name = flow_text_index_name_pre + current_time
+    print index_name
+    #query = {"query": {"bool": {"must": [{"term": {"root_mid": "{}".format(mid)}}]}}, "from": 0, "size": 2000}
+
+    query = {"query": {"bool": {"must": [{"term": {"root_mid": "{}".format(mid)}}]}}, "from": 0, "size": 2000}
+
+    result_info = es_flow_text.search(index=index_name, doc_type='text',body=query)['hits']['hits']
+    comment_list = []
+    for result in result_info:
+        if result['_source']['message_type'] == 2:
+            r = {'uid' : result['_source']['uid'],
+                 'text' : result['_source']['text'],
+                 'message_type' : result['_source']['message_type']
+                }
+            comment_list.append(r)
+            print comment_list
+
+    return comment_list
 
 
 
