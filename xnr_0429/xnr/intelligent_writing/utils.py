@@ -73,7 +73,8 @@ def get_show_writing_task(task_detail):
         'size':MAX_SEARCH_SIZE,
         'sort':{'create_time':{'order':'desc'}}
     }
-
+    # print query_body
+    # print es,writing_task_index_name, writing_task_index_type
     search_results = es.search(index=writing_task_index_name,doc_type=writing_task_index_type,\
         body=query_body)['hits']['hits']
 

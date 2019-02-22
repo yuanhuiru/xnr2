@@ -5,7 +5,7 @@ from global_utils import es_xnr, es_user_portrait,\
     weibo_xnr_relations_index_name, weibo_xnr_relations_index_type,\
     portrait_index_name, portrait_index_type
 from utils import uid2xnr_user_no
-from
+#from
 def update_weibo_user_portrait_info(uid):
     user_exist = es_user_portrait.exists(index=portrait_index_name, doc_type=portrait_index_type, id=uid)
     if user_exist:

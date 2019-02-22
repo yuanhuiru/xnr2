@@ -650,8 +650,10 @@ def ajax_un_trace_follow_operate():
 def select_weibo_comment():
     # 根据mid每次发请求查看单个微博的评论
     mid = request.args.get('mid','')
+    # 备用
+    uid = request.args.get('uid','')
     print mid
-    current_time = request.args.get('current_time','')
+    current_time = request.args.get('tweet_time','')
     print current_time
     results = get_weibo_comment(mid, current_time)
     return json.dumps(results)

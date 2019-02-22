@@ -6,6 +6,7 @@ import sys
 import random
 import base64
 import re
+import datetime
 
 #reload(sys)
 #sys.path.append('../../')
@@ -2224,28 +2225,59 @@ def save_weibo_follow_operate(xnr_user_no,uid_string,follow_type_string):
     return {'status':'ok'}
 
 
-def get_weibo_comment(mid, current_time):
+def get_weibo_comment(mid, tweet_time):
     # 传过来当前帖子的时间 data
     # 获取当前时间
-    current_time = current_time
-    print current_time
-    index_name = flow_text_index_name_pre + current_time
-    print index_name
+    tweet_time = tweet_time
+    now = datetime.datetime.now()
+    current_time = now.strftime('%Y-%m-%d')
+    date_start = datetime.datetime.strptime(tweet_time, '%Y-%m-%d')
+    date_end = datetime.datetime.strptime(current_time, '%Y-%m-%d')
+    index_name_list = []
+    index_name_list.append(flow_text_index_name_pre + tweet_time)
+    while date_start < date_end:
+        date_start += datetime.timedelta(days=1)
+        index_date = date_start.strftime('%Y-%m-%d')
+        index_name = flow_text_index_name_pre + index_date
+        index_name_list.append(index_name)
+    print "-=-=-=-=-=-=-=-=-=-=-==--="
+    print index_name_list
+    print "-=-=-=-=-=-=-=-=-=-=-==--="
     #query = {"query": {"bool": {"must": [{"term": {"root_mid": "{}".format(mid)}}]}}, "from": 0, "size": 2000}
 
-    query = {"query": {"bool": {"must": [{"term": {"root_mid": "{}".format(mid)}}]}}, "from": 0, "size": 2000}
+    query = {
+        "query": {
+            "bool": {
+                "must": [
+                    {"term": {"root_mid": "{}".format(mid)}},
+                    {"term":{"message_type":2}}
+                ]
+            }
+        }, 
 
-    result_info = es_flow_text.search(index=index_name, doc_type='text',body=query)['hits']['hits']
-    comment_list = []
-    for result in result_info:
-        if result['_source']['message_type'] == 2:
-            r = {'uid' : result['_source']['uid'],
-                 'text' : result['_source']['text'],
-                 'message_type' : result['_source']['message_type']
-                }
-            comment_list.append(r)
-            print comment_list
-
+        "from": 0, 
+        "size": 100
+    }
+    #index_list = ['flow_text_2019-01-27','flow_text_2019-01-28'] 
+    try:
+        result_info = es_flow_text.search(index=index_name_list, doc_type='text',body=query)['hits']['hits']
+    #result_info = es_flow_text.search(index=index_name, doc_type='text',body=query)['hits']['hits']
+        print result_info
+        comment_list = []
+        for result in result_info:
+            if result['_source']['message_type'] == 2:
+                r = {'uid' : result['_source']['uid'],
+                     'text' : result['_source']['text'],
+                     'message_type' : result['_source']['message_type'],
+                     'timestamp':result['_source']['timestamp'],
+                     'mid':result['_source']['mid'],
+                     'root_mid':result['_source']['root_mid']
+                    }
+                comment_list.append(r)
+                #print comment_list
+    except Exception as e:
+        comment_list = []
+        print e
     return comment_list
 
 

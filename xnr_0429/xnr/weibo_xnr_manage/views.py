@@ -519,3 +519,4 @@ def update_xnr_monitor_words():
     task_detail['old_monitor_keywords'] = request.args.get('old_monitor_keywords','')  # 提交的关键词，以中文逗号分隔“，”
     result_info=modify_xnr_monitor_words(task_detail)
     return json.dumps(result_info)
+

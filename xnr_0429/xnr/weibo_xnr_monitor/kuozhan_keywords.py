@@ -24,9 +24,11 @@ def detect_by_keywords():
     es_results = es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id='WXNR0152')
     monitor_keywords = es_results['_source']['monitor_keywords']
     #print es_results
-    print list(monitor_keywords)
+    #print list(monitor_keywords)
+    monitor_keywords = u"共产党,中国"
+    print monitor_keywords
     model = gensim.models.KeyedVectors.load_word2vec_format(WORD2VEC_PATH,binary=True)
-    for word in list(monitor_keywords):
+    for word in monitor_keywords.split(','):
         print '-==-========-=-=-=-=-=-=-=-=-=-'
         print word
         if word == ',':
@@ -40,7 +42,7 @@ def detect_by_keywords():
             print u'扩展词 Exception', str(e)
     print '开始搜索 start searching================================'
     print keywords_list
-    search_by_keywords(keywords_list)
+    #search_by_keywords(keywords_list)
 
 
 def search_by_keywords(keywords_list):
