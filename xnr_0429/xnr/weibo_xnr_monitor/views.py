@@ -168,3 +168,23 @@ def ajax_weibo_user_detail():
     result=weibo_user_detail(user_id)
     return json.dumps(result)
 
+
+from keyword_info_monitor_utils import search_posts
+@mod.route('/keyword_info_monitor/')
+def keyword_info_monitor():
+    xnr_user_no = request.args.get('weiboxnr_id','')
+    from_ts = request.args.get('from_ts', '')
+    to_ts = request.args.get('to_ts', '')
+    extend_keywords_size = request.args.get('extend_keywords_size', 0)
+    result = search_posts(xnr_user_no, from_ts, to_ts, extend_keywords_size)
+    return json.dumps(result)
+
+
+from user_info_monitor_utils import load_posts
+@mod.route('/user_info_monitor/')
+def user_info_monitor():
+    xnr_user_no = request.args.get('weiboxnr_id','')
+    from_ts = request.args.get('from_ts', '')
+    to_ts = request.args.get('to_ts', '')
+    result = load_posts(xnr_user_no, from_ts, to_ts,)
+    return json.dumps(result)

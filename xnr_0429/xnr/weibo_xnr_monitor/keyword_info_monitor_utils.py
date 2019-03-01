@@ -3,7 +3,7 @@ import json
 import sys
 import gensim
 from elasticsearch import Elasticsearch
-
+import time
 sys.path.append('/home/xnr1/xnr_0429/xnr')
 sys.path.append('/home/xnr1/xnr_0429')
 from parameter import MAX_DETECT_COUNT, MAX_FLOW_TEXT_DAYS, MAX_SEARCH_SIZE, FB_TW_TOPIC_ABS_PATH, FB_DOMAIN_ABS_PATH, \
@@ -17,7 +17,18 @@ weibo_xnr_index_type = 'user'
 es_xnr = Elasticsearch(['192.168.169.45:9205', '192.168.169.47:9205', '192.168.169.47:9206'], timeout=600)
 MAX_VALUE = 999
 
+def ts2datetime(ts):
+    return time.strftime('%Y-%m-%d', time.localtime(ts))
 
+def datetime2ts(date):
+    return int(time.mktime(time.strptime(date, '%Y-%m-%d')))
+
+def load_index(index_prefix, from_ts, to_ts):
+    index_list = []
+    print 'from_ts', [from_ts], 'to_ts', [to_ts]
+    for timestamp in range(int(from_ts), int(to_ts) + 3600*24, 3600*24):
+        index_list.append(index_prefix + ts2datetime(timestamp))
+    return index_list
 
 def load_keywords(xnr_user_no, extend_keywords_size=0):
     """
@@ -71,33 +82,28 @@ def load_query_body(keywords, query_item='text'):
         query_body = {
             'query': {
                 'bool': {
-                    'must': keyword_query_list,
-                }
+                    'should': keyword_query_list,
+                },
             },
+            'size': MAX_SEARCH_SIZE
         }
 
     return  query_body
 
-def search_posts():
-    keywords = load_keywords('WXNR0152', 2)
+def search_posts(xnr_user_no, from_ts, to_ts, extend_keywords_size=0):
+    keywords = load_keywords(xnr_user_no, extend_keywords_size)
     query_body = load_query_body(keywords)
+    index_list = load_index(flow_text_index_name_pre, from_ts, to_ts)
 
-    date = '2019-01-20'
-    flow_text_index_name = '%s%s' % (flow_text_index_name_pre, date)
+    search_results = es_flow_text.search(index=index_list, doc_type=flow_text_index_type, body=query_body)['hits']['hits']
+    return search_results
 
-    print 'keywords', keywords
-    print 'query_body', query_body
-    search_results = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type, body=query_body)['hits']['hits']
-    for r in search_results:
-        print r['_score'], r['_souce']['text']
-    return 'search_results', search_results
 
 
 
 if __name__ == '__main__':
-    #detect_by_keywords()
-    # print load_keywords('WXNR0152', 2)
-    search_posts()
+    print search_posts('WXNR0152', 1550139123, 1551003123)
+
 
 
 
