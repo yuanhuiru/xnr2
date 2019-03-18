@@ -466,6 +466,9 @@ fb_xnr_fans_followers_index_type='uids'
 facebook_xnr_save_like_index_name='facebook_xnr_save_like'
 facebook_xnr_save_like_index_type='text'
 
+# facebook xnr相关的各种有关注关系的用户 用于取代存储琐碎的关注、粉丝等信息表 2019-3-18
+facebook_xnr_relations_index_name = 'facebook_xnr_relations'
+facebook_xnr_relations_index_type = 'user'
 
 
 #use to save facebook xnr count info
@@ -624,6 +627,9 @@ twitter_xnr_assessment_index_type = 'score'
 twitter_xnr_save_like_index_name='twitter_xnr_save_like'
 twitter_xnr_save_like_index_type='text'
 
+# twitter xnr相关的各种有关注关系的用户 用于取代存储琐碎的关注、粉丝等信息表 2019-3-18
+twitter_xnr_relations_index_name = 'twitter_xnr_relations'
+twitter_xnr_relations_index_type = 'user'
 
 
 #use to save twitter xnr count info
