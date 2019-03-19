@@ -156,6 +156,40 @@ def uid2xnr_user_no(uid):
 
     return xnr_user_no
 
+def fb_uid2xnr_user_no(uid):
+    try:
+        query_body = {
+        'query':{
+            'term':{'uid':uid}
+        }
+    }
+        result = es_fb_tw.search(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,body=query_body)['hits']['hits']
+        #print result
+        xnr_user_no = result[0]['_source']['xnr_user_no']
+
+    except:
+        xnr_user_no = ''
+
+    return xnr_user_no
+
+def tw_uid2xnr_user_no(uid):
+    try:
+        query_body = {
+        'query':{
+            'term':{'uid':uid}
+        }
+    }
+        result = es_fb_tw.search(index=tw_xnr_index_name,doc_type=tw_xnr_index_type,body=query_body)['hits']['hits']
+        #print result
+        xnr_user_no = result[0]['_source']['xnr_user_no']
+
+    except:
+        xnr_user_no = ''
+
+    return xnr_user_no
+
+
+
 # 保存至粉丝关注表
 def save_to_fans_follow_ES(xnr_user_no,uid,save_type,follow_type,trace_type='ordinary_follow'):
 
@@ -634,4 +668,5 @@ if __name__ == '__main__':
     #print r_operate_queue.lrange(operate_queue_name,0,8)
     # print r_operate_queue.rpop(operate_queue_name)
     pass
+
 
