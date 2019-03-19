@@ -631,7 +631,7 @@ if __name__ == '__main__':
     #    id='AV4Zi0NasTFJ_K1Z2dDy')
     #item_dict = {"channel":"weibo"}
     #add_operate2redis(item_dict)
-    print r_operate_queue.lrange(operate_queue_name,0,8)
+    #print r_operate_queue.lrange(operate_queue_name,0,8)
     # print r_operate_queue.rpop(operate_queue_name)
-
+    pass
 
