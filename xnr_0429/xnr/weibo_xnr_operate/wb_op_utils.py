@@ -40,7 +40,7 @@ from time_utils import ts2datetime,datetime2ts,get_flow_text_index_list,\
                             get_timeset_indexset_list
 from weibo_publish_func import publish_tweet_func,retweet_tweet_func,comment_tweet_func,private_tweet_func,\
                                 like_tweet_func,follow_tweet_func,unfollow_tweet_func,\
-                                reply_tweet_func #,at_tweet_func create_group_func,
+                                reply_tweet_func,like_comment #,at_tweet_func create_group_func,
 from parameter import DAILY_INTEREST_TOP_USER,DAILY_AT_RECOMMEND_USER_TOP,TOP_WEIBOS_LIMIT,\
                         HOT_AT_RECOMMEND_USER_TOP,HOT_EVENT_TOP_USER,BCI_USER_NUMBER,USER_POETRAIT_NUMBER,\
                         MAX_SEARCH_SIZE,domain_ch2en_dict,topic_en2ch_dict,topic_ch2en_dict,FRIEND_LIST,\
@@ -1091,6 +1091,30 @@ def get_like_operate(task_detail):
         return False
 
     mark = like_tweet_func(account_name,password,r_mid)
+    
+    return mark
+
+
+# 对评论点赞 19.03.01 xuan
+def get_like_comment(task_detail):
+
+    xnr_user_no = task_detail['xnr_user_no']
+    r_mid = task_detail['mid']
+
+    es_get_result = es.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
+
+    weibo_mail_account = es_get_result['weibo_mail_account']
+    weibo_phone_account = es_get_result['weibo_phone_account']
+    password = es_get_result['password']
+      
+    if weibo_mail_account:
+        account_name = weibo_mail_account
+    elif weibo_phone_account:
+        account_name = weibo_phone_account
+    else:
+        return False
+
+    mark = like_comment(account_name,password,r_mid)
     
     return mark
 

@@ -151,7 +151,7 @@ def update_facebook_xnr_relations(root_uid, uid, data, update_portrait_info=Fals
     :param update_portrait_info: update or not
     :return: update success or not
     '''
-    xnr_user_no = uid2xnr_user_no(root_uid)
+    xnr_user_no = fb_uid2xnr_user_no(root_uid)
     if xnr_user_no:
         data['platform'] = 'facebook'
         data['xnr_no'] = xnr_user_no
@@ -182,6 +182,7 @@ def update_facebook_xnr_relations(root_uid, uid, data, update_portrait_info=Fals
                 protrait_info = update_facebook_user_portrait_info(uid)
                 data.update(protrait_info)
                 es_result = es_xnr_2.index(index=facebook_xnr_relations_index_name, doc_type=facebook_xnr_relations_index_type, id=_id, body=data)
+            print es_result
             return True
         except Exception,e:
             print 'update_facebook_xnr_relations Error: ', str(e)
@@ -246,7 +247,7 @@ def update_twitter_xnr_relations(root_uid, uid, data, update_portrait_info=False
     :param update_portrait_info: update or not
     :return: update success or not
     '''
-    xnr_user_no = uid2xnr_user_no(root_uid)
+    xnr_user_no = tw_uid2xnr_user_no(root_uid)
     if xnr_user_no:
         data['platform'] = 'twitter'
         data['xnr_no'] = xnr_user_no
@@ -281,4 +282,5 @@ def update_twitter_xnr_relations(root_uid, uid, data, update_portrait_info=False
         except Exception,e:
             print 'update_twitter_xnr_relations Error: ', str(e)
     return False
+
 

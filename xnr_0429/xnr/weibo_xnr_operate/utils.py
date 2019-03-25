@@ -2206,15 +2206,28 @@ def save_oprate_like(task_detail):
 def save_weibo_follow_operate(xnr_user_no,uid_string,follow_type_string):
 
     root_uid = xnr_user_no2uid(xnr_user_no)
+    print '-------------'
+    print uid_string
+    print follow_type_string
+    print '------------'
     uid_list = uid_string.encode('utf-8').split('，')
+    print uid_list
     follow_type_list = follow_type_string.encode('utf-8').split('，')
+    print len(follow_type_list)
     follow_data = {}
-    if len(follow_type_list) == 2:
-        follow_data={"richangguanzhu":1, "yewuguanzhu":1, "pingtaiguanzhu":1}
+    # add gensuiguanzhu
+    if len(follow_type_list) == 3:
+        follow_data={"richangguanzhu":1, "yewuguanzhu":1, "gensuiguanzhu":1, "pingtaiguanzhu":1}
+
     elif follow_type_list[0] == 'daily':
         follow_data={"richangguanzhu":1,"pingtaiguanzhu":1}
+
     elif follow_type_list[0] == 'business':
         follow_data={"yewuguanzhu":1,"pingtaiguanzhu":1}
+
+    elif follow_type_list[0] == 'gensui':
+        follow_data={"gensuiguanzhu":1,"pingtaiguanzhu":1}
+
     else:
         follow_data={"richangguanzhu":0, "yewuguanzhu":0,"pingtaiguanzhu":1}
     print follow_data

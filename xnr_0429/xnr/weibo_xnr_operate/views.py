@@ -318,6 +318,30 @@ def ajax_reply_total():
 
     return json.dumps(mark)
 
+
+# 对评论点赞
+@mod.route('/like_comment/')
+def like_comment():
+    task_detail = dict()
+    #task_detail['tweet_type'] = request.args.get('tweet_type','')
+    task_detail['xnr_user_no'] = request.args.get('xnr_user_no','')
+    #task_detail['text'] = request.args.get('text','').encode('utf-8')
+    #task_detail['r_mid'] = request.args.get('r_mid','')
+    task_detail['mid'] = request.args.get('mid','')
+    #task_detail['uid'] = request.args.get('uid','')  # 收到的评论人的uid
+    #task_detail['retweet_option'] = request.args.get('retweet_option','')  # true-同时转发，false-不转发
+
+
+    #mark = get_reply_total(task_detail)
+
+    queue_dict = {}
+    queue_dict['channel'] = 'weibo'
+    queue_dict['operate_type'] = 'like_comment'
+    queue_dict['content'] = task_detail
+    mark = add_operate2redis(queue_dict)
+
+    return json.dumps(mark)
+
 # 评论及回复
 @mod.route('/show_comment/')
 def ajax_show_comment():
@@ -561,6 +585,8 @@ def ajax_related_recommendation():
     task_detail['sort_item'] = request.args.get('sort_item','influence')
     
     results = get_related_recommendation_from_es(task_detail)
+    for result in results:
+        print result['uid']
     try:
         random_results = random.sample(results, 20)
         for random_result in random_results:

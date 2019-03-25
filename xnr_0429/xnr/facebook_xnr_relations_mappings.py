@@ -2,7 +2,7 @@
 import sys
 import json
 from elasticsearch import Elasticsearch
-from global_utils import es_xnr as es,\
+from global_utils import es_xnr_2 as es,\
     facebook_xnr_relations_index_name, facebook_xnr_relations_index_type
 
 def facebook_xnr_relations_mappings():
@@ -75,7 +75,7 @@ def facebook_xnr_relations_mappings():
                 "type": "string",
                 "analyzer": "my_analyzer"
               },
-              "haoyou_num": {                # 用户的粉丝数
+              "haoyou_num": {                # 用户的好友数
                 "type": "integer",
               },
               "geo": {                      # 位置

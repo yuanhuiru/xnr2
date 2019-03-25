@@ -1,4 +1,4 @@
-#-*-coding:utf-8-*-
+# -*- coding:utf-8 -*-
 import os
 import json
 import time
@@ -20,6 +20,7 @@ from global_utils import fb_xnr_index_name, fb_xnr_index_type, \
                         fb_xnr_fans_followers_index_name, fb_xnr_fans_followers_index_type
                         
 from time_utils import ts2datetime, datetime2ts
+from xnr_relations_utils import update_facebook_xnr_relations
 sys.path.append('../')
 from facebook_feedback_mappings_timer import facebook_feedback_like_mappings, facebook_feedback_retweet_mappings,\
                                             facebook_feedback_at_mappings, facebook_feedback_comment_mappings,\
@@ -30,9 +31,11 @@ from fb_xnr_manage_mappings import fb_xnr_fans_followers_mappings
 sys.path.append('../../facebook/sensitive')
 from get_sensitive import get_sensitive_info, get_sensitive_user
 from fb_xnr_flow_text_mappings import fb_xnr_flow_text_mappings
+from global_utils import facebook_xnr_relations_index_name, facebook_xnr_relations_index_type
+
 
 r_spider = redis.Redis(host='47.94.133.29', port=9506)
-
+EXCEPTION = ''
 redis_keys4fb_spider_data = [
     'facebook_feedback_comment_data',
     'facebook_feedback_like_data',
@@ -41,6 +44,7 @@ redis_keys4fb_spider_data = [
     'facebook_feedback_friends_data',
     'facebook_feedback_at_data',
     'facebook_feedback_friends_exist_data']
+
 
 def load_xnr_info():
     res = []
@@ -56,11 +60,31 @@ def load_xnr_info():
             account = fb_phone_account
         if account:
             xnr_user_no = source.get('xnr_user_no', '')
+
+            '''
+            旧的好友列表获取方式，弃用  @hanmc 2019-3-25 15:10:05
+            
             try:
                 friends_list = es.get(index=fb_xnr_fans_followers_index_name, doc_type=fb_xnr_fans_followers_index_type, id=xnr_user_no)['_source']['fans_list']
             except:
                 friends_list = []
-                
+            '''
+            # 新的好友列表获取方式
+            friends_list = []
+            query_body = {
+                'query': {
+                    'bool': {
+                        'must': [
+                            {'term': {'xnr_no': xnr_user_no}},
+                        ]
+                    }
+                },
+                'size': 99999
+            }
+            friends_search_res = es.search(facebook_xnr_relations_index_name, facebook_xnr_relations_index_type, query_body)['hits']['hits']
+            for friends_item in friends_search_res:
+                friends_list.append(friends_item['_source']['uid'])
+
             info = {
                 'root_uid': source.get('uid', ''),
                 'root_nick_name': source.get('nick_name', ''),
@@ -133,6 +157,7 @@ def load_data(xnr_user_no, redis_key):
 
 # 评论
 def comment(xnr_info, date):
+    global EXCEPTION
     ts = datetime2ts(date)
     facebook_feedback_comment_mappings(facebook_feedback_comment_index_name_pre + date)
     redis_key = 'facebook_feedback_comment_data'
@@ -169,13 +194,14 @@ def comment(xnr_info, date):
             }
             data.append(d)
         except Exception,e:
-            print e
+            EXCEPTION += '\n comment Exception: ' + str(e)
     savedata2es(date, facebook_feedback_comment_index_name_pre, facebook_feedback_comment_index_type, data)
 
 
 
 # 点赞
 def like(xnr_info, date):
+    global EXCEPTION
     ts = datetime2ts(date)
     facebook_feedback_like_mappings(facebook_feedback_like_index_name_pre + date)
     redis_key = 'facebook_feedback_like_data'
@@ -217,6 +243,7 @@ def like(xnr_info, date):
 
 # 分享
 def retweet(xnr_info, date):
+    global EXCEPTION
     ts = datetime2ts(date)
     facebook_feedback_retweet_mappings(facebook_feedback_retweet_index_name_pre + date)
     redis_key = 'facebook_feedback_retweet_data'
@@ -260,6 +287,7 @@ def retweet(xnr_info, date):
 
 # 私信
 def private(xnr_info, date):
+    global EXCEPTION
     ts = datetime2ts(date)
     facebook_feedback_private_mappings(facebook_feedback_private_index_name_pre + date)
     redis_key = 'facebook_feedback_private_data'
@@ -299,6 +327,7 @@ def private(xnr_info, date):
     
 # 好友请求
 def friends(xnr_info, date):
+    global EXCEPTION
     ts = datetime2ts(date)
     facebook_feedback_friends_mappings()
     redis_key = 'facebook_feedback_friends_data'
@@ -332,6 +361,7 @@ def friends(xnr_info, date):
 
 # 点赞
 def at(xnr_info, date):
+    global EXCEPTION
     ts = datetime2ts(date)
     facebook_feedback_at_mappings(facebook_feedback_at_index_name_pre + date)
     redis_key = 'facebook_feedback_at_data'
@@ -370,13 +400,18 @@ def at(xnr_info, date):
 
 # 好友列表
 def friends_exist(xnr_info, date):
+    global EXCEPTION
     ts = datetime2ts(date)
     fb_xnr_fans_followers_mappings()
     redis_key = 'facebook_feedback_friends_exist_data'
     xnr_user_no = xnr_info['xnr_user_no']
+    root_uid = xnr_info['root_uid']
     lis = load_data(xnr_user_no, redis_key)
 
-    # {'uid', 'nick_name', 'photo_url'}
+
+
+    '''
+    旧的好友列表存储方式，弃用  @hanmc 2019-3-25 15:10:05
     try:
         new_friends_list = [item['uid'] for item in lis]
     except Exception,e:
@@ -389,11 +424,32 @@ def friends_exist(xnr_info, date):
         
     if not new_friends_list == friends_list:
         print es.update(index=fb_xnr_fans_followers_index_name, doc_type=fb_xnr_fans_followers_index_type, body={'doc': {'fans_list': new_friends_list}}, id=xnr_user_no)
-    
+    '''
+    # 新的好友列表存储方式
+    for item in lis:
+        # {'uid', 'nick_name', 'profile_url'}
+        uid = item.get('uid', '')
+        user_data = {
+            'platform': 'facebook',
+            'xnr_no': xnr_user_no,
+            'xnr_uid': root_uid,
+
+            'uid': uid,
+            'nickname': item.get('nick_name', ''),
+
+            'pingtaihaoyou': 1,
+        }
+
+        if not update_facebook_xnr_relations(root_uid, uid, user_data, update_portrait_info=True):
+            EXCEPTION += '\n friends_exist Exception: [root_uid: %s] [xnr_user_no: %s] ' % (root_uid, xnr_user_no)
+
+
 def main():
+    global EXCEPTION
     xnr_info_list = load_xnr_info()
     date = ts2datetime(time.time())
     for xnr_info in xnr_info_list:
+        print xnr_info
         try:
             comment(xnr_info, date)
         except Exception,e:
@@ -423,11 +479,13 @@ def main():
             friends_exist(xnr_info, date)
         except Exception,e:
             print e
+    print 'EXCEPTION: ', EXCEPTION
         
 if __name__ == '__main__':
     main()
 
     
+
 
 
 
