@@ -16,7 +16,8 @@ from xnr.global_utils import es_xnr_2 as es,es_xnr, tw_xnr_index_name,tw_xnr_ind
                     tw_hot_subopinion_results_index_name, tw_hot_subopinion_results_index_type, \
                     es_tw_user_portrait, tw_portrait_index_name, tw_portrait_index_type, \
                     tw_bci_index_name_pre, tw_bci_index_type,tw_xnr_fans_followers_index_name,\
-                    tw_xnr_fans_followers_index_type, tw_be_retweet_index_name_pre, tw_be_retweet_index_type
+                    tw_xnr_fans_followers_index_type, tw_be_retweet_index_name_pre, tw_be_retweet_index_type,\
+                    twitter_feedback_at_index_name_pre
 
 from xnr.global_utils import twitter_xnr_save_like_index_name,twitter_xnr_save_like_index_type
 
@@ -1053,7 +1054,7 @@ def get_show_at(task_detail):
         'sort':[{sort_item:{'order':'desc'}},{'timestamp':{'order':'desc'}}],
         'size':MAX_SEARCH_SIZE
     }
-        
+    '''
     if start_ts < datetime2ts(SYSTEM_START_DATE):
         start_ts = datetime2ts(SYSTEM_START_DATE)
 
@@ -1072,6 +1073,12 @@ def get_show_at(task_detail):
             # print e
             pass
     return results_all
+    '''
+    print query_body
+    index_name = twitter_feedback_at_index_name_pre + '*'
+    es_results = es.search(index=index_name, doc_type=twitter_feedback_at_index_type, body=query_body)['hits']['hits']
+    return [item['_source'] for item in es_results]
+
 
 def get_show_fans(task_detail):
     xnr_user_no = task_detail['xnr_user_no']
@@ -1626,3 +1633,4 @@ def save_oprate_like(task_detail):
     except:
         mark=False
     return mark
+

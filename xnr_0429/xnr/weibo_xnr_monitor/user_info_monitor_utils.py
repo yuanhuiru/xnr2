@@ -12,7 +12,7 @@ from parameter import MAX_DETECT_COUNT, MAX_FLOW_TEXT_DAYS, MAX_SEARCH_SIZE, FB_
 from global_utils import es_flow_text,flow_text_index_name_pre, flow_text_index_type,\
     weibo_xnr_relations_index_name, weibo_xnr_relations_index_type, es_xnr
 
-
+MAX_SEARCH_SIZE = 99
 
 def load_uids(xnr_user_no):
     query_body = {

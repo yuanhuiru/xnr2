@@ -492,11 +492,11 @@ def show_today_history_count(xnr_user_no,start_time,end_time):
         if not xnr_result['hits']['hits']:
             print "not ----------------------------------hits hits--------------------------------"
             # xnr_user_detail['user_fansnum']=0
-            xnr_user_detail['daily_post_num']=2
-            xnr_user_detail['business_post_num']=1
-            xnr_user_detail['hot_follower_num']=2
-            xnr_user_detail['total_post_sum']=6
-            xnr_user_detail['trace_follow_tweet_num']=1
+            #xnr_user_detail['daily_post_num']=2
+            #xnr_user_detail['business_post_num']=1
+            #xnr_user_detail['hot_follower_num']=2
+            #xnr_user_detail['total_post_sum']=6
+            #xnr_user_detail['trace_follow_tweet_num']=1
         else:
 
             # for item in xnr_result['hits']['hits']:            

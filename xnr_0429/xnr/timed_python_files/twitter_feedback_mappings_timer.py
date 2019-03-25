@@ -12,7 +12,8 @@ from global_utils import twitter_feedback_comment_index_name_pre,twitter_feedbac
                         twitter_feedback_at_index_name_pre,twitter_feedback_at_index_type,\
                         twitter_feedback_like_index_name_pre,twitter_feedback_like_index_type,\
                         twitter_feedback_fans_index_name_pre,twitter_feedback_fans_index_type,\
-                        twitter_feedback_follow_index_name_pre,twitter_feedback_follow_index_type
+                        twitter_feedback_follow_index_name_pre,twitter_feedback_follow_index_type,\
+                        twitter_feedback_guanzhuhuifen_index_name, twitter_feedback_guanzhuhuifen_index_type
 
 from time_utils import ts2datetime
 
@@ -573,6 +574,70 @@ def twitter_feedback_follow_mappings():  ## 粉丝提醒及回粉
         es.indices.create(index=twitter_feedback_follow_index_name,body=index_info,ignore=400)
 
 
+# 粉丝提醒及回粉
+def twitter_feedback_guanzhuhuifen_mappings():
+    index_info = {
+        'settings':{
+            'number_of_replicas':0,
+            'number_of_shards':5
+        },
+        'mappings':{
+            twitter_feedback_guanzhuhuifen_index_type:{
+                'properties':{
+                    'uid':{
+                        'type':'string',
+                        'index':'not_analyzed'
+                    },
+                    'photo_url':{
+                        'type':'string',
+                        'index':'not_analyzed'
+                    },
+                    'nick_name':{
+                        'type':'string',
+                        'index':'not_analyzed'
+                    },
+                    'fensi_num':{
+                        'type':'long'
+                    },
+					'guanzhu_num':{
+                        'type':'long'
+                    },
+                    'profile_url':{
+                        'type':'string',
+                        'index':'not_analyzed'
+                    },
+                    'update_time':{
+                        'type':'long'
+                    },
+                    'root_uid':{
+                        'type':'string',
+                        'index':'not_analyzed'
+                    },
+                    'root_nick_name':{
+                        'type':'string',
+                        'index':'not_analyzed'
+                    },
+                    'twitter_type':{
+                        'type':'string',
+                        'index':'not_analyzed'
+                    },
+                    'sensitive_info':{
+                        'type':'long'
+                    },
+                    'sensitive_user':{
+                        'type':'long'
+                    },
+                }
+            }
+        }
+    }
+
+    #current_time = time.time()
+    #twitter_feedback_guanzhuhuifen_index_name = twitter_feedback_guanzhuhuifen_index_name_pre + ts2datetime(current_time)
+
+    if not es.indices.exists(index=twitter_feedback_guanzhuhuifen_index_name):
+        es.indices.create(index=twitter_feedback_guanzhuhuifen_index_name,body=index_info,ignore=400)
+
 if __name__ == '__main__':
     current_time = time.time()
     date = ts2datetime(current_time + 24*3600)
@@ -584,3 +649,5 @@ if __name__ == '__main__':
     twitter_feedback_private_mappings(twitter_feedback_private_index_name_pre + date)
     twitter_feedback_fans_mappings()
     twitter_feedback_follow_mappings()
+    twitter_feedback_guanzhuhuifen_mappings()
+

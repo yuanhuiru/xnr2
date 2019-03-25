@@ -31,7 +31,7 @@ from xnr.time_utils import get_fb_xnr_feedback_index_listname as get_xnr_feedbac
 
 from xnr.facebook_publish_func import fb_retweet,fb_comment,fb_like,fb_unfollow,fb_follow
 from xnr.global_utils import new_fb_xnr_flow_text_index_name_pre,new_fb_xnr_flow_text_index_type,\
-                             facebook_xnr_save_like_index_name,facebook_xnr_save_like_index_type
+                             facebook_xnr_save_like_index_name,facebook_xnr_save_like_index_type,facebook_xnr_relations_index_name,facebook_xnr_relations_index_type
 
 
 
@@ -1200,6 +1200,45 @@ def lookup_xnr_fans_followers(user_id,lookup_type):
     return lookup_list
 
 def wxnr_list_friends(user_id,order_type):
+# 新方法 @hanmc 2019-1-17 12:21:44
+    results = []
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'bool':{
+                        'must':[
+                            {'term': {'xnr_no': user_id}},
+                            {'term': {'pingtaihaoyou': 1}}
+                        ]
+                    }
+                }
+            }
+        },
+        'size': MAX_VALUE,
+        'sort': {order_type: {"order": "desc"}},
+    }
+    search_results = es_xnr.search(index=facebook_xnr_relations_index_name, doc_type=facebook_xnr_relations_index_type, body=query_body)['hits']['hits']
+
+    for data in search_results:
+        data = data['_source']
+        r = {
+            'uid': data.get('uid', ''),
+            'nick_name': data.get('nickname', ''),
+            'user_location': data.get('geo', ''),
+            'topic_string': data.get('topic_string', ''),
+            'sensitive': data.get('sensitive', 0),
+            'influence': data.get('influence', 0),
+            'fans_source': '',
+            'sex': data.get('sex', ''),
+            'photo_url': data.get('photo_url', ''),
+        }
+        results.append(r)
+    return results
+
+
+# 旧方法弃用
+'''
     try:
         xnr_result=es_xnr.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=user_id)['_source']
         xnr_uid=xnr_result['uid']
@@ -1262,7 +1301,8 @@ def wxnr_list_friends(user_id,order_type):
 
     #对结果按要求排序
     xnr_followers_result.sort(key=lambda k:(k.get(order_type,0)),reverse=True)
-    return xnr_followers_result
+
+    return xnr_followers_result '''
 
 
 

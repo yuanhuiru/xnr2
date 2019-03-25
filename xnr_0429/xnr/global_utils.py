@@ -508,7 +508,7 @@ facebook_feedback_friends_index_name_pre = 'facebook_feedback_friends_'
 facebook_feedback_friends_index_name = 'facebook_feedback_friends'
 facebook_feedback_friends_index_type = 'text'
 
-# use to save flow text 
+# use to save flow text
 facebook_flow_text_index_name_pre = 'facebook_flow_text_'
 facebook_flow_text_index_type = 'text'
 
@@ -671,6 +671,9 @@ twitter_feedback_follow_index_name_pre = 'twitter_feedback_follow_'
 twitter_feedback_follow_index_name = 'twitter_feedback_follow'
 twitter_history_feedback_follow_index_name = 'twitter_history_feedback_follow'
 twitter_feedback_follow_index_type = 'text'
+
+twitter_feedback_guanzhuhuifen_index_name = 'twitter_feedback_guanzhuhuifen'
+twitter_feedback_guanzhuhuifen_index_type = 'text'
 
 # use to save twitter flow text
 twitter_flow_text_index_name_pre = 'twitter_flow_text_'
@@ -971,6 +974,7 @@ facebook_user_trans_task_name = 'facebook_user_trans_task'
 RE_QUEUE = redis.Redis(host='47.94.133.29', port=9506)
 FB_TWEET_PARAMS = 'fb_tweet_params'
 TW_TWEET_PARAMS = 'tw_tweet_params'
+
 
 
 

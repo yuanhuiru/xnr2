@@ -17,6 +17,10 @@ weibo_xnr_index_type = 'user'
 es_xnr = Elasticsearch(['192.168.169.45:9205', '192.168.169.47:9205', '192.168.169.47:9206'], timeout=600)
 MAX_VALUE = 999
 
+
+MAX_SEARCH_SIZE = 99
+
+
 def ts2datetime(ts):
     return time.strftime('%Y-%m-%d', time.localtime(ts))
 
@@ -25,7 +29,7 @@ def datetime2ts(date):
 
 def load_index(index_prefix, from_ts, to_ts):
     index_list = []
-    print 'from_ts', [from_ts], 'to_ts', [to_ts]
+    #print 'from_ts', [from_ts], 'to_ts', [to_ts]
     for timestamp in range(int(from_ts), int(to_ts) + 3600*24, 3600*24):
         index_list.append(index_prefix + ts2datetime(timestamp))
     return index_list
@@ -96,7 +100,7 @@ def search_posts(xnr_user_no, from_ts, to_ts, extend_keywords_size=0):
     index_list = load_index(flow_text_index_name_pre, from_ts, to_ts)
 
     search_results = es_flow_text.search(index=index_list, doc_type=flow_text_index_type, body=query_body)['hits']['hits']
-    return search_results
+    return [item['_source'] for item in search_results]
 
 
 
