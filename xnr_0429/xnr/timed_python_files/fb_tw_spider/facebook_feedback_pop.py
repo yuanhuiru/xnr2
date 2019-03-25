@@ -449,7 +449,7 @@ def main():
     xnr_info_list = load_xnr_info()
     date = ts2datetime(time.time())
     for xnr_info in xnr_info_list:
-        print xnr_info
+
         try:
             comment(xnr_info, date)
         except Exception,e:
@@ -459,7 +459,12 @@ def main():
             like(xnr_info, date)
         except Exception,e:
             print e
-        
+
+        try:
+            at(xnr_info, date)
+        except Exception,e:
+            print e
+
         try:    
             retweet(xnr_info, date)
         except Exception,e:
@@ -485,6 +490,7 @@ if __name__ == '__main__':
     main()
 
     
+
 
 
 
