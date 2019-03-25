@@ -13,8 +13,8 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 class FeedbackComment:
-    def __init__(self, username, password):
-        self.launcher = SinaLauncher(username, password)
+    def __init__(self, username, password, account_type):
+        self.launcher = SinaLauncher(username, password, account_type)
         self.launcher.login()
         self.uid = self.launcher.uid
         self.session = self.launcher.session
@@ -145,7 +145,7 @@ class FeedbackComment:
 
 if __name__ == '__main__':
     #feedback_comment = FeedbackComment('13269704912', 'murcielagolp640')
-    feedback_comment = FeedbackComment('18737028295', 'xuanhui99999')
+    feedback_comment = FeedbackComment('18737028295','xuanhui99999','phone')
     #print feedback_comment.commentInbox()
     #print feedback_comment.commentOutbox()
     #feedback_comment.commentOutbox()

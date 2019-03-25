@@ -4,6 +4,7 @@ import sys
 sys.path.append('/home/xnr1/xnr_0429/xnr/')
 import re
 import time
+import random
 import traceback
 from utils import uid2xnr_user_no
 from tools.Launcher import SinaLauncher
@@ -14,7 +15,7 @@ sys.setdefaultencoding('utf-8')
 
 class FeedbackFollow:
     def __init__(self, username, password):
-        self.launcher = SinaLauncher(username, password)
+        self.launcher = SinaLauncher(username, password, 'phone')
         self.launcher.login()
         self.uid = self.launcher.uid
         self.session = self.launcher.session
@@ -39,6 +40,12 @@ class FeedbackFollow:
         while True:
             follow_url = 'https://m.weibo.cn/api/container/getIndex?containerid=231093_-_selffollowed&page={}'.format(page)
             resp = self.session.get(follow_url)
+            #print resp
+            try:
+                resp.json()
+            except:
+                #print resp
+                continue
             if resp.json().has_key('msg'):
                 break
             if page == 1:
@@ -89,6 +96,7 @@ class FeedbackFollow:
                 }
                 json_list.append(json.dumps(item, ensure_ascii=False))
             page += 1
+            time.sleep(random.randint(2, 4))
         return json_list
 
     def fans(self):
@@ -97,7 +105,12 @@ class FeedbackFollow:
         while True:
             fans_url = 'https://m.weibo.cn/api/container/getIndex?containerid=231016_-_selffans&page={}'.format(page)
             resp = self.session.get(fans_url)
-            #print resp.text
+            print resp
+            try:
+                resp.json()
+            except:
+                resp.json()
+                continue
             if resp.json().has_key('msg'):
                 break
             if page == 1:
@@ -109,7 +122,7 @@ class FeedbackFollow:
                     except:
                         continue
             else:
-                cards = resp.json()['data']['cards'][0]
+                cards = resp.json()['data']['cards'][1]
                 data_list = cards['card_group']
             
             for data in data_list:
@@ -159,6 +172,7 @@ class FeedbackFollow:
                 }
                 json_list.append(json.dumps(item, ensure_ascii=False))
             page += 1
+            time.sleep(random.randint(2, 4))
         return json_list
 
     def execute(self):
@@ -178,7 +192,7 @@ class FeedbackFollow:
 
 if __name__ == '__main__':
     #weibo_feedback_follow = FeedbackFollow('sosisuki@163.com', '2012hlwxxc')
-    weibo_feedback_follow = FeedbackFollow('18737028295', 'xuanhui99999')
+    weibo_feedback_follow = FeedbackFollow('80617252@qq.com', 'xuanhui99999')
     # print weibo_feedback_follow.follow()
     #print weibo_feedback_follow.fans()
     weibo_feedback_follow.execute()
