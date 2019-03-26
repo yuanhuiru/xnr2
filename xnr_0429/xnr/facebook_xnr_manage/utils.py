@@ -1200,7 +1200,7 @@ def lookup_xnr_fans_followers(user_id,lookup_type):
     return lookup_list
 
 def wxnr_list_friends(user_id,order_type):
-# 新方法 @hanmc 2019-1-17 12:21:44
+# 新方法 @xyh 2019-03-26
     results = []
     query_body = {
         'query':{
@@ -1237,7 +1237,7 @@ def wxnr_list_friends(user_id,order_type):
     return results
 
 
-# 旧方法弃用
+# 旧方法弃用 2019-03-26
 '''
     try:
         xnr_result=es_xnr.get(index=fb_xnr_index_name,doc_type=fb_xnr_index_type,id=user_id)['_source']
