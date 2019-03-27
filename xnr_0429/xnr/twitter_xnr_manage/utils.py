@@ -52,7 +52,7 @@ from xnr.global_utils import weibo_xnr_save_like_index_name,weibo_xnr_save_like_
                              weibo_xnr_count_info_index_name,weibo_xnr_count_info_index_type,\
                              weibo_date_remind_index_name,weibo_date_remind_index_type,\
                              weibo_feedback_follow_index_name,weibo_feedback_follow_index_type,\
-                             weibo_feedback_fans_index_name,weibo_feedback_fans_index_type
+                             weibo_feedback_fans_index_name,weibo_feedback_fans_index_type,twitter_xnr_relations_index_name,twitter_xnr_relations_index_type
 
 
 
@@ -1208,6 +1208,46 @@ def lookup_xnr_fans_followers(user_id,lookup_type):
     return lookup_list
 
 def wxnr_list_concerns(user_id,order_type):
+    # 新方法 @xyh 2019-03-26
+    results = []
+    query_body = {
+        'query': {
+            'filtered': {
+                'filter': {
+                    'bool': {
+                        'must': [
+                            {'term': {'xnr_no': user_id}},
+                            {'term': {'pingtaiguanzhu': 1}}
+                        ]
+                    }
+                }
+            }
+        },
+        'size': MAX_VALUE,
+        'sort': {order_type: {"order": "desc"}},
+    }
+    search_results = \
+    es_xnr.search(index=twitter_xnr_relations_index_name, doc_type=twitter_xnr_relations_index_type, body=query_body)['hits']['hits']
+
+    for data in search_results:
+        data = data['_source']
+        r = {
+            'uid': data['uid'],
+            # 'nick_name': data['nickname'],
+            'nick_name': data.get('nickname', ''),
+            'topic_string': data.get('topic_string', ''),
+            'sensitive': data.get('sensitive', 0),
+            'influence': data.get('influence', 0),
+            'follow_source': '',
+            'sex': data.get('sex', ''),
+            'photo_url': data.get('photo_url', ''),
+        }
+        results.append(r)
+    return results
+
+
+    # 旧方法弃用
+    '''
     try:
         xnr_result=es_xnr.get(index=tw_xnr_index_name,doc_type=tw_xnr_index_type,id=user_id)['_source']
         xnr_uid=xnr_result['uid']
@@ -1267,7 +1307,7 @@ def wxnr_list_concerns(user_id,order_type):
     #对结果按要求排序
     xnr_followers_result.sort(key=lambda k:(k.get(order_type,0)),reverse=True)
     return xnr_followers_result
-
+'''
 
 
 
@@ -1301,6 +1341,45 @@ def count_weibouser_influence(uid):
 #step 4.5: list of fans
 
 def wxnr_list_fans(user_id,order_type):
+ # 新方法 @xyh 2019-03-26
+    results = []
+    query_body = {
+        'query': {
+            'filtered': {
+                'filter': {
+                    'bool': {
+                        'must': [
+                            {'term': {'xnr_no': user_id}},
+                            {'term': {'pingtaifensi': 1}}
+                        ]
+                    }
+                }
+            }
+        },
+        'size': MAX_VALUE,
+        'sort': {order_type: {"order": "desc"}},
+    }
+    search_results = \
+    es_xnr.search(index=twitter_xnr_relations_index_name, doc_type=twitter_xnr_relations_index_type, body=query_body)['hits']['hits']
+
+    for data in search_results:
+        data = data['_source']
+        r = {
+            'uid': data.get('uid', ''),
+            'nick_name': data.get('nickname', ''),
+            'user_location': data.get('geo', ''),
+            'topic_string': data.get('topic_string', ''),
+            'sensitive': data.get('sensitive', 0),
+            'influence': data.get('influence', 0),
+            'fans_source': '',
+            'sex': data.get('sex', ''),
+            'photo_url': data.get('photo_url', ''),
+        }
+        results.append(r)
+    return results
+
+'''
+    # 旧方法弃用
     try:
         xnr_result=es_xnr.get(index=tw_xnr_index_name,doc_type=tw_xnr_index_type,id=user_id)['_source']
         xnr_uid=xnr_result['uid']
@@ -1361,7 +1440,7 @@ def wxnr_list_fans(user_id,order_type):
     #对结果按要求排序
     xnr_fans_result.sort(key=lambda k:(k.get(order_type,0)),reverse=True)
     return xnr_fans_result
-
+'''
 
 #########################################################
 #   step 5：change    and   continue                    #

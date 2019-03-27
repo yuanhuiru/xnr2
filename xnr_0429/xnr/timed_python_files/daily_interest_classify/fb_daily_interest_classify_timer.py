@@ -13,6 +13,7 @@ from fb_xnr_flow_text_mappings import fb_daily_inerests_flow_text_mappings
 
 
 sys.path.append('../../')
+sys.path.append('/home/xnr1/xnr_0429/xnr/')
 
 from global_utils import es_xnr, facebook_flow_text_index_name_pre, facebook_flow_text_index_type,\
 					fb_daily_interest_index_name_pre,fb_daily_interest_index_type

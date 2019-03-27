@@ -3,6 +3,7 @@ import sys
 import json
 import time
 sys.path.append('../')
+sys.path.append('/home/xnr1/xnr_0429/xnr/')
 from global_utils import es_xnr_2 as es, fb_xnr_flow_text_index_name_pre, \
                 fb_xnr_flow_text_index_type
 from time_utils import ts2datetime

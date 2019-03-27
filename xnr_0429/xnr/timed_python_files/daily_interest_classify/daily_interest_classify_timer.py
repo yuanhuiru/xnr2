@@ -102,6 +102,8 @@ if __name__ == '__main__':
 	else:
 		current_time = int(time.time()-24*3600)
 		current_date = ts2datetime(current_time)
+        print current_time
+        print current_date
 
 	#current_time = datetime2ts(current_date)
 	#current_date_last_day = ts2datetime(current_time-24*3600)

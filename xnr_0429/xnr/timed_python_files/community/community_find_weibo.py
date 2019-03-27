@@ -87,6 +87,8 @@ def get_users(xnr_user_no,nodes=None):
    # print 'comment_result:::',comment_result	
         G = nx.Graph()
    # retweet_result.sort(key=lambda k:(json.loads(k['_source']['uid_retweet']).getvalues()),reverse=True)
+   # retweet_result.sort(key=lambda k:(json.loads(k['_source']['uid_retweet']).getvalues()))
+
         for i in retweet_result:
            # print 'i:',i
             if not i['found']:

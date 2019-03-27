@@ -17,7 +17,7 @@ def pop_post_task():
 
     while True:
         temp = r_sensitive.rpop(weibo_sensitive_post_task_queue_name)
-
+        
         # print 'temp:::::',temp
         if not temp:
             print '当前没有生成信息监测帖子任务'         

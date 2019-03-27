@@ -26,7 +26,7 @@ sys.path.append(WEIBO_XNR_OPERATE_PATH)
 
 
 from wb_op_utils import get_submit_tweet, get_reply_total, get_reply_comment, get_reply_retweet, get_reply_private, \
-				get_reply_follow, get_reply_unfollow, get_like_operate
+				get_reply_follow, get_reply_unfollow, get_like_operate, get_like_comment
 
 import traceback
 # publish-发帖、retweet-转发、comment-评论、like-点赞、follow-关注、unfollow-取消关注、at-提到、private-私信
@@ -310,11 +310,20 @@ def operate_out_of_redis():
 					#add_operate2redis(queue_dict)
 					pass
 
+            # 对评论点赞 19.03.01
+			elif operate_type == 'like_comment':
+				try:
+					print "weibo_like_comment-========================0-=============================================="
+					mark = get_like_comment(task_detail)
+				except:
+					#add_operate2redis(queue_dict)
+					pass
 
 
 if __name__ == '__main__':
-    print 'WEIBO_XNR_OPERATE_PATH..',WEIBO_XNR_OPERATE_PATH	
-    print 'FACEBOOK_XNR_OPERATE_PATH..',FACEBOOK_XNR_OPERATE_PATH
+    #print 'WEIBO_XNR_OPERATE_PATH..',WEIBO_XNR_OPERATE_PATH	
+    #print 'FACEBOOK_XNR_OPERATE_PATH..',FACEBOOK_XNR_OPERATE_PATH
     operate_out_of_redis()
     print "END.."
+    pass
 

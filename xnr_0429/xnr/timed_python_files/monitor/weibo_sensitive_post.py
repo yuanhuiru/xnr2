@@ -162,6 +162,9 @@ def get_user_nickname(uid):
 
 #查询敏感帖子
 def lookup_sensitive_posts(start_time,end_time):
+    #start_time = 1545810543
+    #end_time = 1545814143
+    #start_date = 2018-12-26
     start_date = ts2datetime(start_time)
     end_date = ts2datetime(end_time)
      
@@ -211,10 +214,15 @@ def lookup_sensitive_posts(start_time,end_time):
     try:
         es_result=es_flow_text.search(index=flow_text_index_name_list,doc_type=flow_text_index_type,\
             body=query_body)['hits']['hits']
-
+        print 'es_result----------------+++++++++++++++++++______________________-'
+        print es_result
         warning_type = 'user'
         print 'repeat!!!'
         hot_result = remove_repeat(es_result,warning_type)
+        print 'hot_result----------------+++++++++++++++++++______________________-'
+        print hot_result
+
+        warning_type = 'user'
         print 'save!!!'
         for item in hot_result:
             task_id = item['mid']
@@ -378,13 +386,18 @@ def lookup_timestamp_posts(start_time,end_time):
     return mark_result
 
 
-
 def create_post_task():
 
+    #WEIBO_SENSITIVE_POST_TIME = 60*60
     now_time = int(time.time())
+    print '-=-=-=-=--===================---------------now_time'
+    print now_time
     start_time = now_time - WEIBO_SENSITIVE_POST_TIME 
+    print '-=-=-=-=--===================---------------start_time'
+    print start_time
     end_time = now_time
-
+    print '-=-=-=-=--===================---------------end_time'
+    print end_time
     # account_list=get_user_account_list()
     #print account_list
     # for account in account_list:
@@ -396,6 +409,7 @@ def create_post_task():
     # task_dict['xnr_user_no'] = xnr_user_no
     task_dict['start_time'] = start_time
     task_dict['end_time'] = end_time
+    lookup_sensitive_posts(start_time,end_time)
     #将计算任务加入队列
     r_sensitive.lpush(weibo_sensitive_post_task_queue_name ,json.dumps(task_dict))
 
