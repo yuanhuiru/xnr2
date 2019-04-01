@@ -912,3 +912,41 @@ def lookup_today_fullkeywords(from_ts,to_ts):
     except:
         word_dict_new = dict()
     return word_dict_new    
+
+
+
+from xnr.global_utils import es_xnr as es,\
+    info_monitor_index_name_pre, info_monitor_index_type
+import arrow
+
+def load_index_list(from_ts, to_ts):
+    index_list = []
+    days_num = (to_ts- from_ts)/(24*3600)
+    from_date = arrow.get(from_ts+8*3600)
+    for i in range(days_num):
+        index_list.append(info_monitor_index_name_pre + from_date.shift(days=i).format('YYYY-MM-DD'))
+    return index_list
+
+def info_monitor_utils(xnr_user_no, from_ts, to_ts, type):
+    from_ts = int(from_ts)
+    to_ts = int(to_ts)
+    index_list = load_index_list(from_ts, to_ts)
+    query_body = {
+        'query': {
+            'bool': {
+                'must': [
+                    {'term': {'platform': 'weibo'}},
+                    {'term': {'xnr_no': xnr_user_no}},
+                    {'term': {'type': type}}
+                ],
+            }
+        },
+        'size': 1000,
+    }
+    print index_list
+    search_res = es.search(index_list, info_monitor_index_type, query_body)['hits']['hits']
+    res = []
+    for search_item in search_res:
+        item = json.loads(search_item['_source']['content'])
+        res.append(item)
+    return res
