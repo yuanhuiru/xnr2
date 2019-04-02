@@ -140,6 +140,10 @@ sensitive_words_path = 'xnr/wx/sensitive_words.txt'
 '''
 公共mappings
 '''
+info_monitor_index_name = 'info_monitor_2019-04-01'
+info_monitor_index_name_pre = 'info_monitor_'
+info_monitor_index_type = 'text'
+
 
 writing_task_index_name = 'intel_writing_task'
 writing_task_index_type = 'task'
