@@ -45,10 +45,10 @@ def main():
     to_ts = from_ts + 24*3600
     index_name = info_monitor_index_name_pre + date
     info_monitor_mappings(date)
-    xnr_user_no = load_xnr_user_no()
-    xnr_user_no.append('ALL')
-
-    for xnr_user_no in load_xnr_user_no():
+    xnr_user_no_list = load_xnr_user_no() 
+    xnr_user_no_list.append('ALL')
+    
+    for xnr_user_no in xnr_user_no_list:
         try:
             for data in search_posts_users(xnr_user_no, from_ts, to_ts):
                 es.index(
