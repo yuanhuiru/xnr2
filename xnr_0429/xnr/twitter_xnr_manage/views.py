@@ -18,7 +18,8 @@ from utils import xnr_today_remind,change_continue_xnrinfo,show_timing_tasks,\
 				  wxnr_list_concerns,wxnr_list_fans,show_history_count
 
 
-from utils import show_comment_dialog,cancel_follow_user,attach_fans_follow,lookup_detail_weibouser
+from utils import show_comment_dialog,cancel_follow_user,attach_fans_follow,lookup_detail_weibouser,\
+                  get_xnr_monitor_words,modify_xnr_monitor_words
 
 
 
@@ -275,5 +276,29 @@ def ajax_wxnr_list_fans():
 	order_type=request.args.get('order_type','')
 	results=wxnr_list_fans(user_id,order_type)
 	return json.dumps(results)
+
+
+# xyh 查看当前xnr的监测关键词
+#http://219.224.134.213:9209/twitter_xnr_manage/show_xnr_monitor_words/?xnr_user_no=WXNR0003
+@mod.route('/show_xnr_monitor_words/')
+def show_xnr_monitor_words():
+    task_detail = dict()
+    task_detail['xnr_user_no']=request.args.get('xnr_user_no','')
+    monitor_keywords=get_xnr_monitor_words(task_detail)
+    results = {"monitor_keywords": monitor_keywords}
+    return json.dumps(results)
+
+
+# xyh 修改当前xnr的监测关键词 
+#http://219.224.134.213:9209/twitter_xnr_manage/show_xnr_monitor_words/?xnr_user_no=WXNR0003
+@mod.route('/update_xnr_monitor_words/')
+def update_xnr_monitor_words():
+    # 有返回数据的话 则 当前xnr社交帐号或密码有误 去查找xnr用户
+    task_detail = dict()
+    task_detail['xnr_user_no']=request.args.get('xnr_user_no','')
+    task_detail['new_monitor_keywords'] = request.args.get('new_monitor_keywords','')  # 提交的关键词，以中文逗号分隔“，”
+    task_detail['old_monitor_keywords'] = request.args.get('old_monitor_keywords','')  # 提交的关键词，以中文逗号分隔“，”
+    result_info=modify_xnr_monitor_words(task_detail)
+    return json.dumps(result_info)
 
 

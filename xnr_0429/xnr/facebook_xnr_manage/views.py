@@ -9,7 +9,7 @@ from xnr.global_utils import es_xnr_2
 es_flow_text = es_xnr_2
 from xnr.time_utils import datetime2ts
 from utils import show_completed_fbxnr,show_uncompleted_fbxnr,delete_fb_xnr, get_xnr_detail,\
-					 show_history_count, lookup_xnr_assess_info
+					 show_history_count, lookup_xnr_assess_info,get_xnr_monitor_words, modify_xnr_monitor_words
 
 from utils import show_timing_tasks,wxnr_timing_tasks_lookup,wxnr_timing_tasks_change,wxnr_timing_tasks_revoked,\
                   wxnr_list_friends,show_history_posting,show_at_content,show_comment_content,show_like_content,\
@@ -286,14 +286,33 @@ def ajax_lookup_detail_weibouser():
 	return json.dumps(results)
 
 
-
-
-
-
-
-
-
 @mod.route('/delete_receive_like/')
 def ajax_delete_receive_like():
 	results=delete_receive_like()
 	return json.dumps(results)
+
+
+# xyh 查看当前xnr的监测关键词 2019-04-01
+#http://219.224.134.213:9209/facebook_xnr_manage/show_xnr_monitor_words/?xnr_user_no=WXNR0003
+@mod.route('/show_xnr_monitor_words/')
+def show_xnr_monitor_words():
+    task_detail = dict()
+    task_detail['xnr_user_no']=request.args.get('xnr_user_no','')
+    monitor_keywords=get_xnr_monitor_words(task_detail)
+    results = {"monitor_keywords": monitor_keywords}
+    return json.dumps(results)
+
+
+# xyh 修改当前xnr的监测关键词 2019-04-01
+#http://219.224.134.213:9209/facebook_xnr_manage/show_xnr_monitor_words/?xnr_user_no=WXNR0003
+@mod.route('/update_xnr_monitor_words/')
+def update_xnr_monitor_words():
+    # 有返回数据的话 则 当前xnr社交帐号或密码有误 去查找xnr用户
+    task_detail = dict()
+    task_detail['xnr_user_no']=request.args.get('xnr_user_no','')
+    task_detail['new_monitor_keywords'] = request.args.get('new_monitor_keywords','')  # 提交的关键词，以中文逗号分隔“，”
+    task_detail['old_monitor_keywords'] = request.args.get('old_monitor_keywords','')  # 提交的关键词，以中文逗号分隔“，”
+    result_info=modify_xnr_monitor_words(task_detail)
+    return json.dumps(result_info)
+
+

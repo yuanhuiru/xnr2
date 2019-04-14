@@ -1543,3 +1543,30 @@ def delete_receive_like():
         result_list.append(result)
 
     return result_list
+
+
+# xyh 2019-04-01 查看当前xnr的监测关键词
+def get_xnr_monitor_words(task_detail):
+    xnr_user_no = task_detail['xnr_user_no']
+    try:
+        item_exist = es_xnr.get(index=tw_xnr_index_name, doc_type=tw_xnr_index_type, id=xnr_user_no)['_source']
+        keywords_result = item_exist['monitor_keywords']
+    except Exception as e:
+        return ''
+    return keywords_result
+
+
+# xyh 2019-04-01 修改当前xnr的监测关键词
+def modify_xnr_monitor_words(task_detail):
+    xnr_user_no = task_detail['xnr_user_no']
+    try:
+        item_exist = es_xnr.get(index=tw_xnr_index_name, doc_type=tw_xnr_index_type, id=xnr_user_no)['_source']
+        item_exist['monitor_keywords'] = ','.join(task_detail['new_monitor_keywords'].encode('utf-8').split('，'))
+        print es_xnr.update(index=tw_xnr_index_name, doc_type=tw_xnr_index_type, id=xnr_user_no,
+                            body={'doc': item_exist})
+
+        return {"status": "ok"}
+    except Exception as e:
+        print e
+        return {"status": "fail"}
+
