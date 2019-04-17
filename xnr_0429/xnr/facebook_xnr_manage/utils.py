@@ -46,6 +46,9 @@ from xnr.global_utils import es_xnr as es_1,weibo_xnr_save_like_index_name,weibo
                              weibo_date_remind_index_name,weibo_date_remind_index_type,\
                              weibo_feedback_follow_index_name,weibo_feedback_follow_index_type,\
                              weibo_feedback_fans_index_name,weibo_feedback_fans_index_type
+from xnr.xnr_relations_utils import load_facebook_relation_num
+
+
 ##获取索引
 def get_xnr_set_index_listname(index_name_pre,date_range_start_ts,date_range_end_ts):
     index_name_list=[]
@@ -372,13 +375,15 @@ def show_date_count(today_time):
 #step 4.1：history count
 
 #累计统计
-def xnr_cumulative_statistics(xnr_date_info):
+def xnr_cumulative_statistics(xnr_date_info, xnr_user_no):
     Cumulative_statistics_dict=dict()
     Cumulative_statistics_dict['date_time']='累计统计'
     if xnr_date_info: 
         #print xnr_date_info[0]
         # Cumulative_statistics_dict['user_fansnum']=xnr_date_info[-1]['user_fansnum']
-        Cumulative_statistics_dict['user_friendsnum']=xnr_date_info[-1]['user_friendsnum']
+        # Cumulative_statistics_dict['user_friendsnum']=xnr_date_info[-1]['user_friendsnum']
+        Cumulative_statistics_dict['user_friendsnum'] = load_facebook_relation_num(xnr_user_no, [{'term': {'pingtaihaoyou': 1}}])
+
         total_post_sum=0
         daily_post_num=0
         business_post_num=0
@@ -412,7 +417,7 @@ def xnr_cumulative_statistics(xnr_date_info):
         #Cumulative_statistics_dict['penetration']=xnr_date_info[0]['penetration']
         #Cumulative_statistics_dict['safe']=xnr_date_info[0]['safe']
     else:
-        Cumulative_statistics_dict['user_fansnum']=0
+        Cumulative_statistics_dict['user_friendsnum']=0
         Cumulative_statistics_dict['total_post_sum']=0
         Cumulative_statistics_dict['daily_post_num']=0
         Cumulative_statistics_dict['business_post_num']=0
@@ -516,6 +521,9 @@ def show_today_history_count(xnr_user_no,start_time,end_time):
         xnr_user_detail['total_post_sum']=0
         xnr_user_detail['trace_follow_tweet_num']=0
 
+    # 从新的表中取 2019-4-14
+    xnr_user_detail['user_friendsnum'] = load_facebook_relation_num(xnr_user_no, [{'term': {'pingtaihaoyou': 1}}])
+
     #评估信息
     #昨日信息
     yesterday_date=ts2datetime(datetime2ts(date_time)-DAY)
@@ -614,7 +622,7 @@ def show_history_count(xnr_user_no,date_range):
             start_time=system_start_time
         xnr_date_info=show_condition_history_count(xnr_user_no,start_time,end_time)
 
-    Cumulative_statistics_dict=xnr_cumulative_statistics(xnr_date_info)
+    Cumulative_statistics_dict=xnr_cumulative_statistics(xnr_date_info, xnr_user_no)
     return Cumulative_statistics_dict,xnr_date_info
 
 def delete_history_count(task_id):
@@ -1465,4 +1473,5 @@ def modify_xnr_monitor_words(task_detail):
     except Exception as e:
         print e
         return {"status": "fail"}
+
 

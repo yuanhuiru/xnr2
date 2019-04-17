@@ -142,6 +142,34 @@ def load_facebook_pingtaiguanzhu_state(root_uid, uid):
     return pingtaiguanzhu_state
 
 
+def load_facebook_relation_num(xnr_user_no, term_query_list):
+    """
+
+    :param xnr_user_no:
+    :param term_query_list: term语句列表
+    :return: 根据term语句，返回搜到的跟xnr有关系的人的数目
+    """
+    num = 0
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'bool':{
+                        'must':[
+                            {'term': {'xnr_no': xnr_user_no}},
+                        ]
+                    }
+                }
+            }
+        }
+    }
+    query_body['query']['filtered']['filter']['bool']['must'].extend(term_query_list)
+    search_results = es_xnr_2.search(index=facebook_xnr_relations_index_name, doc_type=facebook_xnr_relations_index_type, body=query_body)['hits']['hits']
+    if search_results:
+        num = len(search_results)
+    return num
+
+
 def update_facebook_xnr_relations(root_uid, uid, data, update_portrait_info=False):
     # pingtaiguanzhu 决定了是否要在平台上真正关注该用户，涉及到更改该关系时，一定要指定该字段（1或0）。
     '''
@@ -282,5 +310,6 @@ def update_twitter_xnr_relations(root_uid, uid, data, update_portrait_info=False
         except Exception,e:
             print 'update_twitter_xnr_relations Error: ', str(e)
     return False
+
 
 
