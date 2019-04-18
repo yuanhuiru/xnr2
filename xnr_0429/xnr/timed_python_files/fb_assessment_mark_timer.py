@@ -52,6 +52,7 @@ from facebook_count_mappings import facebook_xnr_count_info_mappings
 S_DATE = '2018-07-01'
 
 from parameter import WEEK,DAY,MAX_SEARCH_SIZE,TOP_ASSESSMENT_NUM,ACTIVE_UID
+from xnr_relations_utils import load_facebook_relation_num
 
 
 # 影响力粉丝数
@@ -556,8 +557,11 @@ def create_xnr_history_info_count(xnr_user_no,current_date):
     print facebook_xnr_flow_text_name, xnr_flow_text_index_type, es, query_body, xnr_result
     if xnr_result:
         #今日总粉丝数
-        for item in xnr_result['hits']['hits']:
-            xnr_user_detail['user_friendsnum']=item['_source']['user_friendsnum']
+        # for item in xnr_result['hits']['hits']:
+        #     xnr_user_detail['user_friendsnum']=item['_source']['user_friendsnum']
+        xnr_user_detail['user_friendsnum'] = load_facebook_relation_num(xnr_user_no, [{'term': {'pingtaihaoyou': 1}}])
+
+
         # daily_post-日常发帖,hot_post-热点跟随,business_post-业务发帖
         for item in xnr_result['aggregations']['all_task_source']['buckets']:
             if item['key'] == 'daily_post':
@@ -1571,6 +1575,7 @@ if __name__ == '__main__':
 #         print 'date', date
 #         current_time = datetime2ts(date)
 #         cron_compute_mark(current_time) 
+
 
 
 
