@@ -41,7 +41,7 @@ from xnr.global_utils import r_fb_fans_uid_list_datetime_pre as r_fans_uid_list_
                             r_fb_followers_count_datetime_xnr_pre as r_followers_count_datetime_xnr_pre,\
                             r_fb_followers_search_xnr_pre as r_followers_search_xnr_pre
 
-
+from xnr.xnr_relations_utils import load_facebook_relation_num
 
 
 
@@ -181,6 +181,7 @@ def get_influence_total_trend(xnr_user_no,start_time,end_time):
 
 def get_influence_total_trend_today(xnr_user_no):
     current_time = int(time.time())
+
     fans_dict = get_influ_fans_num(xnr_user_no,current_time)
     retweet_dict = get_influ_retweeted_num(xnr_user_no,current_time)
     comment_dict = get_influ_commented_num(xnr_user_no,current_time)
@@ -192,7 +193,6 @@ def get_influence_total_trend_today(xnr_user_no):
     total_dict['total_trend'] = {}
     total_dict['day_num'] = {}
     total_dict['growth_rate'] = {}
-
 
     total_dict['total_trend']['fans'] = fans_dict['total_num']
     total_dict['total_trend']['retweet'] = retweet_dict['total_num']
@@ -240,12 +240,18 @@ def compute_growth_rate_total(day8_dict,total8_dict):
 
     return total_dict
 
+
+"""
 # 影响力粉丝数
 def get_influ_fans_num(xnr_user_no,current_time):
     fans_dict = {}
     current_date = ts2datetime(current_time)
     current_time_new = datetime2ts(current_date)
 
+    datetime_count = load_facebook_relation_num(xnr_user_no, [{'term': {'pingtaihaoyou': 1}}])
+    datetime_total = datetime_count
+
+    '''
     r_fans_count = r_fans_count_datetime_xnr_pre + current_date + '_' + xnr_user_no
     r_fans_uid_list = r_fans_uid_list_datetime_pre + current_date
 
@@ -259,6 +265,8 @@ def get_influ_fans_num(xnr_user_no,current_time):
         datetime_total = 0
     else:
         datetime_total = len(json.loads(fans_uid_list))
+    '''
+
     fans_dict['day_num'] = {}
     fans_dict['total_num'] = {}
     fans_dict['growth_rate'] = {}
@@ -710,8 +718,482 @@ def get_influ_private_num(xnr_user_no,current_time):
     private_dict['growth_rate'][current_time_new] = round(float(es_day_count)/private_total_num_last,2)
 
     return private_dict
+"""
 
 
+# 影响力粉丝数
+def get_influ_fans_num(xnr_user_no,current_time):
+    fans_dict = {}
+
+    current_date = ts2datetime(current_time)
+    current_time_new = datetime2ts(current_date)
+
+    r_fans_count = r_fans_count_datetime_xnr_pre + current_date + '_' + xnr_user_no
+    r_fans_uid_list = r_fans_uid_list_datetime_pre + current_date
+
+    #day_num今天的粉丝(好友)数
+    # datetime_count = r_fans_followers.get(r_fans_count)
+    datetime_count = load_facebook_relation_num(xnr_user_no, [{'term': {'pingtaihaoyou': 1}}])
+
+    #total_num总的粉丝(好友)数
+    # fans_uid_list = r_fans_followers.hget(r_fans_uid_list,xnr_user_no)
+    datetime_total = load_facebook_relation_num(xnr_user_no, [{'term': {'pingtaihaoyou': 1}}])
+
+    '''
+    if not datetime_count:
+        datetime_count = 0
+    if not fans_uid_list:
+        datetime_total = 0
+    else:
+        datetime_total = len(json.loads(fans_uid_list))
+    '''
+
+
+
+    last_day = ts2datetime(current_time_new - DAY)
+    _id_last_day = xnr_user_no + '_' + last_day
+
+    try:
+        get_result = es.get(index=facebook_xnr_count_info_index_name,doc_type=facebook_xnr_count_info_index_type,id=_id_last_day)['_source']
+        fans_total_num_last = get_result['friends_total_num']
+    except Exception,e:
+        #print e
+        fans_total_num_last = 0
+    if not fans_total_num_last:
+        fans_total_num_last = 0
+
+    # 新增粉丝数
+    new_datetime_count = datetime_count - fans_total_num_last
+    # fans_dict['day_num'] = datetime_count
+    # fans_dict['total_num'] = datetime_total
+    # fans_dict['growth_rate'] = round(float(new_datetime_count)/(fans_total_num_last+1),2)
+
+    fans_dict['day_num'] = {}
+    fans_dict['total_num'] = {}
+    fans_dict['growth_rate'] = {}
+    fans_dict['day_num'][current_time_new] = datetime_count
+    fans_dict['total_num'][current_time_new] = datetime_total
+    fans_dict['growth_rate'][current_time_new] = round(float(new_datetime_count)/(fans_total_num_last+1),2)
+
+    return fans_dict
+
+def get_influ_retweeted_num(xnr_user_no,current_time):
+    retweet_dict = {}
+    uid = xnr_user_no2uid(xnr_user_no)
+    current_date = ts2datetime(current_time)
+    current_time_new = datetime2ts(current_date)
+
+    index_name_day = facebook_feedback_retweet_index_name_pre + current_date
+    query_body_day = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    # {'range':{'timestamp':{'gte':current_time_new,'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
+    es_day_count = 0
+    try:
+        es_day_count_result = es.count(index=index_name_day, doc_type=facebook_feedback_retweet_index_type,\
+                    body=query_body_day,request_timeout=999999)
+        if es_day_count_result['_shards']['successful'] != 0:
+            es_day_count = es_day_count_result['count']
+        else:
+            return 'es_day_count_found_error'
+    except Exception,e:
+        #print e
+        es_day_count = 0
+
+    '''
+    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_retweet_index_name_pre,startdate=S_DATE,enddate=current_date)
+    query_body_total = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    {'range':{'timestamp':{'gte':0,'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
+
+    try:
+        es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_retweet_index_type,\
+                        body=query_body_total,request_timeout=999999)
+
+        if es_total_count_result['_shards']['successful'] != 0:
+            es_total_count = es_total_count_result['count']
+        else:
+            return 'es_total_count_found_error'
+    except Exception,e:
+        #print e
+        es_total_count = 0
+    '''
+
+    last_day = ts2datetime(current_time_new - DAY)
+    _id_last_day = xnr_user_no + '_' + last_day
+
+    retweet_total_num_last = 0
+    try:
+        get_result = es.get(index=facebook_xnr_count_info_index_name,doc_type=facebook_xnr_count_info_index_type,id=_id_last_day)['_source']
+        retweet_total_num_last = get_result['retweet_total_num']
+    except Exception,e:
+        retweet_total_num_last = 0
+    if not retweet_total_num_last:
+        retweet_total_num_last = 0
+
+    # retweet_dict['day_num'] = es_day_count
+    # retweet_dict['total_num'] = retweet_total_num_last + es_day_count
+    # retweet_dict['growth_rate'] = round(float(es_day_count)/(retweet_total_num_last+1),2)
+
+    retweet_dict['day_num'] = {}
+    retweet_dict['total_num'] = {}
+    retweet_dict['growth_rate'] = {}
+    retweet_dict['day_num'][current_time_new] = es_day_count
+    retweet_dict['total_num'][current_time_new] = retweet_total_num_last + es_day_count
+    retweet_dict['growth_rate'][current_time_new] = round(float(es_day_count)/(retweet_total_num_last+1),2)
+
+    return retweet_dict
+
+def get_influ_commented_num(xnr_user_no,current_time):
+    # 收到的评论 comment_type : receive
+    comment_dict = {}
+    # commented_num_day = {}  # 每天增量统计
+    # commented_num_total = {} # 截止到当天总量统计
+
+    uid = xnr_user_no2uid(xnr_user_no)
+
+    current_date = ts2datetime(current_time)
+    current_time_new = datetime2ts(current_date)
+
+    index_name_day = facebook_feedback_comment_index_name_pre + current_date
+    query_body_day = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    {'term':{'comment_type':'receive'}},
+                    # {'range':{'timestamp':{'gte':current_time_new,'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
+    es_day_count = 0
+    es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_comment_index_type,\
+                    body=query_body_day,request_timeout=999999)
+
+    if es_day_count_result['_shards']['successful'] != 0:
+        es_day_count = es_day_count_result['count']
+    else:
+        return 'es_day_count_found_error'
+
+    '''
+    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_comment_index_name_pre,startdate=S_DATE,enddate=current_date)
+    print 'get_influ_commented_num index_name_total', index_name_total
+
+    query_body_total = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    {'term':{'comment_type':'receive'}},
+                    # {'range':{'timestamp':{'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
+
+    try:
+        es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_comment_index_type,\
+                    body=query_body_total,request_timeout=999999)
+
+        if es_total_count_result['_shards']['successful'] != 0:
+            es_total_count = es_total_count_result['count']
+        else:
+            return 'es_total_count_found_error'
+    except:
+        print 'es_total_count_found_error'
+        es_total_count = 0
+
+    comment_dict['day_num'] = es_day_count
+    comment_dict['total_num'] = es_total_count
+    '''
+
+
+    last_day = ts2datetime(current_time_new - DAY)
+    _id_last_day = xnr_user_no + '_' + last_day
+
+    try:
+        get_result = es.get(index=facebook_xnr_count_info_index_name,doc_type=facebook_xnr_count_info_index_type,id=_id_last_day)['_source']
+        comment_total_num_last = get_result['comment_total_num']
+        if not comment_total_num_last:
+            comment_total_num_last = 0
+    except Exception,e:
+        #print e
+        comment_total_num_last = 0
+
+    # comment_dict['day_num'] = es_day_count
+    # comment_dict['total_num'] = comment_total_num_last + es_day_count
+    # comment_dict['growth_rate'] = round(float(es_day_count)/(comment_total_num_last+1),2)
+
+    comment_dict['day_num'] = {}
+    comment_dict['total_num'] = {}
+    comment_dict['growth_rate'] = {}
+    comment_dict['day_num'][current_time_new] = es_day_count
+    comment_dict['total_num'][current_time_new] = comment_total_num_last + es_day_count
+    comment_dict['growth_rate'][current_time_new] = round(float(es_day_count)/(comment_total_num_last+1),2)
+
+    return comment_dict
+
+def get_influ_like_num(xnr_user_no,current_time):
+    like_dict = {}
+    uid = xnr_user_no2uid(xnr_user_no)
+
+    current_date = ts2datetime(current_time)
+    current_time_new = datetime2ts(current_date)
+
+    index_name_day = facebook_feedback_like_index_name_pre + current_date
+    query_body_day = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    # {'range':{'timestamp':{'gte':current_time_new,'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
+    es_day_count = 0
+    es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_like_index_type,\
+                    body=query_body_day,request_timeout=999999)
+
+    if es_day_count_result['_shards']['successful'] != 0:
+        es_day_count = es_day_count_result['count']
+    else:
+        return 'es_day_count_found_error'
+
+    '''
+    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_like_index_name_pre,startdate=S_DATE,enddate=current_date)
+    query_body_total = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    # {'range':{'timestamp':{'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
+
+    try:
+        es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_like_index_type,\
+                    body=query_body_total,request_timeout=999999)
+
+        if es_total_count_result['_shards']['successful'] != 0:
+            es_total_count = es_total_count_result['count']
+        else:
+            return 'es_total_count_found_error'
+    except:
+        print 'es_total_count_found_error'
+        es_total_count = 0
+    '''
+    last_day = ts2datetime(current_time_new - DAY)
+    _id_last_day = xnr_user_no + '_' + last_day
+
+    like_total_num_last = 0
+    try:
+        get_result = es.get(index=facebook_xnr_count_info_index_name,doc_type=facebook_xnr_count_info_index_type,id=_id_last_day)['_source']
+        like_total_num_last = get_result['like_total_num']
+        if not like_total_num_last:
+            like_total_num_last = 0
+    except Exception,e:
+        #print e
+        like_total_num_last = 0
+
+    # like_dict['day_num'] = es_day_count
+    # like_dict['total_num'] = es_day_count + like_total_num_last
+    # like_dict['growth_rate'] = round(float(es_day_count)/(like_total_num_last+1),2)
+
+    like_dict['day_num'] = {}
+    like_dict['total_num'] = {}
+    like_dict['growth_rate'] = {}
+    like_dict['day_num'][current_time_new] = es_day_count
+    like_dict['total_num'][current_time_new] = es_day_count + like_total_num_last
+    like_dict['growth_rate'][current_time_new] = round(float(es_day_count)/(like_total_num_last+1),2)
+
+    return like_dict
+
+def get_influ_at_num(xnr_user_no,current_time):
+    at_dict = {}
+
+    uid = xnr_user_no2uid(xnr_user_no)
+
+    current_date = ts2datetime(current_time)
+    current_time_new = datetime2ts(current_date)
+
+    index_name_day = facebook_feedback_at_index_name_pre + current_date
+    query_body_day = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    # {'range':{'timestamp':{'gte':current_time_new,'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
+    es_day_count = 0
+    try:
+        es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_at_index_type,\
+                    body=query_body_day,request_timeout=999999)
+
+        if es_day_count_result['_shards']['successful'] != 0:
+            es_day_count = es_day_count_result['count']
+        else:
+            return 'es_day_count_found_error'
+    except:
+        print 'es_day_count_found_error'
+        es_day_count = 0
+
+    '''
+    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_at_index_name_pre,startdate=S_DATE,enddate=current_date)
+    query_body_total = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    # {'range':{'timestamp':{'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
+    try:
+        es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_at_index_type,\
+                    body=query_body_total,request_timeout=999999)
+
+        if es_total_count_result['_shards']['successful'] != 0:
+            es_total_count = es_total_count_result['count']
+        else:
+            return 'es_total_count_found_error'
+    except:
+        print 'es_total_count_found_error'
+        es_total_count = 0
+    '''
+
+
+
+    last_day = ts2datetime(current_time_new - DAY)
+    _id_last_day = xnr_user_no + '_' + last_day
+    at_total_num_last = 0
+    try:
+        get_result = es.get(index=facebook_xnr_count_info_index_name,doc_type=facebook_xnr_count_info_index_type,id=_id_last_day)['_source']
+        at_total_num_last = get_result['at_total_num']
+
+        if not at_total_num_last:
+            at_total_num_last = 0
+    except Exception,e:
+        #print e
+        at_total_num_last = 0
+
+    # at_dict['day_num'] = es_day_count
+    # at_dict['total_num'] = at_total_num_last + es_day_count
+    # at_dict['growth_rate'] = round(float(es_day_count)/(at_total_num_last+1),2)
+
+    at_dict['day_num'] = {}
+    at_dict['total_num'] = {}
+    at_dict['growth_rate'] = {}
+    at_dict['day_num'][current_time_new] = es_day_count
+    at_dict['total_num'][current_time_new] = at_total_num_last + es_day_count
+    at_dict['growth_rate'][current_time_new] = round(float(es_day_count)/(at_total_num_last+1),2)
+
+    return at_dict
+
+def get_influ_private_num(xnr_user_no,current_time):
+    # 收到的私信 private_type : receive
+    private_dict = {}
+    uid = xnr_user_no2uid(xnr_user_no)
+    current_date = ts2datetime(current_time)
+    current_time_new = datetime2ts(current_date)
+
+    index_name_day = facebook_feedback_private_index_name_pre + current_date
+    query_body_day = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    {'term':{'private_type':'receive'}},
+                    # {'range':{'timestamp':{'gte':current_time_new,'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
+    es_day_count = 0
+    try:
+        es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_private_index_type,\
+                    body=query_body_day,request_timeout=999999)
+
+        if es_day_count_result['_shards']['successful'] != 0:
+            es_day_count = es_day_count_result['count']
+        else:
+            return 'es_day_count_found_error'
+    except:
+        print 'es_day_count_found_error'
+        es_day_count = 0
+
+
+    '''
+    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_private_index_name_pre,startdate=S_DATE,enddate=current_date)
+    query_body_total = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    {'term':{'private_type':'receive'}},
+                    # {'range':{'timestamp':{'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
+    try:
+        es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_private_index_type,\
+                    body=query_body_total,request_timeout=999999)
+
+        if es_total_count_result['_shards']['successful'] != 0:
+            es_total_count = es_total_count_result['count']
+        else:
+            return 'es_total_count_found_error'
+    except:
+        print 'es_total_count_found_error'
+        es_total_count = 0
+    '''
+
+    private_total_num_last = 0
+    last_day = ts2datetime(current_time_new - DAY)
+    _id_last_day = xnr_user_no + '_' + last_day
+    try:
+        get_result = es.get(index=facebook_xnr_count_info_index_name,doc_type=facebook_xnr_count_info_index_type,id=_id_last_day)['_source']
+        private_total_num_last = get_result['private_total_num']
+
+        if not private_total_num_last:
+            private_total_num_last = 0
+    except Exception,e:
+       	#print e
+        private_total_num_last = 0
+
+    # private_dict['day_num'] = es_day_count
+    # private_dict['total_num'] = private_total_num_last + es_day_count
+    # private_dict['growth_rate'] = round(float(es_day_count)/(private_total_num_last+1),2)
+
+    private_dict['day_num'] = {}
+    private_dict['total_num'] = {}
+    private_dict['growth_rate'] = {}
+    private_dict['day_num'][current_time_new] = es_day_count
+    private_dict['total_num'][current_time_new] = private_total_num_last + es_day_count
+    private_dict['growth_rate'][current_time_new] = round(float(es_day_count)/(private_total_num_last+1),2)
+
+    return private_dict
 
 def compute_influence_num(xnr_user_no):
 
@@ -1848,4 +2330,5 @@ def get_compare_assessment_today(xnr_user_no_list, dim):
                 table_result['xnr'] = xnr_user_no
         results_all['table'].append(table_result)
     return results_all
+
 

@@ -52,7 +52,7 @@ from facebook_count_mappings import facebook_xnr_count_info_mappings
 S_DATE = '2018-07-01'
 
 from parameter import WEEK,DAY,MAX_SEARCH_SIZE,TOP_ASSESSMENT_NUM,ACTIVE_UID
-from xnr_relations_utils import load_facebook_relation_num
+from xnr_relations_utils import load_facebook_relation_num, load_facebook_relation_uids
 
 
 # 影响力粉丝数
@@ -141,20 +141,24 @@ def compute_penetration_num(xnr_user_no,current_time_old):
     # else:
     #     index_name = flow_text_index_name_pre + current_date
 
-    es_sensitive_result = es.search(index=index_name,doc_type=flow_text_index_type,\
-        body=query_body_count)['aggregations']
-    sensitive_value_top_avg = es_sensitive_result['avg_sensitive']['value']
-    print current_date, index_name, sensitive_value_top_avg
-
-    # if S_TYPE == 'test':
+    sensitive_value_top_avg = 0
+    try:
+        es_sensitive_result = es.search(index=index_name,doc_type=flow_text_index_type,\
+            body=query_body_count)['aggregations']
+        sensitive_value_top_avg = es_sensitive_result['avg_sensitive']['value']
+        print current_date, index_name, sensitive_value_top_avg
+    except:
+        pass
     if not sensitive_value_top_avg:
         sensitive_value_top_avg = 1
+
     #print 'es_sensitive_result::',es_sensitive_result
     # 计算xnr反馈群体的敏感度
     feedback_mark_at = get_pene_feedback_sensitive(xnr_user_no,'be_at',current_time)['sensitive_info']
     feedback_mark_retweet = get_pene_feedback_sensitive(xnr_user_no,'be_retweet',current_time)['sensitive_info']
     feedback_mark_comment = get_pene_feedback_sensitive(xnr_user_no,'be_comment',current_time)['sensitive_info']
 
+    print 'feedback_mark_at', feedback_mark_at, 'feedback_mark_retweet', feedback_mark_retweet, 'feedback_mark_comment', feedback_mark_comment
     pene_mark = float(feedback_mark_at+feedback_mark_retweet+feedback_mark_comment)/(3*sensitive_value_top_avg)
     pene_mark = round(pene_mark,2)
     return pene_mark
@@ -252,6 +256,7 @@ def get_tweets_distribute(xnr_user_no, current_time):
     topic_distribute_dict['radar'] = {}
     uid = xnr_user_no2uid(xnr_user_no)
     if xnr_user_no:
+        '''
         try:
             es_results = es.get(index=facebook_xnr_fans_followers_index_name,doc_type=facebook_xnr_fans_followers_index_type,\
                                 id=xnr_user_no)["_source"]
@@ -260,6 +265,9 @@ def get_tweets_distribute(xnr_user_no, current_time):
                 fans_list = es_results['fans_list']
         except:
             fans_list = []
+        '''
+        fans_list = load_facebook_relation_uids(xnr_user_no, [{'term': {'pingtaihaoyou': 1}}])
+
 
     # friends topic分布 虽然用的名称是fans，但实际上是friends
     try:
@@ -431,11 +439,14 @@ def get_fans_group_distribute(xnr_user_no):
     domain_distribute_dict['radar'] = {}
 
     # 获取所有关注者
-    try:
-        es_results = es.get(index=facebook_xnr_fans_followers_index_name,doc_type=facebook_xnr_fans_followers_index_type,id=xnr_user_no)["_source"]
-        fans_list = es_results['fans_list']
-    except:
-        fans_list = []
+    # try:
+    #     es_results = es.get(index=facebook_xnr_fans_followers_index_name,doc_type=facebook_xnr_fans_followers_index_type,id=xnr_user_no)["_source"]
+    #     fans_list = es_results['fans_list']
+    # except:
+    #     fans_list = []
+    fans_list = load_facebook_relation_uids(xnr_user_no, [{'term': {'pingtaihaoyou': 1}}])
+
+
     # 获取今日关注者
     fans_list_today = []
     current_time = int(time.time()-DAY)
@@ -614,9 +625,6 @@ def create_xnr_history_info_count(xnr_user_no,current_date):
         pass
     xnr_user_detail['xnr_user_no']=xnr_user_no
 
-    #print 'xnr_user_detail'
-    #print xnr_user_detail
-
     return xnr_user_detail
 
 ## 影响力评估各指标
@@ -671,16 +679,21 @@ def get_influ_fans_num(xnr_user_no,current_time):
     r_fans_uid_list = r_fans_uid_list_datetime_pre + current_date
 
     #day_num今天的粉丝(好友)数
-    datetime_count = r_fans_followers.get(r_fans_count)
-    #total_num总的粉丝(好友)数
-    fans_uid_list = r_fans_followers.hget(r_fans_uid_list,xnr_user_no)
+    # datetime_count = r_fans_followers.get(r_fans_count)
+    datetime_count = load_facebook_relation_num(xnr_user_no, [{'term': {'pingtaihaoyou': 1}}])
 
+    #total_num总的粉丝(好友)数
+    # fans_uid_list = r_fans_followers.hget(r_fans_uid_list,xnr_user_no)
+    datetime_total = load_facebook_relation_num(xnr_user_no, [{'term': {'pingtaihaoyou': 1}}])
+
+    '''
     if not datetime_count:
         datetime_count = 0
     if not fans_uid_list:
         datetime_total = 0
     else:
         datetime_total = len(json.loads(fans_uid_list))
+    '''
 
     fans_dict['day_num'] = datetime_count
     fans_dict['total_num'] = datetime_total
@@ -694,11 +707,12 @@ def get_influ_fans_num(xnr_user_no,current_time):
     except Exception,e:
         #print e
         fans_total_num_last = 0
-
     if not fans_total_num_last:
-        fans_total_num_last = 1
+        fans_total_num_last = 0
 
-    fans_dict['growth_rate'] = round(float(datetime_count)/fans_total_num_last,2)
+    # 新增粉丝数
+    new_datetime_count = datetime_count - fans_total_num_last
+    fans_dict['growth_rate'] = round(float(new_datetime_count)/(fans_total_num_last+1),2)
     return fans_dict
 
 def get_influ_retweeted_num(xnr_user_no,current_time):
@@ -708,8 +722,6 @@ def get_influ_retweeted_num(xnr_user_no,current_time):
     current_time_new = datetime2ts(current_date)
 
     index_name_day = facebook_feedback_retweet_index_name_pre + current_date
-    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_retweet_index_name_pre,startdate=S_DATE,enddate=current_date)
-
     query_body_day = {
         'query':{
             'bool':{
@@ -720,7 +732,20 @@ def get_influ_retweeted_num(xnr_user_no,current_time):
             }
         }
     }
+    es_day_count = 0
+    try:
+        es_day_count_result = es.count(index=index_name_day, doc_type=facebook_feedback_retweet_index_type,\
+                    body=query_body_day,request_timeout=999999)
+        if es_day_count_result['_shards']['successful'] != 0:
+            es_day_count = es_day_count_result['count']
+        else:
+            return 'es_day_count_found_error'
+    except Exception,e:
+        #print e
+        es_day_count = 0
 
+    '''
+    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_retweet_index_name_pre,startdate=S_DATE,enddate=current_date)
     query_body_total = {
         'query':{
             'bool':{
@@ -733,18 +758,6 @@ def get_influ_retweeted_num(xnr_user_no,current_time):
     }
 
     try:
-        es_day_count_result = es.count(index=index_name_day, doc_type=facebook_feedback_retweet_index_type,\
-                    body=query_body_day,request_timeout=999999)
-        if es_day_count_result['_shards']['successful'] != 0:
-            es_day_count = es_day_count_result['count']
-        else:
-            return 'es_day_count_found_error'
-    except Exception,e:
-        #print e
-        es_day_count = 0
-
-
-    try:
         es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_retweet_index_type,\
                         body=query_body_total,request_timeout=999999)
 
@@ -755,28 +768,23 @@ def get_influ_retweeted_num(xnr_user_no,current_time):
     except Exception,e:
         #print e
         es_total_count = 0
-
-    retweet_dict['day_num'] = es_day_count
-    retweet_dict['total_num'] = es_total_count
+    '''
 
     last_day = ts2datetime(current_time_new - DAY)
     _id_last_day = xnr_user_no + '_' + last_day
 
+    retweet_total_num_last = 0
     try:
         get_result = es.get(index=facebook_xnr_count_info_index_name,doc_type=facebook_xnr_count_info_index_type,id=_id_last_day)['_source']
         retweet_total_num_last = get_result['retweet_total_num']
     except Exception,e:
-        #print e
         retweet_total_num_last = 0
-        
     if not retweet_total_num_last:
-        retweet_total_num_last = 1
+        retweet_total_num_last = 0
 
-    retweet_dict['growth_rate'] = round(float(es_day_count)/retweet_total_num_last,2)
-
-    #print 'retweet_dict'
-    #print retweet_dict
-
+    retweet_dict['day_num'] = es_day_count
+    retweet_dict['total_num'] = retweet_total_num_last + es_day_count
+    retweet_dict['growth_rate'] = round(float(es_day_count)/(retweet_total_num_last+1),2)
     return retweet_dict
 
 def get_influ_commented_num(xnr_user_no,current_time):
@@ -791,8 +799,6 @@ def get_influ_commented_num(xnr_user_no,current_time):
     current_time_new = datetime2ts(current_date)
 
     index_name_day = facebook_feedback_comment_index_name_pre + current_date
-    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_comment_index_name_pre,startdate=S_DATE,enddate=current_date)
-
     query_body_day = {
         'query':{
             'bool':{
@@ -804,6 +810,18 @@ def get_influ_commented_num(xnr_user_no,current_time):
             }
         }
     }
+    es_day_count = 0
+    es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_comment_index_type,\
+                    body=query_body_day,request_timeout=999999)
+
+    if es_day_count_result['_shards']['successful'] != 0:
+        es_day_count = es_day_count_result['count']
+    else:
+        return 'es_day_count_found_error'
+
+    '''
+    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_comment_index_name_pre,startdate=S_DATE,enddate=current_date)
+    print 'get_influ_commented_num index_name_total', index_name_total
 
     query_body_total = {
         'query':{
@@ -817,13 +835,6 @@ def get_influ_commented_num(xnr_user_no,current_time):
         }
     }
 
-    es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_comment_index_type,\
-                    body=query_body_day,request_timeout=999999)
-
-    if es_day_count_result['_shards']['successful'] != 0:
-        es_day_count = es_day_count_result['count']
-    else:
-        return 'es_day_count_found_error'
     try:
         es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_comment_index_type,\
                     body=query_body_total,request_timeout=999999)
@@ -838,6 +849,8 @@ def get_influ_commented_num(xnr_user_no,current_time):
 
     comment_dict['day_num'] = es_day_count
     comment_dict['total_num'] = es_total_count
+    '''
+
 
     last_day = ts2datetime(current_time_new - DAY)
     _id_last_day = xnr_user_no + '_' + last_day
@@ -846,11 +859,15 @@ def get_influ_commented_num(xnr_user_no,current_time):
         get_result = es.get(index=facebook_xnr_count_info_index_name,doc_type=facebook_xnr_count_info_index_type,id=_id_last_day)['_source']
         comment_total_num_last = get_result['comment_total_num']
         if not comment_total_num_last:
-            comment_total_num_last = 1
+            comment_total_num_last = 0
     except Exception,e:
         #print e
-        comment_total_num_last = 1
-    comment_dict['growth_rate'] = round(float(es_day_count)/comment_total_num_last,2)
+        comment_total_num_last = 0
+
+    comment_dict['day_num'] = es_day_count
+    comment_dict['total_num'] = comment_total_num_last + es_day_count
+
+    comment_dict['growth_rate'] = round(float(es_day_count)/(comment_total_num_last+1),2)
     return comment_dict
 
 def get_influ_like_num(xnr_user_no,current_time):
@@ -861,8 +878,6 @@ def get_influ_like_num(xnr_user_no,current_time):
     current_time_new = datetime2ts(current_date)
 
     index_name_day = facebook_feedback_like_index_name_pre + current_date
-    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_like_index_name_pre,startdate=S_DATE,enddate=current_date)
-
     query_body_day = {
         'query':{
             'bool':{
@@ -873,7 +888,17 @@ def get_influ_like_num(xnr_user_no,current_time):
             }
         }
     }
-    
+    es_day_count = 0
+    es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_like_index_type,\
+                    body=query_body_day,request_timeout=999999)
+
+    if es_day_count_result['_shards']['successful'] != 0:
+        es_day_count = es_day_count_result['count']
+    else:
+        return 'es_day_count_found_error'
+
+    '''
+    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_like_index_name_pre,startdate=S_DATE,enddate=current_date)
     query_body_total = {
         'query':{
             'bool':{
@@ -884,14 +909,6 @@ def get_influ_like_num(xnr_user_no,current_time):
             }
         }
     }
-
-    es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_like_index_type,\
-                    body=query_body_day,request_timeout=999999)
-
-    if es_day_count_result['_shards']['successful'] != 0:
-        es_day_count = es_day_count_result['count']
-    else:
-        return 'es_day_count_found_error'
 
     try:
         es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_like_index_type,\
@@ -904,23 +921,23 @@ def get_influ_like_num(xnr_user_no,current_time):
     except:
         print 'es_total_count_found_error'
         es_total_count = 0
-
-    like_dict['day_num'] = es_day_count
-    like_dict['total_num'] = es_total_count
-
+    '''
     last_day = ts2datetime(current_time_new - DAY)
     _id_last_day = xnr_user_no + '_' + last_day
 
+    like_total_num_last = 0
     try:
         get_result = es.get(index=facebook_xnr_count_info_index_name,doc_type=facebook_xnr_count_info_index_type,id=_id_last_day)['_source']
         like_total_num_last = get_result['like_total_num']
         if not like_total_num_last:
-            like_total_num_last = 1
+            like_total_num_last = 0
     except Exception,e:
         #print e
-        like_total_num_last = 1
-    like_dict['growth_rate'] = round(float(es_day_count)/like_total_num_last,2)
+        like_total_num_last = 0
 
+    like_dict['day_num'] = es_day_count
+    like_dict['total_num'] = es_day_count + like_total_num_last
+    like_dict['growth_rate'] = round(float(es_day_count)/(like_total_num_last+1),2)
     return like_dict
 
 def get_influ_at_num(xnr_user_no,current_time):
@@ -932,8 +949,6 @@ def get_influ_at_num(xnr_user_no,current_time):
     current_time_new = datetime2ts(current_date)
 
     index_name_day = facebook_feedback_at_index_name_pre + current_date
-    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_at_index_name_pre,startdate=S_DATE,enddate=current_date)
-
     query_body_day = {
         'query':{
             'bool':{
@@ -944,18 +959,7 @@ def get_influ_at_num(xnr_user_no,current_time):
             }
         }
     }
-
-    query_body_total = {
-        'query':{
-            'bool':{
-                'must':[
-                    {'term':{'root_uid':uid}},
-                    # {'range':{'timestamp':{'lt':(current_time_new+DAY)}}}
-                ]
-            }
-        }
-    }
-
+    es_day_count = 0
     try:
         es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_at_index_type,\
                     body=query_body_day,request_timeout=999999)
@@ -968,6 +972,18 @@ def get_influ_at_num(xnr_user_no,current_time):
         print 'es_day_count_found_error'
         es_day_count = 0
 
+    '''
+    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_at_index_name_pre,startdate=S_DATE,enddate=current_date)
+    query_body_total = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    # {'range':{'timestamp':{'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
     try:
         es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_at_index_type,\
                     body=query_body_total,request_timeout=999999)
@@ -979,41 +995,36 @@ def get_influ_at_num(xnr_user_no,current_time):
     except:
         print 'es_total_count_found_error'
         es_total_count = 0
+    '''
 
-    at_dict['day_num'] = es_day_count
-    at_dict['total_num'] = es_total_count
+
 
     last_day = ts2datetime(current_time_new - DAY)
     _id_last_day = xnr_user_no + '_' + last_day
-
+    at_total_num_last = 0
     try:
         get_result = es.get(index=facebook_xnr_count_info_index_name,doc_type=facebook_xnr_count_info_index_type,id=_id_last_day)['_source']
         at_total_num_last = get_result['at_total_num']
 
         if not at_total_num_last:
-            at_total_num_last = 1
+            at_total_num_last = 0
     except Exception,e:
         #print e
-        at_total_num_last = 1
+        at_total_num_last = 0
 
-    at_dict['growth_rate'] = round(float(es_day_count)/at_total_num_last,2)
-
-
+    at_dict['day_num'] = es_day_count
+    at_dict['total_num'] = at_total_num_last + es_day_count
+    at_dict['growth_rate'] = round(float(es_day_count)/(at_total_num_last+1),2)
     return at_dict
 
 def get_influ_private_num(xnr_user_no,current_time):
     # 收到的私信 private_type : receive
     private_dict = {}
-
     uid = xnr_user_no2uid(xnr_user_no)
-
-
     current_date = ts2datetime(current_time)
     current_time_new = datetime2ts(current_date)
 
     index_name_day = facebook_feedback_private_index_name_pre + current_date
-    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_private_index_name_pre,startdate=S_DATE,enddate=current_date)
-    
     query_body_day = {
         'query':{
             'bool':{
@@ -1025,20 +1036,8 @@ def get_influ_private_num(xnr_user_no,current_time):
             }
         }
     }
-
-    query_body_total = {
-        'query':{
-            'bool':{
-                'must':[
-                    {'term':{'root_uid':uid}},
-                    {'term':{'private_type':'receive'}},
-                    # {'range':{'timestamp':{'lt':(current_time_new+DAY)}}}
-                ]
-            }
-        }
-    }
-
-    try: 
+    es_day_count = 0
+    try:
         es_day_count_result = es.count(index=index_name_day,doc_type=facebook_feedback_private_index_type,\
                     body=query_body_day,request_timeout=999999)
 
@@ -1050,6 +1049,20 @@ def get_influ_private_num(xnr_user_no,current_time):
         print 'es_day_count_found_error'
         es_day_count = 0
 
+
+    '''
+    index_name_total = get_timeset_indexset_list(index_name_pre=facebook_feedback_private_index_name_pre,startdate=S_DATE,enddate=current_date)
+    query_body_total = {
+        'query':{
+            'bool':{
+                'must':[
+                    {'term':{'root_uid':uid}},
+                    {'term':{'private_type':'receive'}},
+                    # {'range':{'timestamp':{'lt':(current_time_new+DAY)}}}
+                ]
+            }
+        }
+    }
     try:
         es_total_count_result = es.count(index=index_name_total,doc_type=facebook_feedback_private_index_type,\
                     body=query_body_total,request_timeout=999999)
@@ -1061,10 +1074,9 @@ def get_influ_private_num(xnr_user_no,current_time):
     except:
         print 'es_total_count_found_error'
         es_total_count = 0
+    '''
 
-    private_dict['day_num'] = es_day_count
-    private_dict['total_num'] = es_total_count
-
+    private_total_num_last = 0
     last_day = ts2datetime(current_time_new - DAY)
     _id_last_day = xnr_user_no + '_' + last_day
     try:
@@ -1072,18 +1084,18 @@ def get_influ_private_num(xnr_user_no,current_time):
         private_total_num_last = get_result['private_total_num']
 
         if not private_total_num_last:
-            private_total_num_last = 1
+            private_total_num_last = 0
     except Exception,e:
        	#print e
-        private_total_num_last = 1
+        private_total_num_last = 0
 
-    private_dict['growth_rate'] = round(float(es_day_count)/private_total_num_last,2)
-
+    private_dict['day_num'] = es_day_count
+    private_dict['total_num'] = private_total_num_last + es_day_count
+    private_dict['growth_rate'] = round(float(es_day_count)/(private_total_num_last+1),2)
     return private_dict
 
 
 ## 渗透力评估 各指标
-
 def penetration_total(xnr_user_no,current_time):
     total_dict = {}
 
@@ -1284,6 +1296,8 @@ def get_pene_feedback_sensitive(xnr_user_no,sort_item,current_time_old):
             }
         }
     }
+    print 'index_name_sort', index_name_sort
+    print 'query_body', query_body
     try:
         es_sensitive_result = es.search(index=index_name_sort,doc_type=index_type_sort,body=query_body)['aggregations']
         sensitive_value = es_sensitive_result['avg_sensitive']['value']
@@ -1385,12 +1399,15 @@ def get_pene_warning_report_sensitive(xnr_user_no,current_time_old):
     print 'index_name_list', index_name_list
     print 'current_time', current_time
 
-    es_result_event = es.search(index=index_name_list,doc_type=flow_text_index_type,\
-        body=query_body_event)['aggregations']
-    event_sensitive_avg = es_result_event['avg_sensitive']['value']
-
-    if event_sensitive_avg == None:
-        event_sensitive_avg = 0.0
+    event_sensitive_avg = 0
+    try:
+        es_result_event = es.search(index=index_name_list,doc_type=flow_text_index_type,\
+            body=query_body_event)['aggregations']
+        event_sensitive_avg = es_result_event['avg_sensitive']['value']
+    except:
+        pass
+    if not event_sensitive_avg:
+        event_sensitive_avg = 0
 
     ## 人物平均敏感度
     query_body_user = {
@@ -1439,10 +1456,14 @@ def get_pene_warning_report_sensitive(xnr_user_no,current_time_old):
     #     current_time = datetime2ts(S_DATE)
     index_name_list = get_flow_text_index_list(current_time)
 
-    es_result_tweet = es.search(index=index_name_list,doc_type=flow_text_index_type,\
-        body=query_body_tweet)['aggregations']
-    tweet_sensitive_avg = es_result_tweet['avg_sensitive']['value']
-    if tweet_sensitive_avg == None:
+    tweet_sensitive_avg = 0
+    try:
+        es_result_tweet = es.search(index=index_name_list,doc_type=flow_text_index_type,\
+            body=query_body_tweet)['aggregations']
+        tweet_sensitive_avg = es_result_tweet['avg_sensitive']['value']
+    except:
+        pass
+    if not tweet_sensitive_avg:
         tweet_sensitive_avg = 0.0
 
     if S_TYPE == 'test':
@@ -1469,7 +1490,7 @@ def cron_compute_mark(current_time):
 
 
 
-    xnr_results = [{'_source': {'xnr_user_no': 'FXNR0010'}}]
+    # xnr_results = [{'_source': {'xnr_user_no': 'FXNR0010'}}]
 
 
 
@@ -1566,6 +1587,8 @@ if __name__ == '__main__':
         current_time = datetime2ts(S_DATE)
     else:
         current_time = int(time.time()-1*DAY)
+
+
     print current_time
     cron_compute_mark(current_time)
 
@@ -1575,6 +1598,7 @@ if __name__ == '__main__':
 #         print 'date', date
 #         current_time = datetime2ts(date)
 #         cron_compute_mark(current_time) 
+
 
 
 

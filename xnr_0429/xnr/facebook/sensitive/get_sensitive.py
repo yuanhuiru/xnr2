@@ -76,4 +76,6 @@ if __name__ == '__main__':
     print get_sensitive_info(timestamp=1507996800,mid='123124323',text=u"64和达赖太阳花")
     print get_sensitive_info(timestamp=1507996800,mid='123124323')
     print get_sensitive_info(timestamp=1507996800,text=u"64和达赖太阳花")
-    print get_sensitive_info(timestamp=1507996800,)
+    print get_sensitive_info(timestamp=1507996800,text=u'达赖')
+    print get_sensitive_info(timestamp=1507996800, text=u'军区')
+

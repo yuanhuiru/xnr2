@@ -97,8 +97,8 @@ def load_xnr_info():
     return res
 
 def sensitive_func(ts, text, uid):
-    sensitive_info = get_sensitive_info(ts, text)
-    sensitive_user = get_sensitive_user(ts, uid)
+    sensitive_info = get_sensitive_info(timestamp=ts, text=text)
+    sensitive_user = get_sensitive_user(timestamp=ts, uid=uid)
     return sensitive_info, sensitive_user
         
 '''
@@ -490,6 +490,7 @@ if __name__ == '__main__':
     main()
 
     
+
 
 
 

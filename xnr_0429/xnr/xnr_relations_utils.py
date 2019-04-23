@@ -142,14 +142,14 @@ def load_facebook_pingtaiguanzhu_state(root_uid, uid):
     return pingtaiguanzhu_state
 
 
-def load_facebook_relation_num(xnr_user_no, term_query_list):
+def load_facebook_relation_uids(xnr_user_no, term_query_list):
     """
 
     :param xnr_user_no:
     :param term_query_list: term语句列表
-    :return: 根据term语句，返回搜到的跟xnr有关系的人的数目
+    :return: 根据term语句，返回搜到的跟xnr有关系的人的uid列表
     """
-    num = 0
+    uids = []
     query_body = {
         'query':{
             'filtered':{
@@ -165,9 +165,20 @@ def load_facebook_relation_num(xnr_user_no, term_query_list):
     }
     query_body['query']['filtered']['filter']['bool']['must'].extend(term_query_list)
     search_results = es_xnr_2.search(index=facebook_xnr_relations_index_name, doc_type=facebook_xnr_relations_index_type, body=query_body)['hits']['hits']
-    if search_results:
-        num = len(search_results)
-    return num
+    for search_result in search_results:
+        uid = search_result['_source']['uid']
+        uids.append(uid)
+    return uids
+
+
+def load_facebook_relation_num(xnr_user_no, term_query_list):
+    """
+
+    :param xnr_user_no:
+    :param term_query_list: term语句列表
+    :return: 根据term语句，返回搜到的跟xnr有关系的人的数目
+    """
+    return len(load_facebook_relation_uids(xnr_user_no, term_query_list))
 
 
 def update_facebook_xnr_relations(root_uid, uid, data, update_portrait_info=False):
@@ -310,6 +321,7 @@ def update_twitter_xnr_relations(root_uid, uid, data, update_portrait_info=False
         except Exception,e:
             print 'update_twitter_xnr_relations Error: ', str(e)
     return False
+
 
 
 
