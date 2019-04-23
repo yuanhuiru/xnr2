@@ -1161,6 +1161,7 @@ def get_show_private(task_detail):
 
     index_name_pre = facebook_feedback_private_index_name + '_'
     index_name_list = get_timeset_indexset_list(index_name_pre,ts2datetime(start_ts),ts2datetime(end_ts))
+    print 'index_name_list', index_name_list
     results_all = []
     for index_name in index_name_list:
         try:
@@ -1773,6 +1774,7 @@ def save_oprate_like(task_detail):
     except:
         mark=False
     return mark
+
 
 
 

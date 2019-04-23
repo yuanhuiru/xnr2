@@ -489,6 +489,7 @@ def main():
     global EXCEPTION
     xnr_info_list = load_xnr_info()
     date = ts2datetime(time.time())
+    print date
     for xnr_info in xnr_info_list:
         '''
         try:
