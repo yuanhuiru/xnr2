@@ -220,6 +220,15 @@ def like_tweet_func(account_name,password,r_mid):
 
     return mark
 
+
+## 对评论点赞 19.03.01 xuan
+def like_comment(account_name,password,r_mid):
+
+    sina_operate_api = SinaOperateAPI(account_name,password)
+    mark = sina_operate_api.like_to_comment(mid=r_mid)
+    return mark
+
+
 ## 关注
 def follow_tweet_func(xnr_user_no,account_name,password,uid,trace_type):
 
