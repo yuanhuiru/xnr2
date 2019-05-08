@@ -26,6 +26,7 @@ def fb_save_to_xnr_flow_text(tweet_type,xnr_user_no,text, message_type):
     #item_detail['topic_field'] = ''
     item_detail['fid'] = ''
     task_id = xnr_user_no + '_' + str(current_time)
+    print text, "text=------------------------------------------"
     
     #classify_results = topic_classfiy(classify_mid_list, classify_text_dict)
 
