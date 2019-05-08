@@ -259,6 +259,7 @@
 {% block my_js %}
 
 <script>
+	var admin='{{g.user}}';
     var loadingType = 'WX';
     weiboORqq('WX');
     $('.nav_type').text('(微信)');

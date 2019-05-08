@@ -158,12 +158,38 @@ $("#allFoucs").on('click',function(){
 	if(fs_uid_list.length==0){
 		$('#pormpt p').text('请选择要关注的人。');
         $('#pormpt').modal('show');
-		return false;
+	}else {
+		$("#focusListType").modal('show');
 	}
-	var focus_list_url='/weibo_xnr_operate//?xnr_user_no='+ID_Num+'&uid='+fs_uid_list.join(',');
-    public_ajax.call_request('get',focus_list_url,sucFai);
-	
+});
+function driectFocus(uid,_this){
+	joinFS(uid);
+	setTimeout(function(){
+		focus_this_uid=fs_uid_list;
+		$("#focusListType").modal('show');
+	},300);
+}
+/*$("#sureFlist").click(function(){
+	var _type=[];
+    $("#focusListType input:checkbox:checked").each(function (index,item) {
+        _type.push($(this).val());
+    });
+	if(fs_uid_list.length==0||_type.length==0){
+        $('#pormpt p').text('请选择要关注的人和要关注的类型。');
+        $('#pormpt').modal('show');
+        return false;
+    }
+    var focus_list_url='/weibo_xnr_operate/follow_operate/?xnr_user_no='+ID_Num+
+            '&uid='+fs_uid_list.join('，')+'&follow_type='+_type.join('，');
+    public_ajax.call_request('get',focus_list_url,suc__Fai);
+
 })
+function suc__Fai(data){
+    var _in=data['status'];
+    var txt= _in=='ok'?'操作成功':'操作失败';
+    $('#pormpt p').text(txt);
+    $('#pormpt').modal('show');
+}*/
 $('#inputList label input').on('click',function () {
     var ty=$(this).attr('tp');
     //idNAME=ty;
@@ -260,7 +286,7 @@ function lookDetails(puid) {
     $('#details').modal('show');
 }
 //直接关注
-var onceFocusObj={};
+/*var onceFocusObj={};
 function driectFocus(uid,_this) {
     var foc_url,mid='';
     if (!uid){uid=$(_this).prev().text()}
@@ -281,7 +307,7 @@ function driectFocus(uid,_this) {
         	onceFocusObj[uid]=1;
     	}
 	},444);
-}
+}*/
 //提示
 function sucFai(data) {
     var m='';

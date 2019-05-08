@@ -103,18 +103,18 @@ body {
 }
 #container .everyUser .user_center .center_3 span {
     display: inline-block;
-    width: 19%;
+    width: 15%;
     padding: 3px 7px;
     color: white;
     cursor: pointer;
     text-align: center;
     font-size: 12px;
 }
-#container .everyUser .user_center .center_3 span:nth-child(2),
-#container .everyUser .user_center .center_3 span:nth-child(4) {
+#container .everyUser .user_center .center_3 span:nth-child(2){
     border-left:1px solid slategrey;
     border-right:1px solid slategrey;
 }
+#container .everyUser .user_center .center_3 span:nth-child(4),
 #container .everyUser .user_center .center_3 span:last-child {
 	border-left:1px solid slategrey;
 }

@@ -57,7 +57,9 @@ body {
 #container .type_page #content .focusEvery .foc-head {
     position: absolute;
     top: 20px;
-    left: 15px;
+    left: 14px;
+	width:60px;
+	height:60px;
 }
 #container .type_page #content .focusEvery .foc-1 .foc-fm .foc-join,
 #container .type_page #content .focusEvery .foc-1 .foc-fm-2 .heavy-join {

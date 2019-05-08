@@ -666,7 +666,9 @@ function defalutWords(data) {
 						'               <span class="cen3-1" onclick="retweet(this,\'日常发帖\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发</span>'+
                         //'               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论（<b class="comment">'+row.comment+'</b>）</span>'+
 						'               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论</span>'+
-                        '               <span class="cen3-3" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
+                        '               <span class="cen3-2" onclick="commentList(this)"><i class="icon icon-list"></i>&nbsp;&nbsp;查看评论</span>'+
+
+						'               <span class="cen3-3" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '               <span class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
                         '               <span class="cen3-4" onclick="joinlab(this)"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+
                         '               <span title="关注用户" onclick="focusUser(this)"><i class="icon icon-heart"></i>&nbsp;&nbsp;关注用户</span>'+
@@ -828,10 +830,11 @@ function hotWeibo(data) {
                                                '           <div class="center_3">'+
                        // '               <span title="事件子观点及相关微博" onclick="related(this)"><i class="icon icon-stethoscope"></i>&nbsp;&nbsp;事件子观点及相关微博</span>'+
                         '               <span title="复制" onclick="copyPost(this)"><i class="icon icon-copy"></i>&nbsp;&nbsp;复制</span>'+
-                        '               <span title="转发数" onclick="retweet(this,\'热点跟随\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发</span>'+
+                        '               <span title="转发" onclick="retweet(this,\'热点跟随\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发</span>'+
 /*&nbsp;（<b class="forwarding">'+row.retweeted+'</b>）</span>'+*/
-                        '               <span title="评论数" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论</span>'+
+                        '               <span title="评论" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论</span>'+
 /*&nbsp;（<b class="comment">'+row.comment+'</b>）</span>'+*/
+						'               <span class="cen3-2" onclick="commentList(this)"><i class="icon icon-list"></i>&nbsp;&nbsp;查看评论</span>'+
                         '               <span title="赞" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '               <span title="机器人回复" class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
                         '               <span title="加入语料库" onclick="joinlab(this)"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+
@@ -862,11 +865,11 @@ function hotWeibo(data) {
     $('.defaultWeibo2 .search .form-control').attr('placeholder','输入关键词快速搜索相关微博（回车搜索）');
 }
 //关注用户
-function focusUser(_this){
+/*function focusUser(_this){
     var uid=$(_this).parents('.center_rel').find('.uid').text();
 	var foc_url='/weibo_xnr_operate/follow_operate/?xnr_user_no='+xnrUser+'&uid='+uid;
     public_ajax.call_request('get',foc_url,postYES);
-}
+}*/
 //大V
 //=========热点跟随===========
 $('#bigtheme-2 .demo-label input').on('click',function () {
@@ -960,6 +963,7 @@ function bigVipWeibo(data) {
                         '               <span title="复制" onclick="copyPost(this)"><i class="icon icon-copy"></i>&nbsp;&nbsp;复制</span>'+
                         '               <span title="转发" onclick="retweet(this,\'热点跟随\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发&nbsp;</span>'+
                         '               <span title="评论" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论&nbsp;</span>'+
+						'               <span class="cen3-2" onclick="commentList(this)"><i class="icon icon-list"></i>&nbsp;&nbsp;查看评论</span>'+
                         '               <span title="赞" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '               <span title="机器人回复" class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
                         '               <span title="加入语料库" onclick="joinlab(this)"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+
@@ -1319,6 +1323,7 @@ function businessWeibo(data) {
 						'               <span class="cen3-1" onclick="retweet(this,\'业务发帖\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发</span>'+
                         //'               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论（<b class="comment">'+row.comment+'</b>）</span>'+
 						'               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论</span>'+
+						'               <span class="cen3-2" onclick="commentList(this)"><i class="icon icon-list"></i>&nbsp;&nbsp;查看评论</span>'+
                         '               <span class="cen3-3" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '               <span class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
                         '               <span class="cen3-4" onclick="joinlab(this)"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+

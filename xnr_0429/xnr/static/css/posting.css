@@ -147,7 +147,7 @@ body {
 #container #content #everyday .post_perfect .center_3 span {
     display: inline-block;
     /*width: 15%;*/
-    padding: 3px 15px;
+    padding: 3px 8px;
     color: white;
     cursor: pointer;
     text-align: center;
@@ -159,8 +159,11 @@ body {
     border-right:1px solid slategrey;
 }
 #container #content #everyday .post_perfect .center_3 span:nth-child(6) {
-border-right:1px solid slategrey;
+    border-right:1px solid slategrey;
     border-left:1px solid slategrey;
+}
+#container #content #everyday .post_perfect .center_3 span:last-child {
+	border-left:1px solid slategrey;
 }
 #container #content #everyday .post_perfect .center_3 span:hover {
     color:#eb7350;
@@ -315,11 +318,11 @@ border-right:1px solid slategrey;
 #container #content #hot .post_perfect .center_3_top span {
     display: inline-block;
     /*width: 16%;*/
-    min-width: 80px;
+    min-width: 50px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow:ellipsis ;
-    padding: 3px 7px;
+    padding: 3px 6px;
     color: white;
     cursor: pointer;
     text-align: center;
@@ -334,6 +337,9 @@ border-right:1px solid slategrey;
 #container #content #hot .post_perfect .center_3_top span:nth-child(2){
     border-left:1px solid slategrey;
     border-right:1px solid slategrey;
+}
+.post_perfect .center_3 span:last-child {
+	border-left:1px solid slategrey;
 }
 /*#container #content #hot .post_perfect .center_3 span:nth-child(6){*/
     /*!*width: 30%;*!*/

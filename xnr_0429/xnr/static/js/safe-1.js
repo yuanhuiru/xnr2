@@ -541,6 +541,7 @@ function weiboData(data) {
                         '           <div class="center_3">'+
                         '               <span class="cen3-1" onclick="retweet(this,\'行为评估\')" title="转发"><i class="icon icon-share"></i>&nbsp;&nbsp;转发（'+row.retweeted+'）</span>'+
                         '               <span class="cen3-2" onclick="showInput(this)" title="评论"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论（'+row.comment+'）</span>'+
+						'               <span class="cen3-2" onclick="commentList(this)"><i class="icon icon-list"></i>&nbsp;&nbsp;查看评论</span>'+
                         '               <span class="cen3-3" onclick="thumbs(this)" title="赞"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '               <span class="cen3-9" onclick="robot(this)" title="机器人回复"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
                         '               <span class="cen3-4" onclick="joinlab(this)" title="加入语料库"><i class="icon icon-upload-alt"></i>&nbsp;&nbsp;加入语料库</span>'+

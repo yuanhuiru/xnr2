@@ -1,8 +1,8 @@
 // =====关注列表====
-$("#two2").on("click",function(){
+/*$("#two2").on("click",function(){
     public_ajax.call_request('get',focusOn_url,focusOn);
     public_ajax.call_request('get',fans_url,fans);
-});
+});*/
 $('.focusSEN .demo-label input').on('click',function () {
     var orderType=$(this).val();
     var ClickFocusOn_url='/weibo_xnr_manage/wxnr_list_concerns/?user_id='+ID_Num+'&order_type='+orderType;

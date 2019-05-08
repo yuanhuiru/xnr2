@@ -93,10 +93,10 @@
 <div id="container">
     <ul id="myTabs" class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active" id="one1">
-            <a href="#one" role="tab" data-toggle="tab"><b class="icon icon-rss"></b>&nbsp;&nbsp;内容监测</a>
+            <a href="#one" role="tab" data-toggle="tab"><b class="icon icon-rss"></b>&nbsp;&nbsp;关键词监测</a>
         </li>
         <li role="presentation" id="two2">
-            <a href="#two" role="tab" data-toggle="tab"><b class="icon icon-umbrella"></b>&nbsp;&nbsp;用户监测</a>
+            <a href="#one" role="tab" data-toggle="tab"><b class="icon icon-umbrella"></b>&nbsp;&nbsp;用户监测</a>
         </li>
     </ul>
     <div class="tab-content" id="content">
@@ -108,10 +108,10 @@
                 <!--</div>-->
                 <div class="perTime" style="margin:0 10px;padding:20px 0;">
                     <span style="display: inline-block;width: 80px;text-align: left;">时间范围：</span>
-                    <label class="demo-label">
+                    <!--<label class="demo-label">
                         <input class="demo-radio" type="radio" name="day" value="0" checked>
                         <span class="demo-radioInput"></span> 今天
-                    </label>
+                    </label>-->
                     <label class="demo-label">
                         <input class="demo-radio" type="radio" name="day" value="1">
                         <span class="demo-radioInput"></span> 昨天
@@ -150,12 +150,12 @@
                         <p style="width: 100%;text-align: center;margin-top: 40px;color: white;">正在拼命加载中...</p>
                     </div>
                 </div>
-                <div class="content-2" style="margin-top: 20px;">
-                    <div class="hot-1">
+                <div class="content-2">
+                    <div class="hot-1" style="display:none">
                         <img src="/static/images/icon.png" alt="">
                         <span style="font-size: 18px;font-weight: 900;color: #fff">热门帖子</span>
                     </div>
-                    <div class="hot-2" style="margin-left: 30px;">
+                    <div class="hot-2">
                         <!--<div style="text-align: center;">-->
                         <!--<input type="text" id="search-1-hot" placeholder="搜索关键词相关的微博" style="width: 94%;"/>-->
                         <!--<button type="button" class="btn-xs" id="search-hot" style="padding:3px 5px;margin: -3px 0 0 0;">搜索</button>-->
@@ -177,7 +177,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div>
+                        <div style="display:none;">
                             <span style="display:inline-block;width:70px;">排序指标：</span>
                             <div id="theme-3" style="display: inline-block;">
                                 <label class="demo-label">
@@ -194,14 +194,32 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="hot_post">
-                            <div id="hot_post">
+                        <div style="margin-left:10px;">			
+                			<span style="display:inline-block;">关键词检索范围：</span>
+							<div id="keywordSearch1" style="display: inline-block;">
+                                <label class="demo-label" style="width:auto;">
+                                    <input class="demo-radio" type="radio" name="k1" value="111" checked>
+                                    <span class="demo-radioInput"></span> 正在登陆的虚拟人
+                                </label>
+                                <label class="demo-label">
+                                    <input class="demo-radio" type="radio" name="k1" value="ALL">
+                                    <span class="demo-radioInput"></span> 所有虚拟人
+                                </label>
+                            </div>
+						</div>
+						<div class="hot_post keyHot">
+                            <div id="keyHot">
                                 <p style="width: 100%;text-align: center;margin-top: 40px;color: white;">正在拼命加载中...</p>
+                            </div>
+                        </div>
+						<div class="hot_post userTestList" style="display:none;">
+                            <div id="userTestList">
+                               <p style="width: 100%;text-align: center;margin-top: 40px;color: white;">正在拼命加载中...</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="content-3" style="margin-top: 20px;">
+                <div class="content-3" style="margin-top: 20px;display:none;">
                     <div class="user-1" style="margin: 20px 0;">
                         <img src="/static/images/icon.png" alt="">
                         <span style="font-size: 18px;font-weight: 900;color: #fff">活跃用户</span>
@@ -233,7 +251,7 @@
             </div>
         </div>
         <div role="tabpanel" class="tab-pane" id="two" style="margin-top: 20px;">
-            <div class="oli">
+            <div class="oli" style="display:none;">
                 <h5 style="font-size: 16px;"><i class="icon icon-star"></i>&nbsp;关注列表</h5>
                 <div class="focusSEN" style="margin: 10px 0;">
                     <label class="demo-label">
@@ -251,7 +269,7 @@
                     </div>
                 </div>
             </div>
-            <div class="oli" style="margin-top: 20px">
+            <div class="oli" style="margin-top: 20px;display:none;">
                 <h5 style="font-size: 16px;"><i class="icon icon-heart"></i>&nbsp;粉丝列表</h5>
                 <div class="fansSEN" style="margin: 10px 0;">
                     <label class="demo-label">

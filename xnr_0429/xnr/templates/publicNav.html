@@ -31,7 +31,7 @@
             margin: 5px 10px;
         }
         #wordcloud #cloud-2 .demo-label, #RobotType .demo-label{width:auto}
-	#sameRoad .modActCC .tt {
+		#sameRoad .modActCC .tt {
             font-size: 18px;
             font-weight: 700;
         }
@@ -41,6 +41,7 @@
             margin: 10px 0;
             font-weight: 600;
         }
+		.center_1 {cursor:pointer;}
 		span[onclick*="joinPolice"] {display: none!important;}
 		.weiboContent span[onclick*="robot"] {border-left:1px solid slategrey;}
        /* .old_3,.old_4 {display:none;}*/
@@ -126,6 +127,183 @@
         </div>
     </div>
 </div>
+<!--查看评论-->
+<style>
+#lookComment .post_perfect {
+    position: relative;
+    padding: 10px 10px 10px 30px;
+    background: #10364e;
+    margin:0 auto 10px;
+    width: 950px;
+}
+#lookComment .post_perfect .center_icon {
+    position: absolute;
+    top:10px;
+    left:3px;
+    width: 20px;
+    height:20px;
+}
+#lookComment .post_perfect .center_3 {
+    margin: 10px 0;
+    text-align: center;
+    border-top: 1px solid slategrey;
+    padding-top: 5px;
+}
+#lookComment .post_perfect .center_3 span {
+    display: inline-block;
+    width:420px;
+    padding: 3px 8px;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    font-size: 12px;
+}
+#lookComment .post_perfect .center_3 span:nth-child(2){
+    border-left:1px solid slategrey;
+}
+#lookComment .post_perfect .center_3 span:hover {
+    color:#eb7350;
+}
+#lookComment .commentDown {
+    width: 100%;
+    padding: 5px;
+    margin: 10px 0;
+}
+#lookComment .commentDown input {
+    width: 90%;
+    color: white;
+    display: inline-block;
+    padding: 4px 8px;
+    background: rgba(8,23,44,0.25);
+    border: 1px solid silver;
+    border-radius: 5px;
+    text-align: center;
+}
+#lookComment .commentDown span {
+    color: white;
+    display: inline-block;
+    padding: 4px 8px;
+    background: rgba(8,23,44,0.25);
+    border: 1px solid silver;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#lookComment .commentDown span:hover {
+    background: #333333;
+}
+
+</style>
+<div class="modal fade" id="lookComment" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:1000px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">评论内容列表</h4>
+            </div>
+            <div class="modal-body">
+				<p style="text-align: center;font-size: 18px;color: #fff;font-weight: 900;" class="loading">
+                        正在加载中，请稍等。。。
+                    </p>
+                <div class="commentTable weiboTable">
+		            <div id="commentTable"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--关注选择-->
+<div class="modal fade" id="focusListType" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="margin-top:140px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">选择关注类型</h4>
+            </div>
+            <div class="modal-body">
+                <div class="srType" style="padding: 10px 25px;">
+                    <label class="demo-label">
+                        <input class="demo-radio" type="checkbox" name="fsList" value='daily' checked>
+                        <span class="demo-checkbox demo-radioInput"></span> 日常关注
+                    </label>
+                    <label class="demo-label">
+                        <input class="demo-radio" type="checkbox" name="rbt" value='business'>
+                        <span class="demo-checkbox demo-radioInput"></span> 业务关注
+                    </label>
+                    <label class="demo-label">
+                        <input class="demo-radio" type="checkbox" name="rbt" value='gensui'>
+                        <span class="demo-checkbox demo-radioInput"></span> 跟随转发关注
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="sureFlist">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--编辑监测词-->
+<style>
+    #WORDedit .wdwd {padding:20px 10px 10px;}
+    #WORDedit .wdwd input {padding:3px 5px;width:300px;border-radius:3px;color:white;border: 1px solid silver;
+    background: rgba(8, 23, 44, 0.25);text-align:center;}
+    #WORDedit .wdwd span {color:#fff;font-size:14px;}
+</style>
+<div class="modal fade" id="WORDedit" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">更改密码</h4>
+            </div>
+            <div class="modal-body">
+                <div class="wd1 wdwd">
+                    <span>原监测词：</span> <b class="yuan"></b> 
+                </div>
+				<div class="wd2 wdwd">
+                    <span>更改后监测词：</span> <input class="xian" type="text">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="changeWORD" onclick="wordCHANGE()"  data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--更改密码-->
+<style>
+	#changePaawordOpt .oopp {padding:20px 10px 10px;}
+	#changePaawordOpt .oopp input {padding:3px 5px;width:300px;border-radius:3px;color:white;border: 1px solid silver;
+    background: rgba(8, 23, 44, 0.25);text-align:center;}
+	#changePaawordOpt .oopp span {color:#fff;font-size:14px;}
+</style>
+<div class="modal fade" id="changePaawordOpt" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">更改密码</h4>
+            </div>
+            <div class="modal-body">
+                <div class="opt1 oopp">
+                    <span>邮箱：</span>	<input class="passval1" type="email">
+                </div>
+				<div class="opt2 oopp">
+                    <span>电话：</span> <input class="passval2" type="text" maxlength="11">
+                </div>
+				<div class="opt3 oopp">
+                    <span>密码：</span> <input class="passval3" type="password">
+                </div>
+            </div>
+			<div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="sureChangePaaword" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!--语料选择-->
 <div class="modal fade" id="wordcloud" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">

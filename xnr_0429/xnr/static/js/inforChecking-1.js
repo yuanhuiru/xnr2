@@ -10,16 +10,51 @@ $('.title .perTime .demo-label input').on('click',function () {
         }else {
             from_ts=getDaysBefore(_val);
         }
-        $('#content-1-word p').show();
-        $('#hot_post p').show();
-        $('#userList p').show();
+        //$('#content-1-word p').show();
+        //$('#hot_post p').show();
+		var _x=$('#keywordSearch1 .demo-label input:checked').val(),_id;
+		if(_x=='111'){
+			_id=ID_Num
+		}else {
+			_id='ALL';
+		}
+		var hotPost_url='/weibo_xnr_monitor/keyword_info_monitor/?from_ts='+from_ts+'&to_ts='+to_ts+
+	    '&weiboxnr_id='+_id;
+		var user_test_url='/weibo_xnr_monitor/user_info_monitor/?from_ts='+from_ts+'&to_ts='+to_ts+
+    	'&weiboxnr_id='+_id;
+		if(xnrChoose=='keyword'){
+			$('#hot_post p').show();
+			con_box='keyHot';
+			public_ajax.call_request('get',hotPost_url,hotPost);
+		}else {
+			$('#userTestList p').show();
+			con_box='userTestList';
+			public_ajax.call_request('get',user_test_url,hotPost);
+		}
+       // $('#userList p').show();
        // public_ajax.call_request('get',word_url,wordCloud);
        // public_ajax.call_request('get',word_url2,wordCloud2);
-        public_ajax.call_request('get',hotPost_url,hotPost);
-        public_ajax.call_request('get',activePost_url,activeUser);
-        $('.titTime').hide();
+       // public_ajax.call_request('get',hotPost_url,hotPost);
+        //public_ajax.call_request('get',activePost_url,activeUser);
+        //$('.titTime').hide();
     }
 });
+var xnrChoose='keyword';
+$('#one1').on('click',function(){
+	xnrChoose='keyword';
+	con_box='keyHot';
+	$(".keyHot").show();
+	$(".userTestList").hide();
+	public_ajax.call_request('get',hotPost_url,hotPost);
+});
+$('#two2').on('click',function(){
+	xnrChoose='user';
+	con_box='userTestList';
+    $(".keyHot").hide();
+    $(".userTestList").show();
+	public_ajax.call_request('get',user_test_url,hotPost);
+})
+
 //选择时间范围
 $('.timeSure').on('click',function () {
     var from = $('.start').val();
@@ -31,7 +66,7 @@ $('.timeSure').on('click',function () {
         $('#pormpt').modal('show');
     }else {
         $('#content-1-word p').show();
-        $('#hot_post p').show();
+        $('#keyHot p').show();
         $('#userList p').show();
         //public_ajax.call_request('get',word_url,wordCloud);
        // public_ajax.call_request('get',word_url2,wordCloud2);
@@ -149,7 +184,7 @@ function wordCloud2(data) {
 }
 //热门帖子
 $('#theme-2 .demo-radio').on('click',function () {
-    $('#hot_post p').show();
+    $('#keyHot p').show();
     var classify_id=$(this).val();
     var order_id=$('#theme-3 input:radio[name="demo"]:checked').val();
     var NEWhotPost_url='/weibo_xnr_monitor/lookup_hot_posts/?from_ts='+from_ts+'&to_ts='+to_ts+
@@ -157,19 +192,33 @@ $('#theme-2 .demo-radio').on('click',function () {
     public_ajax.call_request('get',NEWhotPost_url,hotPost);
 });
 $('#theme-3 .demo-radio').on('click',function () {
-    $('#hot_post p').show();
+    $('#keyHot p').show();
     var classify_id=$('#theme-2 input:radio[name="demo-radio"]:checked').val();
     var order_id=$(this).val();
     var NEWhotPost_url='/weibo_xnr_monitor/lookup_hot_posts/?from_ts='+from_ts+'&to_ts='+to_ts+
         '&weiboxnr_id='+ID_Num+'&classify_id='+classify_id+'&order_id='+order_id;
     public_ajax.call_request('get',NEWhotPost_url,hotPost);
 });
-var hotPost_url='/weibo_xnr_monitor/lookup_hot_posts/?from_ts='+from_ts+'&to_ts='+to_ts+
-    '&weiboxnr_id='+ID_Num+'&classify_id=0&order_id=3';
+//选择时间和范围
+$('#keywordSearch1 .demo-label input').on('click',function () {
+    $('#'+con_box+' p').show();
+    var _xnr=$(this).val(),mid='keyword_info_monitor';
+	if(_xnr=='111'){_xnr=ID_Num;mid='user_info_monitor'}
+    var NEWhotPost_url='/weibo_xnr_monitor/'+mid+'/?from_ts='+from_ts+'&to_ts='+to_ts+
+        '&weiboxnr_id='+_xnr;
+    public_ajax.call_request('get',NEWhotPost_url,hotPost);
+});
+//var hotPost_url='/weibo_xnr_monitor/lookup_hot_posts/?from_ts='+from_ts+'&to_ts='+to_ts+
+//    '&weiboxnr_id='+ID_Num+'&classify_id=0&order_id=3';
+var hotPost_url='/weibo_xnr_monitor/keyword_info_monitor/?from_ts='+from_ts+'&to_ts='+to_ts+
+	'&weiboxnr_id='+ID_Num;
 public_ajax.call_request('get',hotPost_url,hotPost);
+var user_test_url='/weibo_xnr_monitor/user_info_monitor/?from_ts='+from_ts+'&to_ts='+to_ts+
+    '&weiboxnr_id='+ID_Num;
+var con_box='keyHot';
 function hotPost(data) {
-    $('#hot_post').bootstrapTable('load', data);
-    $('#hot_post').bootstrapTable({
+    $('#'+con_box).bootstrapTable('load', data);
+    $('#'+con_box).bootstrapTable({
         data:data,
         search: true,//是否搜索
         pagination: true,//是否分页
@@ -239,7 +288,7 @@ function hotPost(data) {
 
                     };
                     var str=
-                        '<div class="post_perfect" style="margin-bottom:10px;width:920px;">'+
+                        '<div class="post_perfect" style="margin-bottom:10px;">'+
                         '   <div class="post_center-hot">'+
                         '       <img src="'+img+'" alt="" class="center_icon">'+
                         '       <div class="center_rel" style="text-align:left;">'+
@@ -255,6 +304,7 @@ function hotPost(data) {
                         '           <div class="center_3">'+
                         '               <span class="cen3-1" onclick="retweet(this,\'信息监测\')"><i class="icon icon-share"></i>&nbsp;&nbsp;转发</span>'+
                         '               <span class="cen3-2" onclick="showInput(this)"><i class="icon icon-comments-alt"></i>&nbsp;&nbsp;评论</span>'+
+						'               <span class="cen3-2" onclick="commentList(this)"><i class="icon icon-list"></i>&nbsp;&nbsp;查看评论</span>'+
                         '               <span class="cen3-3" onclick="thumbs(this)"><i class="icon icon-thumbs-up"></i>&nbsp;&nbsp;赞</span>'+
                         '               <span class="cen3-4" onclick="focusThis(this)"><i class="icon icon-heart-empty"></i>&nbsp;&nbsp;关注该用户</span>'+
                         '               <span class="cen3-9" onclick="robot(this)"><i class="icon icon-github-alt"></i>&nbsp;&nbsp;机器人回复</span>'+
@@ -277,7 +327,7 @@ function hotPost(data) {
             },
         ],
     });
-    $('#hot_post p').slideUp(700);
+    $('#'+con_box+' p').slideUp(700);
     $('.hot_post .search .form-control').attr('placeholder','输入关键词快速搜索相关微博（回车搜索）');
 }
 //活跃用户
@@ -290,7 +340,7 @@ $('#user-1 .demo-radio').on('click',function () {
 });
 var activePost_url='/weibo_xnr_monitor/lookup_active_weibouser/?weiboxnr_id='+ID_Num+
     '&start_time='+from_ts+'&end_time='+to_ts+'&classify_id=0';
-public_ajax.call_request('get',activePost_url,activeUser);
+//public_ajax.call_request('get',activePost_url,activeUser);
 var act_user_list=[];
 function activeUser(persondata) {
     $('.userList #userList').bootstrapTable('load', persondata);

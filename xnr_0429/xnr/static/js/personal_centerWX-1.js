@@ -1,8 +1,8 @@
 //登录用户名
-	var admin='admin@qq.com';
+//	var admin='{{g.user}}';
 
 // =========展示所有虚拟人=============
-	var url_WX = '/wx_xnr_manage/show/';
+	var url_WX = '/wx_xnr_manage/show/?submitter='+admin;
 	public_ajax.call_request('GET',url_WX,has_table_WX);
 	// 表格生成
 	function has_table_WX(has_data_QQ) {

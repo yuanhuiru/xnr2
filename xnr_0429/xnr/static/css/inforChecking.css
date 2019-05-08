@@ -102,6 +102,9 @@ body {
     border-left:1px solid slategrey;
 	border-right:1px solid slategrey;
 }
+#container .content-2 .hot-2 .post_perfect .post_center-hot .center_3 span:last-child {
+    border-left:1px solid slategrey;
+}
 #container .content-2 .hot-2 .post_perfect .post_center-hot .center_3 span:hover {
     color:#eb7350;
 }
