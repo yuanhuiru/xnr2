@@ -67,6 +67,7 @@ class SinaLauncher():
                 "Referer": "https://weibo.com/",
             }
             self.session.get(url,headers=header)
+            print r.text
             if r.status_code != 200:
                 print "Login error!"
                 # 在此如果出错的话，则写入错误帐号到weibo_xnr表中的verify_password字段。  
@@ -88,7 +89,7 @@ class SinaLauncher():
 
 if __name__ == '__main__':
     #test = SinaLauncher('13269704912','murcielagolp640', 'phone')
-    test = SinaLauncher('18737028295','xuanhui99999', 'phone')
+    test = SinaLauncher('80617252@qq.com','xuanhui99999', 'phone')
     test.login()
     print test.uid
 

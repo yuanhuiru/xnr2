@@ -5,7 +5,7 @@ import json
 import elasticsearch
 from elasticsearch import Elasticsearch
 import sys
-sys.path.append('../../')
+sys.path.append('/home/xnr1/xnr_0429/xnr/')
 from global_utils import es_xnr as es, weibo_xnr_index_name, weibo_xnr_index_type
 
 
@@ -39,6 +39,7 @@ def save_error_es(username, account_type):
 
 
 if __name__ == '__main__':
-    username = '80617252@qq.com'
-    account_type = 'mail'
-    save_error_es(username, account_type)
+    #username = '80617252@qq.com'
+    #account_type = 'mail'
+    #save_error_es(username, account_type)
+    pass
