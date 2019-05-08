@@ -15,7 +15,7 @@ from xnr.parameter import MAX_VALUE,LOCALHOST_IP
 from xnr.utils import user_no2qq_id
 from xnr.time_utils import ts2datetime,datetime2ts
 import socket
-from xnr.qq.getgroup import getgroup_v2,getgroup_v3
+from xnr.qq.getgroup import getgroup,getgroup_v2,getgroup_v3
 from xnr.qq.receiveQQGroupMessage import execute_v2
 
 
@@ -67,6 +67,7 @@ def find_port(exist_port_list):
         port +=1
     return port
 '''
+
 def find_port(exist_port_list):
     min_port = port_range[0]
     max_port = port_range[1]
@@ -95,8 +96,10 @@ def get_login_name(xnr_user_no):
         qq_number = get_results['qq_number']
         qqbot_port = get_results['qqbot_port']
         access_id = get_results['access_id']
-
+        print "qq_number, qqbot_port, access_id, _+_+_+_+_+_+_+_+_+_"
+        print qq_number, qqbot_port, access_id
         #qqbot_port = '8199'
+        # ABS_LOGIN_PATH = /home/xnr1/xnr_0429/xnr/qq/reciveQQGroupMesaage.py
         p_str1 = 'python '+ ABS_LOGIN_PATH + ' -i '+str(qqbot_port) + ' >> login'+str(qqbot_port)+'.txt'
         #qqbot_port = '8190'
         qqbot_num = qq_number
@@ -104,19 +107,22 @@ def get_login_name(xnr_user_no):
         qqbot_mc = access_id #'sirtgdmgwiivbegf'
         #qqbot_mc = 'worunhzbzyipdagc'
         # yuanlai >>>>>>>>>>>>8.20
-        #p_str1 = 'python '+ ABS_LOGIN_PATH + ' -i '+qqbot_port + ' -o ' + qqbot_num + ' -m ' + qqbot_mc + ' >> login'+qqbot_port+'.txt'
+        p_str1 = 'python '+ ABS_LOGIN_PATH + ' -i '+qqbot_port + ' -o ' + qqbot_num + ' -m ' + qqbot_mc + ' >> login'+qqbot_port+'.txt'
         # xuanhui 8.20 把邮件发送到80217252
-        p_str1 = 'python '+ ABS_LOGIN_PATH + ' -i '+qqbot_port + ' -o ' + '80617252' + ' -m ' + qqbot_mc + ' >> login'+qqbot_port+'.txt'
+        #p_str1 = 'python '+ ABS_LOGIN_PATH + ' -i '+qqbot_port + ' -o ' + '80617252' + ' -m ' + qqbot_mc + ' >> login'+qqbot_port+'.txt'
         #p_str1 = 'python '+ ABS_LOGIN_PATH + ' -i '+qqbot_port + ' -o ' + qqbot_num + ' -m ' + qqbot_mc
         command_str = 'python '+ ABS_LOGIN_PATH + ' -i '+qqbot_port + ' -o ' + qqbot_num + ' -m ' + qqbot_mc
-        print 'p_str1:', p_str1
-        print '========================================================================='
+        #print 'p_str1:', p_str1
+        #print '========================================================================='
         p_str2 = 'pgrep -f ' + '"' + command_str + '"'
-        print 'p_str2::',p_str2
+        #print 'p_str2::',p_str2
         process_ids = subprocess.Popen(p_str2, \
                 shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        print '========================================================================='
+        print process_ids
         process_id_list = process_ids.stdout.readlines()
-        
+        print process_id_list
+        print '========================================================================='
         for process_id in process_id_list:
             process_id = process_id.strip()
             kill_str = 'kill -9 ' + process_id
@@ -124,6 +130,7 @@ def get_login_name(xnr_user_no):
             p2 = subprocess.Popen(kill_str, \
                 shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
+        print p_str1
         p2 = subprocess.Popen(p_str1, \
                 shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         

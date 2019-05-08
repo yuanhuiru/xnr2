@@ -39,7 +39,7 @@ def get_my_group_v2(xnr_user_no):
     return group_info
 
 def search_by_xnr_number(xnr_qq_number, current_date,group_qq_name):
-
+    print group_qq_name
     group_qq_name_list = group_qq_name.encode('utf-8').split('，')
     # 用于显示操作页面初始的所有群历史信息
     query_body = {
@@ -66,12 +66,14 @@ def search_by_xnr_number(xnr_qq_number, current_date,group_qq_name):
     #print 'index_names::',index_names
     index_names.reverse()
     results = {}
+    print query_body
+    print index_names
     for index_name in index_names:
         # if not es_xnr.indices.exsits(index=index_name):
         #     continue
         try:
             result = es_xnr.search(index=index_name, doc_type=group_message_index_type,body=query_body)
-            
+            print result
             if results != {}:
                 results['hits']['hits'].extend(result['hits']['hits'])
                 
@@ -125,8 +127,10 @@ def search_by_period(xnr_qq_number,startdate,enddate,group_qq_name):
     for index_name in index_names:
         # if not es_xnr.indices.exsits(index_name):
         #     continue
+        print index_name
         try:
             result = es_xnr.search(index=index_name, doc_type=group_message_index_type,body=query_body)
+            print result
             if results != {}:
                 results['hits']['hits'].extend(result['hits']['hits'])
             else:
