@@ -29,6 +29,7 @@ class SinaOperateAPI:
         url = 'https://m.weibo.cn/api/statuses/update'
         post_data = {'content': content.decode('utf-8'), 'st': st}
         resp = self.session.post(url, data=post_data, headers=self._headers)
+        # 输出了状态
         print resp.status_code
         if str(resp.status_code) == '200':
             return True, '成功'
@@ -149,14 +150,15 @@ def weibo_publish_main(username, password, text='', file=''):
 
 if __name__ == '__main__':
 
-    sina_operate_api = SinaOperateAPI('18737028295', 'xuanhui99999')
+    sina_operate_api = SinaOperateAPI('18348831412', 'Z16051605')
     #print sina_operate_api.publish(content='aaaaa')
     # print sina_operate_api.retweet(mid='', content='')
     # print sina_operate_api.receive(mid='4305918151652871', r_mid='4301849861467864',  content='hhhhh')
     # print sina_operate_api.comment(mid='4301849861467864', content='测试')
     # print sina_operate_api.like(mid='4343623967021258')
     # print sina_operate_api.like_to_comment(mid='4343900799633172')
-    # print sina_operate_api.followed(uid='')
+    #print sina_operate_api.followed(uid='3964587230')
     print sina_operate_api.unfollowed(uid='3964587230')
     # print sina_operate_api.privmessage(uid='5393019099', content='hello')
+   
 

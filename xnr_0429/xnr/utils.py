@@ -116,7 +116,9 @@ def _id2user_no(task_id):
 def xnr_user_no2uid(xnr_user_no):
     try:
         result = es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
+        print result
         uid = result['uid']
+        print uid
     except:
         uid = ''
 
@@ -659,6 +661,8 @@ def add_operate2redis(item_dict):
 
 
 if __name__ == '__main__':
+    result = xnr_user_no = uid2xnr_user_no(5762691364)
+    print result
 
     # save_to_fans_follow_ES('WXNR0004','1496814565','followers')
     #es_xnr.delete(index=weibo_xnr_fans_followers_index_name,doc_type=weibo_xnr_fans_followers_index_type,\

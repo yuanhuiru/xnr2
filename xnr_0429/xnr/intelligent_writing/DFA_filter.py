@@ -18,6 +18,7 @@ def readInputText():
     txt = ''
     for line in open('/home/xnr1/xnr_0429/xnr/cron/qq_group_message/sensitive_words.txt', 'rb'):
     # for line in open('sensitive_words.txt', 'rb'):
+        print line
         txt = txt + line
     return txt
 

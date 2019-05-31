@@ -367,6 +367,8 @@ def xnr_cumulative_statistics(xnr_date_info,xnr_user_no):
     Cumulative_statistics_dict=dict()
     Cumulative_statistics_dict['date_time']='累计统计'
     if xnr_date_info: 
+        print("#########################################################")
+        print xnr_date_info
         #print xnr_date_info[0]
         Cumulative_statistics_dict['user_fansnum']=count_fans_num(xnr_user_no) 
         #Cumulative_statistics_dict['user_fansnum']=xnr_date_info[-1]['user_fansnum']
@@ -382,6 +384,8 @@ def xnr_cumulative_statistics(xnr_date_info,xnr_user_no):
         for i in xrange(0,len(xnr_date_info)):
             #print xnr_date_info[i]['date_time']
             #total_post_sum=total_post_sum+xnr_date_info[i]['total_post_sum']
+            print '-=----------------------------------=-=-=--------------------------'
+            print i
             daily_post_num=daily_post_num+xnr_date_info[i]['daily_post_num']
             business_post_num=business_post_num+xnr_date_info[i]['business_post_num']
             hot_follower_num=hot_follower_num+xnr_date_info[i]['hot_follower_num']
@@ -484,19 +488,19 @@ def show_today_history_count(xnr_user_no,start_time,end_time):
         print xnr_result
        # print 'xnr_result:::',xnr_result
         #今日总粉丝数
-        #fans_list=lookup_xnr_fans_followers(user_id,lookup_type)
-        #xnr_user_detail['user_fansnum']= len(fans_list)
+        fans_list=lookup_xnr_fans_followers(user_id,lookup_type)
+        xnr_user_detail['user_fansnum']= len(fans_list)
         #xnr_user_detail['user_fansnum']=get_today_xnr_fans(xnr_user_no)
         #print "search_fans_result::",search_result
         
         if not xnr_result['hits']['hits']:
             print "not ----------------------------------hits hits--------------------------------"
-            # xnr_user_detail['user_fansnum']=0
-            #xnr_user_detail['daily_post_num']=2
-            #xnr_user_detail['business_post_num']=1
-            #xnr_user_detail['hot_follower_num']=2
-            #xnr_user_detail['total_post_sum']=6
-            #xnr_user_detail['trace_follow_tweet_num']=1
+            xnr_user_detail['user_fansnum']=0
+            xnr_user_detail['daily_post_num']=0
+            xnr_user_detail['business_post_num']=0
+            xnr_user_detail['hot_follower_num']=0
+            xnr_user_detail['total_post_sum']=0
+            xnr_user_detail['trace_follow_tweet_num']=0
         else:
 
             # for item in xnr_result['hits']['hits']:            
@@ -1762,7 +1766,7 @@ def update_account_info(task_detail):
     weibo_phone_account = task_detail['weibo_phone_account']
     weibo_mail_account = task_detail['weibo_mail_account']
     account_password = task_detail['password']
-    print account_password
+    #print account_password
     try:
         item_exist = es_xnr.get(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,id=xnr_user_no)['_source']
         item_exist['weibo_phone_account'] = weibo_phone_account

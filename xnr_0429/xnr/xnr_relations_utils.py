@@ -5,6 +5,8 @@
 from global_utils import es_xnr, es_user_portrait,\
     weibo_xnr_relations_index_name, weibo_xnr_relations_index_type,\
     portrait_index_name, portrait_index_type
+from sina.weibo_operate import SinaOperateAPI
+from global_utils import es_xnr,weibo_xnr_index_name,weibo_xnr_index_type
 from utils import uid2xnr_user_no
 
 
@@ -48,6 +50,31 @@ def load_pingtaiguanzhu_state(root_uid, uid):
     return pingtaiguanzhu_state
 
 
+def load_user_passwd(uid):
+    try:
+        query_body = {
+        'query':{
+            'term':{'uid':uid}
+        }
+    }
+        result = es_xnr.search(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,body=query_body)['hits']['hits']
+        print result
+        #print result
+        xnr_user_no = result[0]['_source']['xnr_user_no']
+        weibo_password = result[0]['_source']['password']
+        weibo_account = result[0]['_source']['weibo_phone_account']
+        if weibo_account == '':
+            weibo_account = result[0]['_source']['weibo_mail_account']
+
+    except:
+        xnr_user_no = ''
+        weibo_password = ''
+        weibo_account = ''
+
+    return weibo_account, weibo_password
+
+
+
 def update_weibo_xnr_relations(root_uid, uid, data, update_portrait_info=False):
     # pingtaiguanzhu 决定了是否要在平台上真正关注该用户，涉及到更改该关系时，一定要指定该字段（1或0）。
     '''
@@ -64,27 +91,34 @@ def update_weibo_xnr_relations(root_uid, uid, data, update_portrait_info=False):
         data['xnr_uid'] = root_uid
         data['uid'] = uid
 
-        '''
+        # 调用爬虫 平台关注 2019年5月31日
         pingtaiguanzhu = data.get('pingtaiguanzhu', -1)
         pingtaiguanzhu_state  = load_pingtaiguanzhu_state(root_uid, uid)
+        account, password = load_user_passwd(root_uid)
+        print(account, password)
+        sina_operate_api = SinaOperateAPI(account, password)
         if pingtaiguanzhu != pingtaiguanzhu_state:
             if pingtaiguanzhu == 1:
-                'gaunzhu'
+                print 'go to follow--------------------------------------'
+                print sina_operate_api.followed(uid=uid)
+                #'gaunzhu'
                 data['pingtaiguanzhu'] = 1
             elif pingtaiguanzhu == 0:
-                'quxiao'
+                #'quxiao'
                 data['pingtaiguanzhu'] = 0
-        '''
 
         try:
+            print "one-------------"
             _id = '%s_%s' % (root_uid, uid)
             user_exist =  es_xnr.exists(index=weibo_xnr_relations_index_name, doc_type=weibo_xnr_relations_index_type, id=_id)
             if user_exist:
+                print "two-------------"
                 if update_portrait_info:
                     protrait_info = update_weibo_user_portrait_info(uid)
                     data.update(protrait_info)
                 es_result = es_xnr.update(index=weibo_xnr_relations_index_name, doc_type=weibo_xnr_relations_index_type, id=_id, body={'doc': data})
             else:
+                print "three-------------"
                 protrait_info = update_weibo_user_portrait_info(uid)
                 data.update(protrait_info)
                 es_result = es_xnr.index(index=weibo_xnr_relations_index_name, doc_type=weibo_xnr_relations_index_type, id=_id, body=data)
@@ -324,4 +358,6 @@ def update_twitter_xnr_relations(root_uid, uid, data, update_portrait_info=False
 
 
 
-
+if __name__ == '__main__':
+    account, password = load_user_passwd('5762691364')
+    print account, password
