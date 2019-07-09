@@ -47,7 +47,7 @@ def load_pingtaiguanzhu_state(root_uid, uid):
     }
     search_results = es_xnr.search(index=weibo_xnr_relations_index_name, doc_type=weibo_xnr_relations_index_type, body=query_body)['hits']['hits']
     if search_results:
-        pingtaiguanzhu_state = int(search_results[0]['_source']['pingtaiguanzhu'])
+        pingtaiguanzhu_state = int(search_results[0]['_source'].get('pingtaiguanzhu', 0))
     return pingtaiguanzhu_state
 
 
@@ -123,6 +123,7 @@ def update_weibo_xnr_relations(root_uid, uid, data, update_portrait_info=False):
                 protrait_info = update_weibo_user_portrait_info(uid)
                 data.update(protrait_info)
                 es_result = es_xnr.index(index=weibo_xnr_relations_index_name, doc_type=weibo_xnr_relations_index_type, id=_id, body=data)
+            print data, es_result
             return True
         except Exception,e:
             print 'update_weibo_xnr_relations Error: ', str(e)
@@ -421,3 +422,4 @@ if __name__ == '__main__':
     tw_account, tw_password = load_twitter_user_passwd('834571011949469699')
     print tw_account, tw_password
     #print account, password
+

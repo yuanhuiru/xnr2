@@ -51,6 +51,6 @@ def get_user_info_by_uid(username, password, uid):
 if __name__ == '__main__':
     username = '13269704912'
     password = 'murcielagolp640'
-    userinfo_item = get_user_info_by_uid(username=username, password=password, uid=6363488745)
+    userinfo_item = get_user_info_by_uid(username=username, password=password, uid=1738932247)
     print userinfo_item
 
