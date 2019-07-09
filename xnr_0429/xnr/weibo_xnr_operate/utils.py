@@ -1790,7 +1790,7 @@ def get_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
     root_uid = xnr_user_no2uid(xnr_user_no)
     uid_list = uid_string.encode('utf-8').split('，')
     for uid in uid_list:
-        if not update_weibo_xnr_relations(root_uid, uid, {'gensuiguanzhu': 1}):
+        if not update_weibo_xnr_relations(root_uid, uid, {'gensuiguanzhu': 1}, True):
             return False
     return True
 
@@ -1865,19 +1865,8 @@ def get_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
 
     return [mark,fail_nick_name_list]
 """
+
 def get_un_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
-    root_uid = xnr_user_no2uid(xnr_user_no)
-    uid_list = uid_string.encode('utf-8').split('，')
-    for uid in uid_list:
-        if not update_weibo_xnr_relations(root_uid, uid, {'gensuiguanzhu': 0}):
-            return False
-    return True
-
-
-
-# 原来的取消逻辑 kn 注销 19.6.28
-#def get_un_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
-'''
     mark = False
     fail_nick_name_list = []
     fail_uids = []
@@ -1936,7 +1925,6 @@ def get_un_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
 
     return [mark,fail_uids,fail_nick_name_list]
 
-'''
 
 def get_show_retweet_timing_list(xnr_user_no,start_ts,end_ts):
 
@@ -2309,6 +2297,7 @@ def get_weibo_comment(mid, tweet_time):
 
 
         
+
 
 
 
