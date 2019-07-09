@@ -13,6 +13,27 @@ weibo_xnr_retweet_timing_list_index_name = 'tweet_retweet_timing_list'
 weibo_xnr_retweet_timing_list_index_type = 'timing_list'
 
 
+def load_xnr_info():
+    res = {}
+    search_res = es_xnr.search('weibo_xnr', 'user', {'size': 999})['hits']['hits']
+    for item in search_res:
+        source = item['_source']
+        tw_mail_account = source.get('weibo_mail_account', '')
+        tw_phone_account = source.get('weibo_phone_account', '')
+        account = ''
+        if tw_mail_account:
+            account = tw_mail_account
+        elif tw_phone_account:
+            account = tw_phone_account
+        if account:
+            xnr_user_no = source.get('xnr_user_no', '')
+            if xnr_user_no:
+                res[xnr_user_no] = {}
+                res[xnr_user_no]['account'] = account
+                res[xnr_user_no]['password'] = source.get('password', '')
+    return res
+
+
 def search_gensui_userinfo(xnr_no):
     userinfo = {}
     query_body = {
@@ -134,10 +155,11 @@ def delete_gensui(date=arrow.now().format('YYYY-MM-DD')):
 
 
 def main():
-    xnr_user_no = 'WXNR0065'
-    userinfo = search_gensui_userinfo(xnr_user_no)
-    delete_gensui()
-    gensui(xnr_user_no, userinfo)
+    xnr_info = load_xnr_info()
+    for xnr_user_no in xnr_info:
+        userinfo = search_gensui_userinfo(xnr_user_no)
+        #delete_gensui()
+        gensui(xnr_user_no, userinfo)
 
 
 if __name__ == '__main__':

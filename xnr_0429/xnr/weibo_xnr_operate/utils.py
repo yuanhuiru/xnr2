@@ -1946,6 +1946,7 @@ def get_show_retweet_timing_list(xnr_user_no,start_ts,end_ts):
             'bool':{
                 'must':[
                     {'term':{'xnr_user_no':xnr_user_no}},
+                    {'term': {'compute_status': 1}},
                     {'range':{'timestamp':{'gte':start_ts,'lt':end_ts}}}
                 ]
             }

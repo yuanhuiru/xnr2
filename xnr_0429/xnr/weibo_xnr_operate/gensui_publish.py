@@ -62,12 +62,10 @@ def publish(xnr_info):
         if xnr_user_no and account and password:
             flag = weibo_publish_main(account, password, text)
             if flag:
-                d = {
-                    'compute_status': 1
-                }
+                r['compute_status'] = 1
                 print es_xnr.update(index=weibo_xnr_retweet_timing_list_index_name,
                          doc_type=weibo_xnr_retweet_timing_list_index_type,
-                         id=id, body={'doc': d})
+                         id=id, body={'doc': r})
 
 
 
