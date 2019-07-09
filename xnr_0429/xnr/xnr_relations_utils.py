@@ -8,6 +8,7 @@ from global_utils import es_xnr, es_user_portrait,\
 from sina.weibo_operate import SinaOperateAPI
 from global_utils import es_xnr,weibo_xnr_index_name,weibo_xnr_index_type
 from utils import uid2xnr_user_no
+import json
 
 
 def update_weibo_user_portrait_info(uid):
@@ -50,6 +51,7 @@ def load_pingtaiguanzhu_state(root_uid, uid):
     return pingtaiguanzhu_state
 
 
+# 2019-6-24
 def load_user_passwd(uid):
     try:
         query_body = {
@@ -59,7 +61,6 @@ def load_user_passwd(uid):
     }
         result = es_xnr.search(index=weibo_xnr_index_name,doc_type=weibo_xnr_index_type,body=query_body)['hits']['hits']
         print result
-        #print result
         xnr_user_no = result[0]['_source']['xnr_user_no']
         weibo_password = result[0]['_source']['password']
         weibo_account = result[0]['_source']['weibo_phone_account']
@@ -91,7 +92,7 @@ def update_weibo_xnr_relations(root_uid, uid, data, update_portrait_info=False):
         data['xnr_uid'] = root_uid
         data['uid'] = uid
 
-        # 调用爬虫 平台关注 2019年5月31日
+        # kn 调用爬虫 平台关注 2019年6月06日
         pingtaiguanzhu = data.get('pingtaiguanzhu', -1)
         pingtaiguanzhu_state  = load_pingtaiguanzhu_state(root_uid, uid)
         account, password = load_user_passwd(root_uid)
@@ -133,7 +134,7 @@ def update_weibo_xnr_relations(root_uid, uid, data, update_portrait_info=False):
 from global_utils import es_xnr_2, es_fb_user_portrait, \
     facebook_xnr_relations_index_name, facebook_xnr_relations_index_type, \
     fb_portrait_index_name, fb_portrait_index_type
-from utils import fb_uid2xnr_user_no
+#from utils import fb_uid2xnr_user_no
 
 
 def update_facebook_user_portrait_info(uid):
@@ -267,7 +268,8 @@ def update_facebook_xnr_relations(root_uid, uid, data, update_portrait_info=Fals
 # twitter
 from global_utils import es_xnr_2, es_tw_user_portrait, \
     twitter_xnr_relations_index_name, twitter_xnr_relations_index_type, \
-    tw_portrait_index_name, tw_portrait_index_type
+    tw_portrait_index_name, tw_portrait_index_type, tw_xnr_index_name,tw_xnr_index_type,\
+    RE_QUEUE as ali_re, twitter_relation_params
 from utils import tw_uid2xnr_user_no
 
 
@@ -283,6 +285,28 @@ def update_twitter_user_portrait_info(uid):
         return portrait_info
     return {'influence': 0, 'sensitive': 0, 'topic_string': ''}
 
+
+def load_twitter_user_passwd(uid):
+    try:
+        query_body = {
+        'query':{
+            'term':{'uid':uid}
+        }
+    }
+        result = es_xnr_2.search(index=tw_xnr_index_name,doc_type=tw_xnr_index_type,body=query_body)['hits']['hits']
+        xnr_user_no = result[0]['_source']['xnr_user_no']
+        tw_password = result[0]['_source']['password']
+        tw_account = result[0]['_source']['tw_phone_account']
+        if tw_account == '':
+            tw_account = result[0]['_source']['tw_mail_account']
+
+    except Exception as e:
+        print e
+        xnr_user_no = ''
+        tw_password = ''
+        tw_account = ''
+
+    return tw_account, tw_password
 
 def load_twitter_pingtaiguanzhu_state(root_uid, uid):
     """
@@ -307,6 +331,7 @@ def load_twitter_pingtaiguanzhu_state(root_uid, uid):
     }
     search_results = es_xnr_2.search(index=twitter_xnr_relations_index_name, doc_type=twitter_xnr_relations_index_type, body=query_body)['hits']['hits']
     if search_results:
+        print search_results
         pingtaiguanzhu_state = int(search_results[0]['_source']['pingtaiguanzhu'])
     return pingtaiguanzhu_state
 
@@ -338,7 +363,40 @@ def update_twitter_xnr_relations(root_uid, uid, data, update_portrait_info=False
                 'quxiao'
                 data['pingtaiguanzhu'] = 0
         '''
+        # kn push jinrong cloud  
+        pingtaiguanzhu = data.get('pingtaiguanzhu', -1)
+        pingtaiguanzhu_state  = load_twitter_pingtaiguanzhu_state(root_uid, uid)
+        tw_account, tw_password = load_twitter_user_passwd(root_uid)
+        params_dict = {}
+        params_dict['account'] = tw_account
+        params_dict['password'] = tw_password
+        params_dict['to_id'] = uid
+        params_dict['xnr_user_no'] = xnr_user_no
+        params_dict['root_uid'] = root_uid
+        # 根据screen_name关注
+        
 
+        if pingtaiguanzhu != pingtaiguanzhu_state:
+            if pingtaiguanzhu == 1:
+                # 'gaunzhu'
+                params_dict['operate_type'] = 'follow'
+                data['pingtaiguanzhu'] = 1
+                ali_re.lpush(twitter_relation_params, json.dumps(params_dict))
+                print params_dict
+                print "push aliyun successful"
+            elif pingtaiguanzhu == 0:
+                # 'quxiao'
+                params_dict['operate_type'] = 'unfollow'
+                data['pingtaiguanzhu'] = 0
+                ali_re.lpush(twitter_relation_params, json.dumps(params_dict))
+                print "push aliyun successful"
+        else:
+            #params_dict['operate_type'] = 'follow'
+            #data['pingtaiguanzhu'] = 1
+            #ali_re.lpush(twitter_relation_params, json.dumps(params_dict))
+            #print "push aliyun successful"
+            pass
+         
         try:
             _id = '%s_%s' % (root_uid, uid)
             user_exist =  es_xnr_2.exists(index=twitter_xnr_relations_index_name, doc_type=twitter_xnr_relations_index_type, id=_id)
@@ -359,5 +417,7 @@ def update_twitter_xnr_relations(root_uid, uid, data, update_portrait_info=False
 
 
 if __name__ == '__main__':
-    account, password = load_user_passwd('5762691364')
-    print account, password
+    #account, password = load_user_passwd('5762691364')
+    tw_account, tw_password = load_twitter_user_passwd('834571011949469699')
+    print tw_account, tw_password
+    #print account, password

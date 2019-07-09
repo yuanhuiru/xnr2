@@ -978,6 +978,9 @@ facebook_user_trans_task_name = 'facebook_user_trans_task'
 RE_QUEUE = redis.Redis(host='47.94.133.29', port=9506)
 FB_TWEET_PARAMS = 'fb_tweet_params'
 TW_TWEET_PARAMS = 'tw_tweet_params'
+# twitter关注参数
+twitter_relation_params = "twitter_relation_params"
+results_twitter_relation_params = "results_twitter_relation_params"
 
 
 

@@ -76,9 +76,11 @@ def get_influence_total_trend(xnr_user_no,start_time,end_time):
         },
         'size':MAX_SEARCH_SIZE
     }
-
-    search_results = es.search(index=twitter_xnr_count_info_index_name,doc_type=twitter_xnr_count_info_index_type,\
-        body=query_body)['hits']['hits']
+    try:
+        search_results = es.search(index=twitter_xnr_count_info_index_name,doc_type=twitter_xnr_count_info_index_type,\
+            body=query_body)['hits']['hits']
+    except:
+        search_results = []
 
     fans_dict = {}
     fans_dict['total_num'] = {}
@@ -707,9 +709,11 @@ def penetration_total(xnr_user_no,start_time,end_time):
         },
         'size':MAX_SEARCH_SIZE
     }
-
-    search_results = es.search(index=twitter_xnr_count_info_index_name,doc_type=twitter_xnr_count_info_index_type,\
-        body=query_body)['hits']['hits']
+    try:
+        search_results = es.search(index=twitter_xnr_count_info_index_name,doc_type=twitter_xnr_count_info_index_type,\
+            body=query_body)['hits']['hits']
+    except:
+        search_results = []
 
     follow_group = {}
     fans_group = {}
@@ -1143,10 +1147,13 @@ def compute_safe_num(xnr_user_no):
     current_date = ts2datetime(current_time)
 
     _id = xnr_user_no + '_' + current_date
-    get_result = es.get(index=twitter_xnr_count_info_index_name,doc_type=twitter_xnr_count_info_index_type,\
-            id=_id)['_source']
+    try:
+        get_result = es.get(index=twitter_xnr_count_info_index_name,doc_type=twitter_xnr_count_info_index_type,\
+                id=_id)['_source']
 
-    safe_mark = get_result['safe']
+        safe_mark = get_result['safe']
+    except:
+        safe_mark = 0
 
     return safe_mark
 
@@ -1168,9 +1175,11 @@ def get_safe_active(xnr_user_no,start_time,end_time):
         },
         'size':MAX_SEARCH_SIZE
     }
-
-    search_results = es.search(index=twitter_xnr_count_info_index_name,doc_type=twitter_xnr_count_info_index_type,\
-        body=query_body)['hits']['hits']
+    try:
+        search_results = es.search(index=twitter_xnr_count_info_index_name,doc_type=twitter_xnr_count_info_index_type,\
+            body=query_body)['hits']['hits']
+    except:
+        search_results = []
 
     for result in search_results:
         result = result['_source']
@@ -1503,3 +1512,4 @@ def get_follow_group_tweets(xnr_user_no,domain,sort_item):
         result['photo_url'] = photo_url
         results_all.append(result)
     return results_all
+

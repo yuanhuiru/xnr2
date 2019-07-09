@@ -4,9 +4,13 @@ use to manage the system
 '''
 import os
 import json
+import xlsxwriter
 #import sqlite
 import sqlite3
 import string
+import datetime
+from flask_security import roles_required, login_required,current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from xnr.global_utils import es_xnr as es,es_xnr_2
 from xnr.global_utils import weibo_xnr_index_name,weibo_xnr_index_type,\
                         weibo_log_management_index_name,weibo_log_management_index_type,\
@@ -53,13 +57,16 @@ def show_log_list():
 		'sort':{'operate_time':{'order':'desc'}}
 	}
 	result=es.search(index=weibo_log_management_index_name,doc_type=weibo_log_management_index_type,body=query_body)['hits']['hits']
+    
 	results=[]
 	for item in result:
+		print item  
 		item['_source']['log_id']=item['_id']
 		#item['_source']['operate_content']=json.loads(item['_source']['operate_content'])
 		results.append(item['_source'])
 		#print results
 	return results
+
 
 #delete log list
 def delete_log_list(log_id):
@@ -843,3 +850,161 @@ def show_all_xnr(main_user,task_id):
         pass
 
     return xnr_dict
+
+
+# 获取次数 2019年6月11日
+def get_user_count(start_time, end_time):
+    data = {}
+    account_list=get_user_account_list()
+    user_list = []
+    for account in account_list:
+        user_list.append(account[0])
+    start_time = start_time
+    end_time = end_time
+    for user_name in user_list:
+        end_name = user_name.split("@")[0]
+         
+        query_body={
+            'query':{
+        	    'filtered':{
+        		    'filter':{
+        			    'bool':{
+        			        'must':[
+        			    	    {'term':{'user_name': end_name}},
+        			    	    {'range':{'operate_date':{'gte':start_time,'lte':end_time}}}
+        			        ]
+        			    }
+        		    }
+        	    }
+            },
+            'size':100,
+            'sort': {'operate_time': {'order': 'desc'}},
+    }
+        result=es.search(index=weibo_log_management_index_name,doc_type=weibo_log_management_index_type,body=query_body)['hits']['hits']
+        data[user_name] = len(result)
+        #print data
+    return data
+
+
+# 根据时间查，是最重要的，然后统计每个xnr的次数
+def show_user_count(start_time, end_time):
+    result = get_user_count(start_time, end_time)
+    if result:
+        return result
+    else:
+        return {"status":"fail"}
+
+
+def get_excel_count(start_time, end_time):
+    data = get_user_count(start_time, end_time)
+    list_1 = []
+    list_2 = []	
+    list_all = []
+    for key,values in data.items():
+	    list_1.append(key)
+	    list_2.append(values)
+
+    list_all.append(list_1)
+    list_all.append(list_2)
+    start_time = start_time
+    end_time = end_time
+    excel_name = start_time + "+" + end_time
+    filename = 'xnr/static/doc/' + excel_name +'.xlsx'
+    try: 
+        workbook = xlsxwriter.Workbook(filename)     #新建excel表
+        worksheet = workbook.add_worksheet('sheet1')       #新建sheet（sheet的名称为"sheet1"）
+         
+        headings = ['用户','登录次数']     #设置表头
+ 
+        data = list_all 
+        worksheet.set_column('A:C', 20)
+        worksheet.write_row('A1',headings)
+ 
+        worksheet.write_column('A2',data[0])
+        worksheet.write_column('B2',data[1])
+        # worksheet.write_column('C2',data[2])                   #将数据插入到表格中
+        workbook.close()          #将excel文件保存关闭，如果没有这一行运行代码会报错
+        return {"status":1}
+    except Excption as e:
+        print e
+        return {"status":0}
+
+
+
+
+def change_user_info(user_name,new_password, new_department, confirmedat):
+    try:
+        cx = sqlite3.connect("/home/xnr1/xnr_0429/xnr/flask-admin.db")
+        cu = cx.cursor()
+        user_id = get_current_user_info(user_name)["id"]
+        #print user_id
+        new_password_hash = generate_password_hash(new_password, method='pbkdf2:sha1')
+        #print new_password_hash
+        cu.execute("update user set password='{}',department='{}',confirmedat ='{}' where id = '{}'".format(new_password_hash, new_department, confirmedat, user_id))
+        cx.commit()
+        # 目前不是太能验证
+        #check_password_hash('pbkdf2:sha256:50000$ntpFkKsc$bd062cd0b35c5b26c91242fc72eb0e889cf71b9dd4c1ae291587a7a3e84db293','123')
+        #if check_password_hash(new_password ,'test'):
+        cx.close()
+        return {"status":"ok"}
+    except Exception as e:
+        print e
+        return {"status":"fail"}
+
+
+def get_current_user_info(current_user_name):
+    try:
+        data = {}
+        cx = sqlite3.connect("/home/xnr1/xnr_0429/xnr/flask-admin.db")
+        cu = cx.cursor()
+        current_user_name = current_user_name
+        cu.execute("select * from user where email='{}'".format(current_user_name))    
+        user_info = cu.fetchall()
+        data["id"] = user_info[0][0]
+        data["email"] = user_info[0][1]
+        #data["password"] = user_info[0][2]
+        data["active"] = user_info[0][3]
+        data["confirmedat"] = user_info[0][4]
+        data["department"] = user_info[0][11]
+        cx.close()
+    except Exception as e:
+        print e
+        return {"status":"fail"}
+ 
+    return data
+
+
+#show yourself management 2019-06-17
+def get_your_log_list(user_name):
+    end_name = user_name.split("@")[0]
+    query_body={
+        'query':{
+        	'filtered':{
+        		'filter':{
+        			'bool':{
+        			    'must':[
+        			    	{'term':{'user_name': end_name}},
+        			    ]
+        			}
+        		}
+        	}
+        },
+        'size':1000,
+        'sort': {'operate_time': {'order': 'desc'}},
+    }
+    result=es.search(index=weibo_log_management_index_name,doc_type=weibo_log_management_index_type,body=query_body)['hits']['hits']
+    
+    results=[]
+    for item in result:
+        print item  
+        item['_source']['log_id']=item['_id']
+        #item['_source']['operate_content']=json.loads(item['_source']['operate_content'])
+        results.append(item['_source'])
+        #print results
+    return results
+
+
+def get_current_time():
+ 
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d')
+    return current_time

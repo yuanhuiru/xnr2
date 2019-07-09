@@ -149,16 +149,17 @@ def weibo_publish_main(username, password, text='', file=''):
 
 
 if __name__ == '__main__':
-
-    sina_operate_api = SinaOperateAPI('18348831412', 'Z16051605')
+    username = '18348831412' #输入你的用户名
+    password = 'Z16051605' #输入你的密码
+    sina_operate_api = SinaOperateAPI(username, password)
     #print sina_operate_api.publish(content='aaaaa')
     # print sina_operate_api.retweet(mid='', content='')
     # print sina_operate_api.receive(mid='4305918151652871', r_mid='4301849861467864',  content='hhhhh')
     # print sina_operate_api.comment(mid='4301849861467864', content='测试')
     # print sina_operate_api.like(mid='4343623967021258')
     # print sina_operate_api.like_to_comment(mid='4343900799633172')
-    #print sina_operate_api.followed(uid='3964587230')
-    print sina_operate_api.unfollowed(uid='3964587230')
+    print sina_operate_api.followed(uid='6363488745')
+    #print sina_operate_api.unfollowed(uid='6363488745')
     # print sina_operate_api.privmessage(uid='5393019099', content='hello')
    
 

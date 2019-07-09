@@ -20,7 +20,7 @@ from utils import get_submit_tweet_fb, fb_save_to_tweet_timing_list, get_recomme
                 get_show_retweet_timing_list, get_show_retweet_timing_list_future, get_robot_reply,\
                 get_daily_recomment_tweets_from_es
 from xnr.utils import add_operate2redis
-from utils import save_oprate_like
+from utils import save_oprate_like, save_facebook_follow_operate
 mod = Blueprint('facebook_xnr_operate', __name__, url_prefix='/facebook_xnr_operate')
 
 '''
@@ -327,6 +327,14 @@ def ajax_like_operate():
 @mod.route('/follow_operate/')
 def ajax_follow_operate():
     task_detail = dict()
+    xnr_user_no = request.args.get('xnr_user_no','')
+    uid_string = request.args.get('uid','')    # 不同uid之间用中文逗号“，”隔开
+    follow_type_string = request.args.get('follow_type','')  # 日常 daily 业务business
+
+    results = save_facebook_follow_operate(xnr_user_no,uid_string,follow_type_string)
+    return json.dumps(results)
+    '''
+    task_detail = dict()
     task_detail['xnr_user_no'] = request.args.get('xnr_user_no','')
     task_detail['uid'] = request.args.get('uid','')
     task_detail['trace_type'] = request.args.get('trace_type','')  # 跟随关注 -trace_follow，普通关注-ordinary_follow
@@ -340,6 +348,7 @@ def ajax_follow_operate():
     mark = add_operate2redis(queue_dict)
 
     # return json.dumps(mark)
+    '''
 
 # 取消关注
 @mod.route('/unfollow_operate/')
@@ -569,3 +578,6 @@ def ajax_related_recommendation():
     task_detail['sort_item'] = request.args.get('sort_item','influence')
     results = get_related_recommendation(task_detail)
     return json.dumps(results)
+
+
+

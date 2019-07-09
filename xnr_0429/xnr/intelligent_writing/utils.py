@@ -77,7 +77,9 @@ def get_show_writing_task(task_detail):
     # print es,writing_task_index_name, writing_task_index_type
     search_results = es.search(index=writing_task_index_name,doc_type=writing_task_index_type,\
         body=query_body)['hits']['hits']
-
+    print '111111111111111111111111111111111111111111111'
+    print search_results
+    print '111111111111111111111111111111111111111111111'
     results = []
     if search_results:
         for result in search_results:
@@ -114,7 +116,11 @@ def get_topics_river(task_source, task_id,start_ts,end_ts,unit=MinInterval):#主
     }
     
     news_topics = json.loads(es_intel.search(index=topics_river_index_name,doc_type=topics_river_index_type,body=query_body)['hits']['hits'][0]['_source']['features'])
+    #print 'news_topics---------------11111111111111111111111111111111111111111111'
+    #print news_topics
     zhutihe_results = cul_key_weibo_time_count(task_source, task_id,news_topics,start_ts,end_ts,unit)
+    #print 'zhutihe_results---------------11111111111111111111111111111111111111111111'
+    #print zhutihe_results
     results = {}
     for k,v in news_topics.iteritems():
         if len(v)>0:
@@ -236,6 +242,7 @@ def get_opinions_results(task_id,intel_type):
         
     try:
         results = es_intel.get(index=intel_opinion_results_index_name,doc_type=intel_type,id=task_id)['_source']
+        print "results::" , results
     except:
         results = {}
 
@@ -371,7 +378,7 @@ def get_show_opinion_corpus_name():
     }
 
     results = es.search(index=opinion_corpus_index_name,doc_type=opinion_corpus_index_type,body=query_body)['hits']['hits']
-
+    print 'results::',results
     item_dict = {}
 
     for result in results:
@@ -389,7 +396,8 @@ def get_show_opinion_corpus_content(task_detail):
     
     try:
         get_result = es.get(index=opinion_corpus_results_index_name,doc_type=opinion_corpus_results_index_type,id=task_id)['_source']
-
+        #print '11111111111111111111111111111111'
+        #print get_result
     except:
         return []
     opinion_results = json.loads(get_result['corpus_results'])

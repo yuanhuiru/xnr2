@@ -20,6 +20,11 @@ def purview():
     flag = request.args.get('flag','')
     return render_template('systemManage/purview.html',flag=flag)
 
+@mod.route('/inforMange/')
+def inforMange():
+    flag = request.args.get('flag','')
+    return render_template('systemManage/inforMange.html',flag=flag)
+
 @mod.route('/virtual/')
 def virtual():
     flag = request.args.get('flag','')

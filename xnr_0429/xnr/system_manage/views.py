@@ -3,14 +3,16 @@ import os
 import time
 import json
 from flask import Blueprint, url_for, render_template, request,\
-                  abort, flash, session, redirect
+                  abort, flash, session, redirect, make_response, send_file
+from flask_security import roles_required, login_required,current_user
 from utils import create_log_list,show_log_list,delete_log_list,\
 				  create_role_authority,show_authority_list,change_authority_list,delete_authority_list,\
 				  create_user_account,add_user_xnraccount,show_users_account,\
 				  delete_user_account,delete_user_xnraccount,change_user_account,\
 				  add_xnr_map_relationship,show_xnr_map_relationship,change_xnr_platform,\
 				  delete_xnr_map_relationship,update_xnr_map_relationship,control_add_xnr_map_relationship,\
-				  show_all_users_account,lookup_xnr_relation,show_all_xnr
+				  show_all_users_account,lookup_xnr_relation,show_all_xnr,show_user_count,get_excel_count,\
+                  get_current_user_info,get_your_log_list,change_user_info,get_current_time
 
 
 mod = Blueprint('system_manage', __name__, url_prefix='/system_manage')
@@ -34,9 +36,28 @@ def ajax_create_log_list():
 #显示日志内容
 #http://219.224.134.213:9209/system_manage/show_log_list
 @mod.route('/show_log_list/')
+#@login_required
+#@roles_required('administration')
 def ajax_show_log_list():
-	results=show_log_list()
+    user_name=request.args.get('user_name','')
+    if current_user.has_role('administration'):
+        results=show_log_list()
+        print "11111111111111111111111111111111111111111111111111111"
+    else:
+        results=get_your_log_list(user_name)
+        print "00000000000000000000000000000000000000000000000000000"
+    return json.dumps(results)
+
+
+# 根据日志内容，统计操作次数 2019年6月11日
+#http://219.224.134.213:9209/system_manage/show_log_list
+@mod.route('/show_user_count/')
+def ajax_show_user_count():
+	start_time=request.args.get('start_time', '')
+	end_time=request.args.get('end_time', '')
+	results = show_user_count(start_time, end_time)
 	return json.dumps(results)
+
 
 #删除日志内容
 #http://219.224.134.213:9209/system_manage/delete_log_list/?log_id=0011504922400
@@ -248,3 +269,55 @@ def ajax_lookup_xnr_relation():
 	origin_xnr_user_no = request.args.get('origin_xnr_user_no','')
 	results = lookup_xnr_relation(origin_platform,origin_xnr_user_no)
 	return json.dumps(results)
+
+
+# 生成excel
+@mod.route('/get_excel_count/')
+def ajax_get_excel_count():
+	start_time=request.args.get('start_time', '')
+	end_time=request.args.get('end_time', '')
+	results = get_excel_count(start_time, end_time)
+	return json.dumps(results)
+
+
+@mod.route('/download_excel/')
+def index():
+    start_time = request.args.get('start_time')
+    end_time = request.args.get('end_time')
+    excel_name = start_time + "+" + end_time
+    filename = 'static/doc/' + excel_name +'.xlsx'
+    try:
+        response = make_response(send_file(filename))
+    except Exception as e:
+        print e
+        return json.dumps({"status":0})
+    return response
+
+
+@mod.route('/get_current_user_info/')
+def ajax_get_current_user_info():
+	current_user_name = request.args.get('user_name','')
+	results = get_current_user_info(current_user_name)
+	return json.dumps(results)
+
+@mod.route('/change_user_info/')
+def ajax_change_user_info():
+	user_name = request.args.get('user_name','')
+	new_password = request.args.get('new_password','')
+	new_department = request.args.get('new_department','')
+	confirmedat = get_current_time()
+	results = change_user_info(user_name, new_password, new_department, confirmedat)
+	return json.dumps(results)
+
+
+@mod.route('/is_admin/')
+def verify_admin():
+    try:
+        if current_user.has_role('administration'):
+            return json.dumps({"status":1})
+        else:
+            return json.dumps({"status":0})
+    except Exception as e:
+        print e
+        return json.dumps({"status":0})
+ 

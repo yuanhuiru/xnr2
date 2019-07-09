@@ -17,12 +17,13 @@ from xnr.global_utils import es_xnr_2 as es,es_xnr, tw_xnr_index_name,tw_xnr_ind
                     es_tw_user_portrait, tw_portrait_index_name, tw_portrait_index_type, \
                     tw_bci_index_name_pre, tw_bci_index_type,tw_xnr_fans_followers_index_name,\
                     tw_xnr_fans_followers_index_type, tw_be_retweet_index_name_pre, tw_be_retweet_index_type,\
-                    twitter_feedback_at_index_name_pre
+                    twitter_feedback_at_index_name_pre, twitter_xnr_relations_index_name,twitter_xnr_relations_index_type, RE_QUEUE as ali_re, twitter_relation_params
 
+from xnr_relations_utils import update_twitter_xnr_relations,load_twitter_user_passwd
 from xnr.global_utils import twitter_xnr_save_like_index_name,twitter_xnr_save_like_index_type
 
 from xnr.twitter_publish_func import tw_publish, tw_comment, tw_retweet, tw_follow, tw_unfollow, tw_like, tw_mention, tw_message
-from xnr.utils import tw_uid2nick_name_photo
+from xnr.utils import tw_uid2nick_name_photo,tw_xnr_user_no2uid
 from parameter import topic_ch2en_dict, TOP_WEIBOS_LIMIT, HOT_EVENT_TOP_USER, HOT_AT_RECOMMEND_USER_TOP,\
                     BCI_USER_NUMBER, USER_POETRAIT_NUMBER, DAY
 from time_utils import datetime2ts, ts2datetime
@@ -737,7 +738,42 @@ def get_show_retweet_timing_list_future(xnr_user_no):
 
 
 def get_show_trace_followers(xnr_user_no):
-    
+    # kn 2019-06-28 新的查询关系
+    results = []
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'bool':{
+                        'must':[
+                            {'term': {'xnr_no': xnr_user_no}},
+                            {'term': {'gensuiguanzhu': 1}}
+                        ]
+                    }
+                }
+            }
+        },
+        'size': MAX_SEARCH_SIZE,
+    }
+    search_results = es.search(index=twitter_xnr_relations_index_name, doc_type=twitter_xnr_relations_index_type, body=query_body)['hits']['hits']
+    print search_results
+    for data in search_results:
+        data = data['_source']
+        r = {
+            'uid': data.get('uid', ''),
+            'nick_name': data.get('nickname', ''),
+            'fansnum': data.get('fensi_num', 0),
+            'follownum': data.get('guanzhu_num', 0),
+            'sex': data.get('sex', 'unknown'),
+            'photo_url': data.get('photo_url', ''),
+            'statusnum': 0,
+            'user_location': data.get('geo', ''),
+        }
+        results.append(r)
+    return results
+
+    """ 
+    # kn 旧的查询关系注销
     try: 
         es_get_result = es.get(index=tw_xnr_fans_followers_index_name,doc_type=tw_xnr_fans_followers_index_type,\
                     id=xnr_user_no)['_source']
@@ -763,10 +799,58 @@ def get_show_trace_followers(xnr_user_no):
         weibo_user_info = []
 
     return weibo_user_info
+    """
 
 
 def get_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
+    root_uid = tw_xnr_user_no2uid(xnr_user_no)
+    if uid_string:
+        print 'uid--------------------------------------'
+        uid_list = uid_string.encode('utf-8').split('，')
+        tw_account, tw_password = load_twitter_user_passwd(root_uid)
+        for uid in uid_list:
+            data = {}
+            data['platform'] = 'twitter'
+            data['xnr_no'] = xnr_user_no
+            data['xnr_uid'] = root_uid
+            data['uid'] = uid
+            data['account'] = tw_account
+            data['password'] = tw_password
+            data['screen_name'] = ''
+            data['gensuiguanzhu'] = 1
+            data['pingtaiguanzhu'] = 1
+            data['operate_type'] = 'follow'
+            # push
+            ali_re.lpush(twitter_relation_params, json.dumps(data))
+            print 'push aliyun successful'
+            #if not update_twitter_xnr_relations(root_uid, uid, {'gensuiguanzhu': 1, 'pingtaiguanzhu':1}):
+                #return False
+    elif nick_name_string:
+        print 'nick_name--------------------------------------'
+        screen_name_list = nick_name_string.encode('utf-8').split('，')
+        tw_account, tw_password = load_twitter_user_passwd(root_uid)
+        for screen_name in screen_name_list:
+            data = {}
+            data['platform'] = 'twitter'
+            data['xnr_no'] = xnr_user_no
+            data['xnr_uid'] = root_uid
+            data['uid'] = ''
+            data['account'] = tw_account
+            data['password'] = tw_password
+            data['screen_name'] = screen_name
+            data['gensuiguanzhu'] = 1
+            data['pingtaiguanzhu'] = 1
+            data['operate_type'] = 'follow'
+            # push
+            ali_re.lpush(twitter_relation_params, json.dumps(data))
+            print 'push aliyun successful'
+            #if not update_twitter_xnr_relations(root_uid, uid, {'gensuiguanzhu': 1, 'pingtaiguanzhu':1}):
+                #return False
+    return True
 
+
+"""
+    # kn 2019-6-28 注销 使用简单的关注关系
     mark = False
     fail_nick_name_list = []
     if uid_string:
@@ -836,9 +920,27 @@ def get_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
 
     return [mark,fail_nick_name_list]    
 
+"""
 
 def get_un_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
-
+    # 新的取消跟随关注的逻辑 kn 2019-06-28
+    root_uid = tw_xnr_user_no2uid(xnr_user_no)
+    if uid_string:
+        print 'uid--------------------------------------'
+        uid_list = uid_string.encode('utf-8').split('，')
+        for uid in uid_list:
+            if not update_twitter_xnr_relations(root_uid, uid, {'gensuiguanzhu': 0, 'pingtaiguanzhu':0}):
+                return False
+    elif nick_name_string:
+        print 'nick_name--------------------------------------'
+        uid_list = nick_name_string.encode('utf-8').split('，')
+        for uid in uid_list:
+            if not update_twitter_xnr_relations(root_uid, uid, {'gensuiguanzhu': 0, 'pingtaiguanzhu':0}):
+                return False
+    return True
+ 
+    """
+    kn 注掉原来的取消关注逻辑
     mark = False
     fail_nick_name_list = []
     fail_uids = []
@@ -896,6 +998,7 @@ def get_un_trace_follow_operate(xnr_user_no,uid_string,nick_name_string):
         mark = False
 
     return [mark,fail_uids,fail_nick_name_list]    
+    """
 
 
 
@@ -1633,4 +1736,48 @@ def save_oprate_like(task_detail):
     except:
         mark=False
     return mark
+
+
+# 存储关注用户关注关系
+def save_twitter_follow_operate(xnr_user_no,uid_string,follow_type_string):
+
+    root_uid = xnr_user_no2uid(xnr_user_no)
+    print '-------------'
+    print uid_string
+    print follow_type_string
+    print '------------'
+    uid_list = uid_string.encode('utf-8').split('，')
+    print uid_list
+    follow_type_list = follow_type_string.encode('utf-8').split('，')
+    print len(follow_type_list)
+    follow_data = {}
+    # add gensuiguanzhu
+    if len(follow_type_list) == 3:
+        follow_data={"richangguanzhu":1, "yewuguanzhu":1, "gensuiguanzhu":1, "pingtaiguanzhu":1}
+    elif len(follow_type_list) == 1:
+        if follow_type_list[0] == 'daily':
+            follow_data={"richangguanzhu":1,"pingtaiguanzhu":1}
+
+        elif follow_type_list[0] == 'business':
+            follow_data={"yewuguanzhu":1,"pingtaiguanzhu":1}
+
+        elif follow_type_list[0] == 'gensui':
+            follow_data={"gensuiguanzhu":1,"pingtaiguanzhu":1}
+    elif len(follow_type_list) == 2:
+        type_one = follow_type_list[0]
+        type_two = follow_type_list[1]
+        if type_one == 'daily' and type_two == 'business':
+            follow_data = {"richangguanzhu": 1,"yewuguanzhu":1,"pingtaiguanzhu": 1}
+        elif type_one == 'business' and type_two == 'gensui':
+            follow_data = {"yewuguanzhu": 1,"gensuiguanzhu":1,"pingtaiguanzhu": 1}
+        elif type_one == 'daily' and type_two == 'gensui':
+            follow_data = {"richangguanzhu": 1, "gensuiguanzhu": 1, "pingtaiguanzhu": 1}
+
+    else:
+        follow_data = {"richangguanzhu": 0, "yewuguanzhu": 0, "gensuiguanzhu": 1, "pingtaiguanzhu": 1}
+    print follow_data
+    for uid in uid_list:
+        if not update_twitter_xnr_relations(root_uid, uid, follow_data):
+            return {'status':'fail'}
+    return {'status':'ok'}
 

@@ -7,7 +7,8 @@ from flask import Blueprint, url_for, render_template, request,\
                   abort, flash, session, redirect
 
 from xnr.extensions import db, user_datastore
-from utils import utils_text_trans, utils_voice_trans, utils_url_trans
+from utils import utils_text_trans, utils_voice_trans, utils_url_trans 
+from utils_user_portrait_search import utils_user_portrait_search
 mod = Blueprint('index', __name__, url_prefix='/index')
 
 @mod.route('/login/')
@@ -83,6 +84,16 @@ def url_trans():
     if uid and mid:
         #url trans
         res = utils_url_trans(uid, mid)
+        if res:
+            return json.dumps(res)
+    return None
+
+# 根据uid,提供用户画像信息
+@mod.route('/user_portrait_search/')
+def user_portrait_search():
+    uid =  request.args.get('uid', '')
+    if uid:
+        res = utils_user_portrait_search(uid)
         if res:
             return json.dumps(res)
     return None

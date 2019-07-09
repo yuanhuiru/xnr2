@@ -874,7 +874,8 @@ def show_condition_corpus(corpus_condition):
 
         },
         'size':MAX_VALUE
-    }    
+    }
+    print query_body    
     result=es.search(index=weibo_xnr_corpus_index_name,doc_type=weibo_xnr_corpus_index_type,body=query_body)['hits']['hits']
     results=[]
     for item in result:

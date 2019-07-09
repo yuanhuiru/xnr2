@@ -9,10 +9,13 @@ from global_utils import es_xnr_2 as es_xnr,tw_xnr_fans_followers_index_name,tw_
                     tw_xnr_retweet_timing_list_index_name,tw_xnr_retweet_timing_list_index_type,\
                     tw_xnr_index_name,tw_xnr_index_type,tw_xnr_timing_list_index_name,\
                     tw_xnr_timing_list_index_type
-from parameter import MAX_SEARCH_SIZE,RETWEET_START_TS,RETWEET_END_TS,TRACE_FOLLOW_LIST,task_source_ch2en
+from parameter import MAX_SEARCH_SIZE,RETWEET_START_TS,RETWEET_END_TS,TRACE_FOLLOW_LIST,task_source_ch2en,TWITTER_XNR_OPERATE_PATH
 from utils import tw_uid2nick_name_photo
 from twitter_publish_func import tw_retweet,tw_publish
 from time_utils import datetime2ts,ts2datetime
+sys.path.append(TWITTER_XNR_OPERATE_PATH)
+from tw_op_utils import get_submit_tweet_tw
+
 
 # 从流数据中扫描跟踪人物的发帖
 def read_tracing_followers_tweet():
@@ -182,17 +185,22 @@ def publish_operate_timing():
 
     results = es_xnr.search(index=tw_xnr_timing_list_index_name,doc_type=\
                     tw_xnr_timing_list_index_type,body=query_body)['hits']['hits']
-    #print 'results::',results
+    print '----------------------------------------------------------------------'
+    print 'results::',results
+    print '----------------------------------------------------------------------'
     if results:
         for result in results:
             _id = result['_id']
             result = result['_source']
             timestamp_set = result['post_time']
-            print timestamp_set
+            #print timestamp_set
             if timestamp_set <= int(time.time()):
                 print '!!'
                 text = result['text'].encode('utf-8')
-                tweet_type = task_source_ch2en[result['task_source']]
+                # error
+                #tweet_type = task_source_ch2en[result['task_source']]
+                tweet_type = result['task_source']
+                print tweet_type
                 xnr_user_no = result['xnr_user_no']
 
                 # try:
@@ -210,19 +218,36 @@ def publish_operate_timing():
                 #r_tid = result['tid']
 
                 es_get_result = es_xnr.get(index=tw_xnr_index_name,doc_type=tw_xnr_index_type,id=xnr_user_no)['_source']
-
+                print '=---------------'
+                print es_get_result
+                print '=---------------'
                 tw_mail_account = es_get_result['tw_mail_account']
                 tw_phone_account = es_get_result['tw_phone_account']
                 password = es_get_result['password']
                 
                 if tw_mail_account:
                     account_name = tw_mail_account
+                    print account_name
                 elif tw_phone_account:
                     account_name = tw_phone_account
                 else:
                     return False
-                        
-                mark = tw_publish(account_name, password, text, tweet_type, xnr_user_no)
+                # kn 2019-6-27  push to aliyun
+                try:
+                    task_detail = {}        
+                    task_detail['channel'] = "twitter"
+                    task_detail['operate_type'] = "publish"
+                    task_detail['text'] = text
+                    task_detail['tweet_type'] = tweet_type
+                    task_detail['xnr_user_no'] = xnr_user_no
+                    mark = get_submit_tweet_tw(task_detail)
+                except Exception as e:
+                    mark = 0
+                    print e
+               
+# 2k19-6-27 之前的注销
+                # mark = tw_publish(account_name, password, text, tweet_type, xnr_user_no)
+                # 2019-6-27 之前的注销
 
                 if mark:
                     #task_id = xnr_user_no + '_' + r_tid
@@ -244,7 +269,7 @@ def publish_operate_timing():
 if __name__ == '__main__':
 
     # 定时发帖
-    #publish_operate_timing()
+    publish_operate_timing()
 
     # 定时跟踪转发
     read_tracing_followers_tweet()

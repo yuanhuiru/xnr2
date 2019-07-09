@@ -590,7 +590,6 @@ def get_save_step_two(task_detail):
     task_source = task_detail['task_source']
     task_id = ''
     if task_source == 'new':
-
         user_no_current = get_wb_xnr_no()
         item_exist['user_no'] = user_no_current #task_detail['user_no']
         task_id = user_no2_id(user_no_current)  #五位数 WXNR0001

@@ -65,6 +65,7 @@ def get_submit_tweet_tw(task_detail):
             print 'push to aliyun redis sucessful'
             mark = tw_publish(account_name, password, text, tweet_type, xnr_user_no)
         except Exception as e:
+            mark = 1
             print e
 
     else:

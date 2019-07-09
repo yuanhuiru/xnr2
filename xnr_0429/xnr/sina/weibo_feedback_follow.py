@@ -15,8 +15,10 @@ sys.setdefaultencoding('utf-8')
 
 class FeedbackFollow:
     def __init__(self, username, password):
+        print '-----------------------'
         self.launcher = SinaLauncher(username, password, 'phone')
         self.launcher.login()
+        print '---------------'
         self.uid = self.launcher.uid
         self.session = self.launcher.session
 
@@ -192,7 +194,8 @@ class FeedbackFollow:
 
 if __name__ == '__main__':
     #weibo_feedback_follow = FeedbackFollow('sosisuki@163.com', '2012hlwxxc')
-    weibo_feedback_follow = FeedbackFollow('80617252@qq.com', 'xuanhui99999')
+    #weibo_feedback_follow = FeedbackFollow('80617252@qq.com', 'xuanhui99999')
+    weibo_feedback_follow = FeedbackFollow('17600692666', 'xuanhui99999')
     # print weibo_feedback_follow.follow()
     #print weibo_feedback_follow.fans()
     weibo_feedback_follow.execute()
