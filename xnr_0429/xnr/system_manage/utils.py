@@ -11,7 +11,7 @@ import string
 import datetime
 from flask_security import roles_required, login_required,current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from xnr.global_utils import es_xnr as es,es_xnr_2
+from xnr.global_utils import es_xnr as es,es_xnr_2,access_control_index_name,access_control_index_type
 from xnr.global_utils import weibo_xnr_index_name,weibo_xnr_index_type,\
                         weibo_log_management_index_name,weibo_log_management_index_type,\
 						weibo_authority_management_index_name,weibo_authority_management_index_type,\
@@ -1008,3 +1008,30 @@ def get_current_time():
  
     current_time = datetime.datetime.now().strftime('%Y-%m-%d')
     return current_time
+
+
+
+
+def get_access_level_info(account_name):
+    level_info = dict()
+    res = es_xnr_2.get(index=access_control_index_name, doc_type=access_control_index_type, id=account_name)
+    level_info_type = res['_source'].get('access_level')
+    level_info['account_name'] = account_name
+    level_info['level_info'] = level_info_type
+    print level_info
+    
+    return level_info
+
+
+
+
+
+
+
+
+
+
+
+
+
+
