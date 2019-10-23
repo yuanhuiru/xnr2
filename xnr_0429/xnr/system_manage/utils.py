@@ -1015,23 +1015,28 @@ def get_current_time():
 def get_access_level_info(account_name):
     level_info = dict()
     res = es_xnr_2.get(index=access_control_index_name, doc_type=access_control_index_type, id=account_name)
+    print res
     level_info_type = res['_source'].get('access_level')
     level_info['account_name'] = account_name
-    level_info['level_info'] = level_info_type
-    print level_info
+    level_info['access_level'] = level_info_type
     
     return level_info
 
 
+def update_access_level_info(account_name, access_level):
+    try:
+        item_exist = es_xnr_2.get(index=access_control_index_name, doc_type=access_control_index_type, id=account_name)['_source']
+        item_exist['access_level'] = access_level
+        #print item_exist
+        # res = es.update(index=fb_xnr_fans_followers_index_name, doc_type=fb_xnr_fans_followers_index_type, \
+        #           id=xnr_user_no, body={'doc': {'trace_follow_list': trace_follow_list, 'fans_list': followers_list}})
+        #
+        # print es.update(index=fb_xnr_index_name, doc_type=fb_xnr_index_type, id=task_id, body={'doc': item_exist})
+        res = es_xnr_2.update(index=access_control_index_name, doc_type=access_control_index_type,id=account_name,body={'doc':item_exist})
 
-
-
-
-
-
-
-
-
+    except Exception as e:
+        return {"status":"fail"}
+    return {"status":"ok"}
 
 
 

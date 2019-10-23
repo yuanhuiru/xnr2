@@ -12,7 +12,8 @@ from utils import create_log_list,show_log_list,delete_log_list,\
 				  add_xnr_map_relationship,show_xnr_map_relationship,change_xnr_platform,\
 				  delete_xnr_map_relationship,update_xnr_map_relationship,control_add_xnr_map_relationship,\
 				  show_all_users_account,lookup_xnr_relation,show_all_xnr,show_user_count,get_excel_count,\
-                  get_current_user_info,get_your_log_list,change_user_info,get_current_time,get_access_level_info
+                  get_current_user_info,get_your_log_list,change_user_info,get_current_time,get_access_level_info,\
+                  update_access_level_info
 
 
 mod = Blueprint('system_manage', __name__, url_prefix='/system_manage')
@@ -326,10 +327,26 @@ def verify_admin():
 def get_access_level():
     try:
         account_name = request.args.get('account_name', '')
-        level_info = get_access_level_info(account_name)
        
+        level_info = get_access_level_info(account_name)       
         return json.dumps(level_info)
  
     except Exception as e:
         print e
         return json.dumps({"status": 'fail'})
+
+
+@mod.route('/update_access_level/')
+def update_access_level():
+    try:
+        account_name = request.args.get('account_name', '')
+        access_level = request.args.get('access_level', '')
+        results = update_access_level_info(account_name, access_level)
+
+        return json.dumps(results)
+
+    except Exception as e:
+        print e
+        return json.dumps({"status": 'fail'})
+
+
