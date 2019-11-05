@@ -1,4 +1,4 @@
-var dailyLOG_Url='/system_manage/show_log_list/';
+var dailyLOG_Url='/system_manage/show_log_list/?user_name='+admin;
 public_ajax.call_request('get',dailyLOG_Url,dailyLOG);
 function dailyLOG(data) {
     $('#loglist').bootstrapTable('load', data);
@@ -166,3 +166,128 @@ function successFail(data) {
     $('#pormpt p').text(f);
     $('#pormpt').modal('show');
 }
+//--------------使用统计表
+//导出excel
+$(".outputExcel").click(function(){
+	var excel_making_url='/system_manage/get_excel_count/?start_time='+$("#start_1").val()+'&end_time='+$("#end_1").val();
+    public_ajax.call_request('get',excel_making_url,excel_making_request);
+});
+function excel_making_request(data){
+	if(data['status']){
+		setTimeout(function(){
+			var excel_download_url='/system_manage/download_excel/?start_time='+$("#start_1").val()+'&end_time='+$("#end_1").val();
+	        //public_ajax.call_request('get',excel_download_url,excel_download);
+			download_excel(excel_download_url)
+		},100)
+	}else {
+		$('#pormpt p').text('EXCEL生成失败，请稍后重试。');
+        $('#pormpt').modal('show');
+	}
+}
+function download_excel(url) {
+	    var xmlResquest = new XMLHttpRequest();
+	    xmlResquest.open("GET", url, true);
+	    xmlResquest.setRequestHeader("Content-type", "application/json");
+	    xmlResquest.setRequestHeader("Authorization", "Bearer 6cda86e3-ba1c-4737-972c-f815304932ee");
+	    xmlResquest.responseType = "blob";
+	    xmlResquest.onload = function (oEvent) {
+
+	    var content = xmlResquest.response;
+	    var elink = document.createElement('a');
+	    elink.download = "record.xlsx";
+	    elink.style.display = 'none';
+	    var blob = new Blob([content]);
+	    elink.href = URL.createObjectURL(blob);
+	    document.body.appendChild(elink);
+	     elink.click();
+	    document.body.removeChild(elink);
+	    };
+	     xmlResquest.send();
+}
+//===检测是否是admin
+var isnot_url='/system_manage/is_admin/';
+public_ajax.call_request('get',isnot_url,isAdmin);
+function isAdmin(data){
+	if(data['status']){
+		$('.admin_purview').show();
+		$(".ipUseTotal").show();
+		$("#start_1").val($_time);
+		$("#end_1").val($_time);	
+		var ip_total_url='/system_manage/show_user_count/?start_time='+$_time+'&end_time='+$_time;
+    	public_ajax.call_request('get',ip_total_url,IPtotalTable);
+	}else{
+		$('.admin_purview').hide();
+		$(".ipUseTotal").hide();
+	}
+}
+//isAdmin(1)
+$("#sureTime").click(function(){
+	var start=$("#start_1").val();
+	var end=$("#end_1").val();
+	 if (start==''||end==''){
+        $('#pormpt p').text('时间不能为空。');
+        $('#pormpt').modal('show');
+    }else {
+		var ip_total_url='/system_manage/show_user_count/?start_time='+start+'&end_time='+end;
+        public_ajax.call_request('get',ip_total_url,IPtotalTable);
+	}
+})
+function IPtotalTable(_data){
+	var data=[];
+	for(var k in _data){
+		data.push({"name":k,"value":_data[k]})
+	}
+	$('#ipTotalTable').bootstrapTable('load', data);
+    $('#ipTotalTable').bootstrapTable({
+        data:data,
+        search: true,//是否搜索
+        pagination: true,//是否分页
+        pageSize: 10,//单页记录数
+        pageList: [2,5,10,20],//分页步进值
+        sidePagination: "client",//服务端分页
+        searchAlign: "left",
+        searchOnEnterKey: false,//回车搜索
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
+        buttonsAlign: "right",//按钮对齐方式
+        locale: "zh-CN",//中文支持
+        detailView: false,
+        showToggle:false,
+        sortName:'bci',
+        sortOrder:"desc",
+        columns: [
+            {
+                title: "用户名",//标题
+                field: "name",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row.name==''||row.name=='null'||row.name=='unknown'||!row.name){
+                        return '-';
+                   	}else{
+                        return row.name;
+                    };
+                }
+            },
+            {
+                title: "登陆次数",//标题
+                field: "value",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row.value==''||row.value=='null'||row.value=='unknown'||!row.value){
+                        return 0;
+                    }else {
+                        return row.value;
+                    };
+                }
+            },
+        ],
+    });
+}
+
+
