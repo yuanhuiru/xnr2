@@ -63,13 +63,13 @@ def load_search_query(uids, from_ts, to_ts):
     }
     return query_body
 
-
-def load_fb_uids(xnr_user_no):
-    query_body = load_uid_query()
-    if xnr_user_no != 'ALL':
-        query_body['query']['filtered']['filter']['bool']['must'].append({'term': {'xnr_no': xnr_user_no}})
-    search_results = es_xnr_2.search(index=facebook_xnr_relations_index_name, doc_type=facebook_xnr_relations_index_type, body=query_body)['hits']['hits']
-    return [item['_source']['uid'] for item in search_results]
+#
+# def load_fb_uids(xnr_user_no):
+#     query_body = load_uid_query()
+#     if xnr_user_no != 'ALL':
+#         query_body['query']['filtered']['filter']['bool']['must'].append({'term': {'xnr_no': xnr_user_no}})
+#     search_results = es_xnr_2.search(index=facebook_xnr_relations_index_name, doc_type=facebook_xnr_relations_index_type, body=query_body)['hits']['hits']
+#     return [item['_source']['uid'] for item in search_results]
 
 
 def load_tw_uids(xnr_user_no):
@@ -80,11 +80,11 @@ def load_tw_uids(xnr_user_no):
     return [item['_source']['uid'] for item in search_results]
 
 
-def search_fb_posts(uids, from_ts, to_ts):
-    query_body = load_search_query(uids, from_ts, to_ts)
-    print query_body
-    search_results = es_xnr_2.search(index=facebook_flow_text_index_name_pre + '*', doc_type=facebook_flow_text_index_type, body=query_body)['hits']['hits']
-    return [item['_source'] for item in search_results]
+# def search_fb_posts(uids, from_ts, to_ts):
+#     query_body = load_search_query(uids, from_ts, to_ts)
+#     print query_body
+#     search_results = es_xnr_2.search(index=facebook_flow_text_index_name_pre + '*', doc_type=facebook_flow_text_index_type, body=query_body)['hits']['hits']
+#     return [item['_source'] for item in search_results]
 
 
 def search_tw_posts(uids, from_ts, to_ts):
@@ -93,10 +93,10 @@ def search_tw_posts(uids, from_ts, to_ts):
     search_results = es_xnr_2.search(index=twitter_flow_text_index_name_pre + '*', doc_type=twitter_flow_text_index_type, body=query_body)['hits']['hits']
     return [item['_source'] for item in search_results]
 
-def load_fb_posts(xnr_user_no, from_ts, to_ts):
-    uids = load_fb_uids(xnr_user_no)
-    fb_posts = search_fb_posts(uids, from_ts, to_ts)
-    return fb_posts
+# def load_fb_posts(xnr_user_no, from_ts, to_ts):
+#     uids = load_fb_uids(xnr_user_no)
+#     fb_posts = search_fb_posts(uids, from_ts, to_ts)
+#     return fb_posts
 
 
 def load_tw_posts(xnr_user_no, from_ts, to_ts):
@@ -106,8 +106,8 @@ def load_tw_posts(xnr_user_no, from_ts, to_ts):
 
 
 if __name__ == '__main__':
-    print load_fb_posts('FXNR0152', 1550764800, 1550841403)
-    print load_tw_posts('FXNR0152', 1550764800, 1550841403)
+    # print load_fb_posts('FXNR0152', 1550764800, 1550841403)
+    print load_tw_posts('TXNR0024', 1566489600, 1566921600)
 
 
 

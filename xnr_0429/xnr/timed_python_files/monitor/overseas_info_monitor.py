@@ -13,8 +13,9 @@ from global_utils import es_xnr_2 ,es_xnr, info_monitor_index_name_pre, info_mon
 from info_monitor_mappings import info_monitor_mappings
 from keyword_info_monitor_utils import search_posts as search_posts_keywords
 from user_info_monitor_utils import load_posts as search_posts_users
-from overseas_user_info_monitor_utils import load_fb_posts as search_fb_posts_users,\
-    load_tw_posts as search_tw_posts_users
+#from overseas_user_info_monitor_utils import #load_fb_posts as search_fb_posts_users,\
+#    load_tw_posts as search_tw_posts_users
+from overseas_user_info_monitor_utils import load_tw_posts as search_tw_posts_users
 from overseas_keyword_info_monitor_utils import search_fb_posts as search_fb_posts_keywords,\
     search_tw_posts as search_tw_posts_keywords
 
@@ -61,51 +62,56 @@ def main():
     # info_monitor_index_type = 'text'
 
     date = arrow.now().shift(days=-1).format("YYYY-MM-DD")
+    print date
     from_ts = datetime2ts(date)
     to_ts = from_ts + 24 * 3600
     index_name = info_monitor_index_name_pre + date
+    #print index_name
     info_monitor_mappings(date)
-    print '1111111111111111加载facebook所有虚拟人'
-    fb_xnr_user_no = load_fb_xnr_user_no()
-    fb_xnr_user_no.append('ALL')
-    print '1111111111111111加载twitter所有虚拟人'
-    tw_xnr_user_no = load_tw_xnr_user_no()
-    tw_xnr_user_no.append('ALL')
+    # print '1111111111111111加载facebook所有虚拟人'
+    # fb_xnr_user_no = load_fb_xnr_user_no()
+    # fb_xnr_user_no.append('ALL')
 
-    print '2222222222222222facebook用户监测'
-    # facebook 用户监测
-    for fb_xnr_user_no in load_fb_xnr_user_no():
-        try:
-            for data in search_fb_posts_users(fb_xnr_user_no, from_ts, to_ts):
-                es_xnr.index(
-                    index=index_name,
-                    doc_type=info_monitor_index_type,
-                    body={
-                        'xnr_no': fb_xnr_user_no,
-                        'platform': 'facebook',
-                        'type': 'users',
-                        'content': json.dumps(data)}
-                            )
-        except Exception, e:
-            print e
-        print '2222222222222222facebook关键词监测'
-        try:
-            for data in search_fb_posts_keywords(fb_xnr_user_no, from_ts, to_ts):
-                es_xnr.index(
-                    index=index_name,
-                    doc_type=info_monitor_index_type,
-                    body={
-                        'xnr_no': fb_xnr_user_no,
-                        'platform': 'facebook',
-                        'type': 'keywords',
-                        'content': json.dumps(data)}
-                )
-        except Exception, e:
-            print e
+    print '1111111111111111加载twitter所有虚拟人'
+    tw_xnr_user_no_list = load_tw_xnr_user_no()
+    tw_xnr_user_no_list.append('ALL')
+
+    # print '2222222222222222facebook用户监测'
+    # # facebook 用户监测
+    # for fb_xnr_user_no in load_fb_xnr_user_no():
+    #     try:
+    #         for data in search_fb_posts_users(fb_xnr_user_no, from_ts, to_ts):
+    #             es_xnr.index(
+    #                 index=index_name,
+    #                 doc_type=info_monitor_index_type,
+    #                 body={
+    #                     'xnr_no': fb_xnr_user_no,
+    #                     'platform': 'facebook',
+    #                     'type': 'users',
+    #                     'content': json.dumps(data)}
+    #                         )
+    #     except Exception, e:
+    #         print e
+    #     print '2222222222222222facebook关键词监测'
+    #     try:
+    #         for data in search_fb_posts_keywords(fb_xnr_user_no, from_ts, to_ts):
+    #             es_xnr.index(
+    #                 index=index_name,
+    #                 doc_type=info_monitor_index_type,
+    #                 body={
+    #                     'xnr_no': fb_xnr_user_no,
+    #                     'platform': 'facebook',
+    #                     'type': 'keywords',
+    #                     'content': json.dumps(data)}
+    #             )
+    #     except Exception, e:
+    #         print e
 
     print '3333333333333333333twitter用户监测'
     # twitter 用户监测
-    for tw_xnr_user_no in load_tw_xnr_user_no():
+    #from_ts = 1566489600
+    #to_ts = 1567492401
+    for tw_xnr_user_no in tw_xnr_user_no_list:
         try:
             for data in search_tw_posts_users(tw_xnr_user_no, from_ts, to_ts):
                 es_xnr.index(
@@ -119,22 +125,22 @@ def main():
                 )
         except Exception, e:
             print e
-        print '3333333333333333333twitter关键词监测'
+
         try:
             for data in search_tw_posts_keywords(tw_xnr_user_no, from_ts, to_ts):
+                print data
                 es_xnr.index(
-                    index = index_name,
-                    doc_type = info_monitor_index_type,
-                    body = {
-                        'xnr_no': tw_xnr_user_no,
-                        'platform': 'twitter',
-                        'type': 'keywords',
-                        'content': json.dumps(data)}
-                )
+                     index = index_name,
+                     doc_type = info_monitor_index_type,
+                     body = {
+                         'xnr_no': tw_xnr_user_no,
+                         'platform': 'twitter',
+                         'type': 'keywords',
+                         'content': json.dumps(data)}
+                 )
         except Exception,e:
             print e
 
 
 if __name__ == '__main__':
     main()
-
