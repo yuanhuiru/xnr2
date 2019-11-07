@@ -5,16 +5,15 @@ import json
 from flask import Blueprint, url_for, render_template, request,\
                   abort, flash, session, redirect, make_response, send_file
 from flask_security import roles_required, login_required,current_user
-from utils import create_log_list,show_log_list,delete_log_list,\
-				  create_role_authority,show_authority_list,change_authority_list,delete_authority_list,\
-				  create_user_account,add_user_xnraccount,show_users_account,\
-				  delete_user_account,delete_user_xnraccount,change_user_account,\
-				  add_xnr_map_relationship,show_xnr_map_relationship,change_xnr_platform,\
-				  delete_xnr_map_relationship,update_xnr_map_relationship,control_add_xnr_map_relationship,\
-				  show_all_users_account,lookup_xnr_relation,show_all_xnr,show_user_count,get_excel_count,\
-                  get_current_user_info,get_your_log_list,change_user_info,get_current_time,get_access_level_info,\
-                  update_access_level_info
-
+from utils import create_log_list, show_log_list, delete_log_list, \
+    create_role_authority, show_authority_list, change_authority_list, delete_authority_list, \
+    create_user_account, add_user_xnraccount, show_users_account, \
+    delete_user_account, delete_user_xnraccount, change_user_account, \
+    add_xnr_map_relationship, show_xnr_map_relationship, change_xnr_platform, \
+    delete_xnr_map_relationship, update_xnr_map_relationship, control_add_xnr_map_relationship, \
+    show_all_users_account, lookup_xnr_relation, show_all_xnr, show_user_count, get_excel_count, \
+    get_current_user_info, get_your_log_list, change_user_info, get_current_time, get_access_level_info, \
+    update_access_level_info, get_all_access_level_info
 
 mod = Blueprint('system_manage', __name__, url_prefix='/system_manage')
 
@@ -350,3 +349,13 @@ def update_access_level():
         return json.dumps({"status": 'fail'})
 
 
+@mod.route('/get_all_access_level/')
+def get_all_access_level():
+    try:
+        account_name = request.args.get('account_name', '')
+        results = get_all_access_level_info(account_name)
+
+    except Exception as e:
+        return {'status': 'fail'}
+
+    return json.dumps(results)

@@ -1039,4 +1039,29 @@ def update_access_level_info(account_name, access_level):
     return {"status":"ok"}
 
 
+def get_all_access_level_info(account_name):
+    account_name = account_name
+    query_body = {
+        "query":{
+            "match_all":{}
+        },
+        "size":9999
+    }
+    try:
+        result = es_xnr_2.search(index=access_control_index_name, doc_type=access_control_index_type, body=query_body)['hits']['hits']
+        print result
+    except Exception as e:
+        print e
+        return []
+    results = []
+    
+    if result!=[]:
+        for item in result:
+            results.append(item['_source'])
+        print(results)
+    return results
+
+
+
+
 
