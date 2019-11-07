@@ -33,6 +33,7 @@ def datetime2ts(date):
 
 def load_index(index_prefix, from_ts, to_ts):
     index_list = []
+    print index_prefix
     #print 'from_ts', [from_ts], 'to_ts', [to_ts]
     for timestamp in range(int(from_ts), int(to_ts) + 3600*24, 3600*24):
         index_list.append(index_prefix + ts2datetime(timestamp))
@@ -130,18 +131,22 @@ def search_fb_posts(fb_xnr_user_no, from_ts, to_ts, extend_keywords_size=0):
 
 # 根据关键词查找监测帖子 twitter
 def search_tw_posts(tw_xnr_user_no, from_ts, to_ts, extend_keywords_size=0):
+    end_results = []
     tw_keywords = load_tw_keywords(tw_xnr_user_no, extend_keywords_size)
     tw_query_body = load_query_body(tw_keywords)
     tw_index_list = load_index(twitter_flow_text_index_name_pre, from_ts, to_ts)
     print '3333333333333333333 tw_index_list'
-
+    print tw_index_list
     tw_search_results = es_xnr_2.search(index=tw_index_list, doc_type=twitter_flow_text_index_type, body=tw_query_body)['hits']['hits']
     return [item['_source'] for item in tw_search_results]
 
 
 
 if __name__ == '__main__':
-    print search_fb_posts('WXNR0152', 1550139123, 1551003123)
-    print search_tw_posts('WXNR0152', 1550139123, 1551003123)
+    # print search_fb_posts('WXNR0152', 1550139123, 1551003123)
+    results = search_tw_posts('TXNR0024', 1566489600, 1566835200)
+    print results
+
+
 
 
