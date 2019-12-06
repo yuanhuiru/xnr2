@@ -238,7 +238,7 @@ def operate_out_of_redis():
 				#count = 0
 				#while count < 3:
 				try:
-		   			#print 'task_detail..',task_detail
+		   			print 'task_detail..',task_detail
 					mark = get_submit_tweet(task_detail)
 					print 'weibo!!!!!!!'
 					break
